@@ -47,7 +47,7 @@ public class Parser {
                 case "exit" -> new ExitCommand();
                 case "help" -> new HelpCommand();
                 default -> new UnknownCommand(commandWord);
-        };
+            };
     }
 
     /**

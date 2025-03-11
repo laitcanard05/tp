@@ -220,7 +220,9 @@ public class Storage {
             // Write transactions
             for (Transaction transaction : transactionManager.listTransactions()) {
                 String type = transaction instanceof Income ? "Income" : "Expense";
-                String category = transaction instanceof Expense ? ((Expense) transaction).getCategory().toString() : "";
+                String category = transaction instanceof Expense
+                        ? ((Expense) transaction).getCategory().toString()
+                        : "";
                 String tags = String.join(";", transaction.getTags());
 
                 // Escape CSV values properly
