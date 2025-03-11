@@ -40,14 +40,14 @@ public class Parser {
         String arguments = parts.length > 1 ? parts[1] : "";
 
         return switch (commandWord) {
-                case "income" -> parseIncomeCommand(arguments);
-                case "expense" -> parseExpenseCommand(arguments);
-                case "export" -> parseExportCommand(arguments);
-                case "clear" -> parseClearCommand(arguments);
-                case "exit" -> new ExitCommand();
-                case "help" -> new HelpCommand();
-                default -> new UnknownCommand(commandWord);
-            };
+        case "income" -> parseIncomeCommand(arguments);
+        case "expense" -> parseExpenseCommand(arguments);
+        case "export" -> parseExportCommand(arguments);
+        case "clear" -> parseClearCommand(arguments);
+        case "exit" -> new ExitCommand();
+        case "help" -> new HelpCommand();
+        default -> new UnknownCommand(commandWord);
+        };
     }
 
     /**
