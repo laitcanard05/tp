@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * @author alanwang
- *
  * Parses user input and creates the corresponding command.
  */
 public class Parser {
@@ -42,13 +40,13 @@ public class Parser {
         String arguments = parts.length > 1 ? parts[1] : "";
 
         return switch (commandWord) {
-            case "income" -> parseIncomeCommand(arguments);
-            case "expense" -> parseExpenseCommand(arguments);
-            case "export" -> parseExportCommand(arguments);
-            case "clear" -> parseClearCommand(arguments);
-            case "exit" -> new ExitCommand();
-            case "help" -> new HelpCommand();
-            default -> new UnknownCommand(commandWord);
+                case "income" -> parseIncomeCommand(arguments);
+                case "expense" -> parseExpenseCommand(arguments);
+                case "export" -> parseExportCommand(arguments);
+                case "clear" -> parseClearCommand(arguments);
+                case "exit" -> new ExitCommand();
+                case "help" -> new HelpCommand();
+                default -> new UnknownCommand(commandWord);
         };
     }
 
@@ -76,7 +74,9 @@ public class Parser {
 
             return new IncomeCommand(amount, description, tags);
         } catch (NumberFormatException e) {
-            return new InvalidCommand("Invalid amount format. Please provide a valid number with up to 2 decimal places.");
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
         } catch (Exception e) {
             return new InvalidCommand("Invalid income command: " + e.getMessage());
         }
@@ -112,7 +112,9 @@ public class Parser {
 
             return new ExpenseCommand(amount, description, category, tags);
         } catch (NumberFormatException e) {
-            return new InvalidCommand("Invalid amount format. Please provide a valid number with up to 2 decimal places.");
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
         } catch (Exception e) {
             return new InvalidCommand("Invalid expense command: " + e.getMessage());
         }

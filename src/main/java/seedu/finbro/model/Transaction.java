@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Represents a financial transaction in the FinBro application.
  */
 public abstract class Transaction {

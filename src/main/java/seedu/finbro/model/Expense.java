@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Represents an expense transaction in the FinBro application.
  */
 public class Expense extends Transaction {

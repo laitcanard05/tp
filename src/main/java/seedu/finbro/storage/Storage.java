@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * @author alanwang
- *
  * Handles saving and loading of data.
  */
 public class Storage {

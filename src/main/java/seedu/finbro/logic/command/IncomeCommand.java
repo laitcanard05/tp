@@ -8,8 +8,6 @@ import seedu.finbro.ui.Ui;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Represents a command to add income.
  */
 public class IncomeCommand implements Command {

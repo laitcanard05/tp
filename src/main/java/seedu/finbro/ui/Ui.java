@@ -3,8 +3,6 @@ package seedu.finbro.ui;
 import java.util.Scanner;
 
 /**
- * @author alanwang
- *
  * Text-based UI for the FinBro application.
  */
 public class Ui {
