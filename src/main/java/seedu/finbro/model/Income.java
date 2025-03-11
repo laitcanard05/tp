@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Represents an income transaction in the FinBro application.
  */
 public class Income extends Transaction {

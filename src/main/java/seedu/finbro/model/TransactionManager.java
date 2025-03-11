@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Manages transactions in the FinBro application.
  */
 public class TransactionManager {

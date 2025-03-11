@@ -5,8 +5,6 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 /**
- * @author alanwang
- *
  * Represents a command to exit the application.
  */
 public class ExitCommand implements Command {

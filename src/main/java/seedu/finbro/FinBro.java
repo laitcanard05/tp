@@ -7,8 +7,6 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 /**
- * @author alanwang
- *
  * Main class for the FinBro application.
  */
 public class FinBro {

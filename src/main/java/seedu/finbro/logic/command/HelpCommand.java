@@ -5,8 +5,6 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 /**
- * @author alanwang
- *
  * Represents a help command.
  */
 public class HelpCommand implements Command {

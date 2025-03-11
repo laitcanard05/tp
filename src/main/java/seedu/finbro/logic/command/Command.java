@@ -5,8 +5,6 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 /**
- * @author alanwang
- *
  * Represents a command in the FinBro application.
  */
 public interface Command {

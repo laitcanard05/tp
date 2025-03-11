@@ -8,8 +8,6 @@ import seedu.finbro.ui.Ui;
 import java.util.List;
 
 /**
- * @author alanwang
- *
  * Represents a command to add an expense.
  */
 public class ExpenseCommand implements Command {
