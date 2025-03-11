@@ -7,10 +7,8 @@ import java.util.List;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Represents a financial transaction in the FinBro application.
  */
 public abstract class Transaction {

@@ -7,10 +7,8 @@ import java.util.List;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Manages transactions in the FinBro application.
  */
 public class TransactionManager {
@@ -32,12 +30,7 @@ public class TransactionManager {
         transactions.add(transaction);
     }
 
-    /**
-     * TODO Deletes a transaction at the specified index.
-     *
-     * @param index The index of the transaction to delete (1-based)
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
+    // TODO Deletes a transaction at the specified index.
 
     /**
      * Lists all transactions in reverse chronological order.
@@ -51,34 +44,13 @@ public class TransactionManager {
         return sortedTransactions;
     }
 
-    /**
-     * TODO Lists a limited number of transactions in reverse chronological order.
-     *
-     * @param limit The maximum number of transactions to return
-     * @return List of transactions, limited to the specified number
-     */
+    // TODO Lists a limited number of transactions in reverse chronological order.
 
-    /**
-     * TODO Lists transactions from a specific date in reverse chronological order.
-     *
-     * @param date The date to filter transactions from
-     * @return List of transactions from the specified date
-     */
+    // TODO Lists transactions from a specific date in reverse chronological order.
 
-    /**
-     * TODO Searches for transactions whose descriptions contain any of the given keywords.
-     *
-     * @param keywords The keywords to search for
-     * @return List of transactions matching the search criteria
-     */
+    // TODO Searches for transactions whose descriptions contain any of the given keywords.
 
-    /**
-     * TODO Filters transactions between the specified start and end dates.
-     *
-     * @param startDate The start date (inclusive)
-     * @param endDate   The end date (inclusive)
-     * @return List of transactions within the date range
-     */
+    // TODO Filters transactions between the specified start and end dates.
 
     /**
      * Calculates the current balance based on all transactions.
@@ -121,29 +93,11 @@ public class TransactionManager {
                 .sum();
     }
 
-    /**
-     * TODO Gets the total income for a specific month and year.
-     *
-     * @param month The month (1-12)
-     * @param year The year
-     * @return The total income for the specified month and year
-     */
+    // TODO Gets the total income for a specific month and year.
 
-    /**
-     * TODO Gets the total expenses for a specific month and year.
-     *
-     * @param month The month (1-12)
-     * @param year  The year
-     * @return The total expenses for the specified month and year
-     */
+    // TODO Gets the total expenses for a specific month and year.
 
-    /**
-     * TODO Gets expenses by category for a specific month and year.
-     *
-     * @param month The month (1-12)
-     * @param year  The year
-     * @return A map of category to total expenses
-     */
+    // TODO Gets expenses by category for a specific month and year.
 
     /**
      * Clears all transactions.
@@ -152,9 +106,5 @@ public class TransactionManager {
         transactions.clear();
     }
 
-    /**
-     * TODO Returns the number of transactions.
-     *
-     * @return The number of transactions
-     */
+    // TODO Returns the number of transactions.
 }

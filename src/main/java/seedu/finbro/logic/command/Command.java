@@ -7,10 +7,8 @@ import seedu.finbro.ui.Ui;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Represents a command in the FinBro application.
  */
 public interface Command {

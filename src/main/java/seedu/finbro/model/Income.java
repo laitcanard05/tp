@@ -6,10 +6,8 @@ import java.util.List;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Represents an income transaction in the FinBro application.
  */
 public class Income extends Transaction {
