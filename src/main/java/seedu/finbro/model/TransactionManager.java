@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * @author alanwang
- * @project tp
- * @date 11/3/25
  *
  * Manages transactions in the FinBro application.
  */

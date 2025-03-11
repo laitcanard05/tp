@@ -6,8 +6,6 @@ import seedu.finbro.ui.Ui;
 
 /**
  * @author alanwang
- * @project tp
- * @date 11/3/25
  *
  * Represents a command to exit the application.
  */

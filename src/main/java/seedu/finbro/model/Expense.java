@@ -5,8 +5,6 @@ import java.util.List;
 
 /**
  * @author alanwang
- * @project tp
- * @date 11/3/25
  *
  * Represents an expense transaction in the FinBro application.
  */
