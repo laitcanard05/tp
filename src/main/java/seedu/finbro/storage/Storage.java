@@ -21,14 +21,6 @@ import java.util.Scanner;
 
 /**
  * @author alanwang
- * @project tp
- * @date 9/3/25
- */
-
-/**
- * @author alanwang
- * @project tp
- * @date 11/3/25
  *
  * Handles saving and loading of data.
  */

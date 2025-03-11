@@ -19,8 +19,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author alanwang
- * @project tp
- * @date 11/3/25
  *
  * Parses user input and creates the corresponding command.
  */
