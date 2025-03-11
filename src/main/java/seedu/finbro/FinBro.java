@@ -9,10 +9,8 @@ import seedu.finbro.ui.Ui;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Main class for the FinBro application.
  */
 public class FinBro {

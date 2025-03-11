@@ -1,9 +1,16 @@
 package seedu.finbro.logic.parser;
 
-import seedu.finbro.logic.command.*;
+import seedu.finbro.logic.command.Command;
+import seedu.finbro.logic.command.IncomeCommand;
+import seedu.finbro.logic.command.ExpenseCommand;
+import seedu.finbro.logic.command.ClearCommand;
+import seedu.finbro.logic.command.ExitCommand;
+import seedu.finbro.logic.command.HelpCommand;
+import seedu.finbro.logic.command.ExportCommand;
+import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.model.Expense;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +20,8 @@ import java.util.regex.Pattern;
 /**
  * @author alanwang
  * @project tp
- * @date 9/3/25
- */
-
-/**
+ * @date 11/3/25
+ *
  * Parses user input and creates the corresponding command.
  */
 public class Parser {
@@ -115,40 +120,15 @@ public class Parser {
         }
     }
 
-    /**
-     * TODO Parses arguments into a ListCommand.
-     *
-     * @param args Command arguments
-     * @return The ListCommand
-     */
+    // TODO Parses arguments into a ListCommand.
 
-    /**
-     * TODO: Parses arguments into a DeleteCommand.
-     *
-     * @param args Command arguments
-     * @return The DeleteCommand
-     */
+    // TODO: Parses arguments into a DeleteCommand.
 
-    /**
-     * TODO Parses arguments into a SearchCommand.
-     *
-     * @param args Command arguments
-     * @return The SearchCommand
-     */
+    // TODO Parses arguments into a SearchCommand.
 
-    /**
-     * TODO Parses arguments into a FilterCommand.
-     *
-     * @param args Command arguments
-     * @return The FilterCommand
-     */
+    // TODO Parses arguments into a FilterCommand.
 
-    /**
-     * TODO Parses arguments into a SummaryCommand.
-     *
-     * @param args Command arguments
-     * @return The SummaryCommand
-     */
+    // TODO Parses arguments into a SummaryCommand.
 
     /**
      * Parses arguments into an ExportCommand.
