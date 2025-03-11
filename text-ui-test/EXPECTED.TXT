@@ -1,9 +1,73 @@
-Hello from
- ____        _        
-|  _ \ _   _| | _____ 
-| | | | | | | |/ / _ \
-| |_| | |_| |   <  __/
-|____/ \__,_|_|\_\___|
-
-What is your name?
-Hello James Gosling
+____________________________________________________________
+Welcome to FinBro - Your Personal Finance Manager!
+Type 'help' to see available commands.
+____________________________________________________________
+> ____________________________________________________________
+Available commands:
+income AMOUNT d/DESCRIPTION [t/TAG...] - Add income
+expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG...] - Add expense
+list [n/NUMBER] [d/DATE] - List transactions
+delete INDEX - Delete a transaction
+search KEYWORD [MORE_KEYWORDS] - Search transactions
+filter d/DATE [to/DATE] - Filter transactions by date
+balance - View current balance
+summary [m/MONTH] [y/YEAR] - View financial summary
+export [f/FORMAT] - Export data (csv or txt)
+clear - Clear all data
+exit - Exit the program
+help - Show this help message
+____________________________________________________________
+> ____________________________________________________________
+New income added: [Income] $3000.00 - Monthly salary [work]
+____________________________________________________________
+> ____________________________________________________________
+New income added: [Income] $500.50 - Freelance design project [graphic-design]
+____________________________________________________________
+> ____________________________________________________________
+New income added: [Income] $1200.00 - Tax refund
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Food] $25.50 - Lunch with colleagues [work]
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Shopping] $75.00 - New shoes
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Bills] $150.20 - Electricity bill [home]
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Transport] $10.80 - Bus fare
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Entertainment] $45.99 - Movie tickets [weekend]
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Food] $120.00 - Groceries [essential]
+____________________________________________________________
+> ____________________________________________________________
+Are you sure you want to clear all data? This action cannot be undone. Type 'clear confirm' to confirm.
+____________________________________________________________
+> ____________________________________________________________
+Unknown command: n
+Type 'help' to see available commands.
+____________________________________________________________
+> ____________________________________________________________
+Are you sure you want to clear all data? This action cannot be undone. Type 'clear confirm' to confirm.
+____________________________________________________________
+> ____________________________________________________________
+Unknown command: y
+Type 'help' to see available commands.
+____________________________________________________________
+> ____________________________________________________________
+New income added: [Income] $2000.00 - New job payment [work]
+____________________________________________________________
+> ____________________________________________________________
+New expense added: [Expense][Food] $30.00 - Dinner
+____________________________________________________________
+> ____________________________________________________________
+Goodbye! Thank you for using FinBro.
+____________________________________________________________
+____________________________________________________________
+Thank you for using FinBro. Your finances are now in better shape!
+Goodbye!
+____________________________________________________________
