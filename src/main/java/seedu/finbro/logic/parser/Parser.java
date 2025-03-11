@@ -39,22 +39,15 @@ public class Parser {
         String commandWord = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
 
-        switch (commandWord) {
-            case "income":
-                return parseIncomeCommand(arguments);
-            case "expense":
-                return parseExpenseCommand(arguments);
-            case "export":
-                return parseExportCommand(arguments);
-            case "clear":
-                return parseClearCommand(arguments);
-            case "exit":
-                return new ExitCommand();
-            case "help":
-                return new HelpCommand();
-            default:
-                return new UnknownCommand(commandWord);
-        }
+        return switch (commandWord) {
+        case "income" -> parseIncomeCommand(arguments);
+        case "expense" -> parseExpenseCommand(arguments);
+        case "export" -> parseExportCommand(arguments);
+        case "clear" -> parseClearCommand(arguments);
+        case "exit" -> new ExitCommand();
+        case "help" -> new HelpCommand();
+        default -> new UnknownCommand(commandWord);
+        };
     }
 
     /**
