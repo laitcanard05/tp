@@ -42,7 +42,7 @@ public class ClearCommand implements Command {
     /**
      * Returns false since this is not an exit command.
      *
-     * @return false
+     * @return falsejimmy cart
      */
     @Override
     public boolean isExit() {

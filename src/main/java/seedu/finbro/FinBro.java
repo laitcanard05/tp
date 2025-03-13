@@ -26,25 +26,10 @@ public class FinBro {
     }
 
     /**
-     * Runs the application.
+     * Exits the application.
      */
-    public void run() {
-        start();
-        runCommandLoop();
-        exit();
-    }
-
-    /**
-     * Starts the application.
-     */
-    private void start() {
-        ui.showWelcome();
-        try {
-            transactionManager = storage.loadTransactions();
-        } catch (Exception e) {
-            ui.showError("Problem loading data: " + e.getMessage());
-            transactionManager = new TransactionManager(); // Start with empty data if loading fails
-        }
+    private void exit() {
+        ui.showGoodbye();
     }
 
     /**
@@ -67,10 +52,25 @@ public class FinBro {
     }
 
     /**
-     * Exits the application.
+     * Starts the application.
      */
-    private void exit() {
-        ui.showGoodbye();
+    private void start() {
+        ui.showWelcome();
+        try {
+            transactionManager = storage.loadTransactions();
+        } catch (Exception e) {
+            ui.showError("Problem loading data: " + e.getMessage());
+            transactionManager = new TransactionManager(); // Start with empty data if loading fails
+        }
+    }
+
+    /**
+     * Runs the application.
+     */
+    public void run() {
+        start();
+        runCommandLoop();
+        exit();
     }
 
     /**
