@@ -54,3 +54,4 @@ class FilterCommandTest {
         assertFalse(command.isExit());
     }
 }
+
