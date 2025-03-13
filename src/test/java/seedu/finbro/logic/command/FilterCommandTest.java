@@ -35,10 +35,13 @@ class FilterCommandTest {
      */
     @Test
     void execute_shouldDisplayFilteredTransactions() {
-        transactionManager.addTransaction(new Expense(6.30, "lunch", LocalDate.parse("2025-03-14"), null, null));
-        transactionManager.addTransaction(new Expense(14.00, "buy books", LocalDate.parse("2025-03-16"), null, null));
+        transactionManager.addTransaction(new Expense(6.30, "lunch",
+                LocalDate.parse("2025-03-14"), null, null));
+        transactionManager.addTransaction(new Expense(14.00, "buy books",
+                LocalDate.parse("2025-03-16"), null, null));
 
-        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"), LocalDate.parse("2025-03-15"));
+        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"),
+                LocalDate.parse("2025-03-15"));
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("Showing transactions from 2025-03-14 to 2025-03-15:\n" +
@@ -50,7 +53,8 @@ class FilterCommandTest {
      */
     @Test
     void isExit_returnsFalse() {
-        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"), LocalDate.parse("2025-03-15"));
+        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"),
+                LocalDate.parse("2025-03-15"));
         assertFalse(command.isExit());
     }
 }

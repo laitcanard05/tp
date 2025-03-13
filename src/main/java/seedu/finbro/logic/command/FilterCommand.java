@@ -26,7 +26,8 @@ public class FilterCommand implements Command {
      */
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         ArrayList<Transaction>  filteredTransactions = transactionManager.getFilteredTransactions(startDate, endDate);
-        String filteredTransactionsDisplay = "Showing transactions from " + startDate.toString() + " to " + endDate.toString() + ":\n";
+        String filteredTransactionsDisplay = "Showing transactions from " +
+                startDate.toString() + " to " + endDate.toString() + ":\n";
         for (int i = 0; i < filteredTransactions.size(); i++) {
             filteredTransactionsDisplay += filteredTransactions.get(i).toString() + "\n";
         }
