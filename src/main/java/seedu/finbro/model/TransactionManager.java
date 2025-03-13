@@ -1,7 +1,9 @@
 package seedu.finbro.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.List;
 
 /**
@@ -46,7 +48,19 @@ public class TransactionManager {
 
     // TODO Searches for transactions whose descriptions contain any of the given keywords.
 
+    /**
+     * Filters transactions made between the specified start date and end date
+     * @param startDate the start date specified by the user for filtering
+     * @param endDate the end date specified by the user for filtering
+     * @return a list of filtered transactions
+     */
     // TODO Filters transactions between the specified start and end dates.
+    public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
+        return transactions.stream()
+                .filter(t -> (t.getDate().isEqual(startDate) || t.getDate().isAfter(startDate)) &&
+                        (t.getDate().isEqual(endDate) || t.getDate().isBefore(endDate)))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
 
     /**
      * Calculates the current balance based on all transactions.
