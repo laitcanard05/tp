@@ -1,16 +1,20 @@
 package seedu.finbro.logic.parser;
 
-import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
+import seedu.finbro.logic.command.FilterCommand;
+import seedu.finbro.logic.command.ExportCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.ExitCommand;
 import seedu.finbro.logic.command.HelpCommand;
-import seedu.finbro.logic.command.ExportCommand;
 import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.model.Expense;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +46,7 @@ public class Parser {
         return switch (commandWord) {
         case "income" -> parseIncomeCommand(arguments);
         case "expense" -> parseExpenseCommand(arguments);
+        case "filter" -> parseFilterCommand(arguments);
         case "export" -> parseExportCommand(arguments);
         case "clear" -> parseClearCommand(arguments);
         case "exit" -> new ExitCommand();
@@ -126,7 +131,35 @@ public class Parser {
 
     // TODO Parses arguments into a SearchCommand.
 
+    /**
+     * Parses arguments into a FilterCommand with specified start and end date
+     * @param args Command arguments
+     * @return The FilterCommand
+     */
     // TODO Parses arguments into a FilterCommand.
+    private Command parseFilterCommand(String args) {
+        try {
+            Map<String, String> parameters = parseParameters(args);
+            if (!parameters.containsKey("d")) {
+                return new InvalidCommand("Start date must be specified for filter command.");
+            }
+            LocalDate startDate = LocalDate.parse(parameters.get("d"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate endDate;
+            if (!parameters.containsKey("to")) {
+                endDate = LocalDate.now();
+            } else {
+                endDate = LocalDate.parse(parameters.get("to"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+            if (startDate.isAfter(endDate)) {
+                return new InvalidCommand("Start date cannot be after end date.");
+            }
+            return new FilterCommand(startDate, endDate);
+        } catch (DateTimeParseException e) {
+            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid filter command: " + e.getMessage());
+        }
+    }
 
     // TODO Parses arguments into a SummaryCommand.
 
@@ -251,3 +284,4 @@ public class Parser {
         return tags;
     }
 }
+
