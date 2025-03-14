@@ -1,1 +1,0 @@
-INCOME|2025-03-14|3.14|Test description||Test tag 1,Test tag 2,Test tag 3

@@ -26,9 +26,9 @@ class IncomeCommandTest {
     private final InputStream originalIn = System.in;
 
     private IncomeCommand income;
-    TransactionManager transactionManager = new TransactionManager();
-    Ui ui = new Ui();
-    Storage storage = new Storage();
+    private TransactionManager transactionManager;
+    private Ui ui;
+    private Storage storage;
 
     /**
      * Sets up the test environment before each test.
@@ -36,6 +36,9 @@ class IncomeCommandTest {
      */
     @BeforeEach
     void setUp() {
+        transactionManager = new TransactionManager();
+        ui = new Ui();
+        storage = new Storage();
         System.setOut(new PrintStream(outContent));
     }
 
