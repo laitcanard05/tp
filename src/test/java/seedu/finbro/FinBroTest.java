@@ -18,5 +18,8 @@ class FinBroTest {
         assertTrue(true);
     }
 
-
+    @Test
+    public void sampleTest3() {
+        assertTrue(true);
+    }
 }
