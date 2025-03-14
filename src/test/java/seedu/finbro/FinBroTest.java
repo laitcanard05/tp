@@ -22,4 +22,9 @@ class FinBroTest {
     public void sampleTest3() {
         assertTrue(true);
     }
+
+    @Test
+    public void sampleTest4() {
+        assertTrue(true);
+    }
 }
