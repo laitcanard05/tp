@@ -6,6 +6,8 @@ import seedu.finbro.ui.Ui;
 
 import java.util.stream.Collectors;
 
+// TODO add filtering of list by number and date
+
 /**
  * Represents a command to list all transactions.
  */
