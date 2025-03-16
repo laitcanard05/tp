@@ -91,4 +91,11 @@ public class Ui {
         String input = scanner.nextLine().trim().toLowerCase();
         return input.equals("y") || input.equals("yes");
     }
+
+    @Override
+    public String toString() {
+        return "Ui{" +
+                "scanner=" + scanner +
+                '}';
+    }
 }

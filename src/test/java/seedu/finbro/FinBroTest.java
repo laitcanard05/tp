@@ -9,7 +9,22 @@ import org.junit.jupiter.api.Test;
  */
 class FinBroTest {
     @Test
-    public void sampleTest() {
+    public void sampleTest1() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void sampleTest2() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void sampleTest3() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void sampleTest4() {
         assertTrue(true);
     }
 }
