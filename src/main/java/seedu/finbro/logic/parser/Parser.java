@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.ExitCommand;
+import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.ExportCommand;
 import seedu.finbro.logic.command.FilterCommand;
 import seedu.finbro.logic.command.HelpCommand;
@@ -21,7 +22,7 @@ import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.UnknownCommand;
-import seedu.finbro.logic.command.ExpenseCommand;
+import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.model.Expense;
 
 /**
@@ -76,6 +77,9 @@ public class Parser {
             break;
         case "list":
             parsedCommand = new ListCommand();
+            break;
+        case "view":
+            parsedCommand = new BalanceCommand();
             break;
         default:
             logger.warning("Unknown command: " + commandWord);
