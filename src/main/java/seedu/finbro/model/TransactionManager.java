@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * Manages transactions in the FinBro application.
  */
 public class TransactionManager {
+    private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
     private final List<Transaction> transactions;
 
     /**
@@ -18,6 +20,7 @@ public class TransactionManager {
      */
     public TransactionManager() {
         this.transactions = new ArrayList<>();
+        logger.info("Created new TransactionManager");
     }
 
     /**
@@ -27,6 +30,9 @@ public class TransactionManager {
      */
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
+        logger.info("Added " + transaction.getClass().getSimpleName() + 
+                " with amount $" + transaction.getAmount() + 
+                " and description: " + transaction.getDescription());
     }
 
     /**
@@ -37,9 +43,13 @@ public class TransactionManager {
      */
     public void deleteTransaction(int index) {
         if (index < 1 || index > transactions.size()) {
+            logger.warning("Attempt to delete transaction at invalid index: " + index);
             throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
         }
-        transactions.remove(index - 1); // Convert from 1-based to 0-based
+        Transaction removed = transactions.remove(index - 1); // Convert from 1-based to 0-based
+        logger.info("Deleted " + removed.getClass().getSimpleName() + 
+                " with amount $" + removed.getAmount() + 
+                " at index " + index);
     }
 
     /**
@@ -200,7 +210,9 @@ public class TransactionManager {
      * Clears all transactions.
      */
     public void clearTransactions() {
+        int count = transactions.size();
         transactions.clear();
+        logger.info("Cleared " + count + " transactions");
     }
 
     /**

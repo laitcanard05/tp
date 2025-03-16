@@ -2,11 +2,13 @@ package seedu.finbro.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents an income transaction in the FinBro application.
  */
 public class Income extends Transaction {
+    private static final Logger logger = Logger.getLogger(Income.class.getName());
     /**
      * Constructs an Income with the specified amount, description, and optional tags.
      *
@@ -16,6 +18,7 @@ public class Income extends Transaction {
      */
     public Income(double amount, String description, List<String> tags) {
         super(amount, description, tags);
+        logger.fine("Created new income with amount $" + amount);
     }
 
     /**
@@ -28,6 +31,7 @@ public class Income extends Transaction {
      */
     public Income(double amount, String description, LocalDate date, List<String> tags) {
         super(amount, description, date, tags);
+        logger.fine("Created new income with amount $" + amount + " for date " + date);
     }
 
     /**

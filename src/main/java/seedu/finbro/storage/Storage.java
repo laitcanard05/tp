@@ -143,7 +143,13 @@ public class Storage {
      */
     private Transaction parseTransaction(String line) {
         try {
-            String[] parts = line.split("\\|");
+            String[] parts = line.split("\\|", -1); // Keep trailing empty strings
+
+            // Log the parts for debugging
+            logger.fine("Parsing line with " + parts.length + " parts: " + line);
+            for (int i = 0; i < parts.length; i++) {
+                logger.fine("Part " + i + ": '" + parts[i] + "'");
+            }
 
             if (parts.length < 5) {
                 logger.warning("Invalid data format: " + line);
@@ -157,19 +163,21 @@ public class Storage {
             String description = parts[3];
 
             List<String> tags = new ArrayList<>();
-            if (parts.length > 5 && !parts[5].isEmpty()) {
+            // Check if there's a 6th part (index 5) for tags
+            if (parts.length > 5 && parts[5] != null && !parts[5].isEmpty()) {
                 tags = Arrays.asList(parts[5].split(","));
             }
 
             if ("INCOME".equals(type)) {
                 logger.fine("Parsed income transaction: date=" + date +
-                        ", amount=" + amount + ", description=" + description);
+                        ", amount=" + amount + ", description=" + description +
+                        ", tags=" + tags);
                 return new Income(amount, description, date, tags);
             } else if ("EXPENSE".equals(type)) {
                 Expense.Category category = Expense.Category.fromString(parts[4]);
                 logger.fine("Parsed expense transaction: date=" + date +
                         ", amount=" + amount + ", description=" + description +
-                        ", category=" + category);
+                        ", category=" + category + ", tags=" + tags);
                 return new Expense(amount, description, date, category, tags);
             } else {
                 logger.warning("Unknown transaction type: " + type);

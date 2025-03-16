@@ -22,6 +22,7 @@ public class LoggingConfig {
      */
     public static void init() {
         if (configured) {
+            logger.fine("Logging already configured, skipping initialization");
             return;
         }
 
@@ -29,10 +30,14 @@ public class LoggingConfig {
             // Ensure log directory exists
             Path logDir = Paths.get(LOG_DIRECTORY);
             if (!Files.exists(logDir)) {
+                logger.info("Creating log directory: " + LOG_DIRECTORY);
                 Files.createDirectory(logDir);
+            } else {
+                logger.fine("Log directory already exists: " + LOG_DIRECTORY);
             }
 
             // Load logging configuration
+            logger.fine("Loading logging configuration from: " + LOG_CONFIG_FILE);
             LogManager.getLogManager().readConfiguration(new FileInputStream(LOG_CONFIG_FILE));
             configured = true;
             logger.info("Logging initialized successfully");
