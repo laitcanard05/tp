@@ -1,5 +1,16 @@
 package seedu.finbro.logic.parser;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.ExitCommand;
@@ -13,19 +24,11 @@ import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.model.Expense;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 /**
  * Parses user input and creates the corresponding command.
  */
 public class Parser {
+    private static final Logger logger = Logger.getLogger(Parser.class.getName());
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
 
     /**
@@ -35,8 +38,10 @@ public class Parser {
      * @return The command based on the user input
      */
     public Command parseCommand(String userInput) {
+        logger.fine("Parsing user input: " + userInput);
         userInput = userInput.trim();
         if (userInput.isEmpty()) {
+            logger.fine("Empty input, returning HelpCommand");
             return new HelpCommand();
         }
 
@@ -44,17 +49,42 @@ public class Parser {
         String commandWord = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
 
-        return switch (commandWord) {
-        case "income" -> parseIncomeCommand(arguments);
-        case "expense" -> parseExpenseCommand(arguments);
-        case "filter" -> parseFilterCommand(arguments);
-        case "export" -> parseExportCommand(arguments);
-        case "clear" -> parseClearCommand(arguments);
-        case "exit" -> new ExitCommand();
-        case "help" -> new HelpCommand();
-        case "list" -> new ListCommand();
-        default -> new UnknownCommand(commandWord);
-        };
+        logger.fine("Command word: " + commandWord + ", Arguments: " + arguments);
+
+        Command parsedCommand;
+        switch (commandWord) {
+        case "income":
+            parsedCommand = parseIncomeCommand(arguments);
+            break;
+        case "expense":
+            parsedCommand = parseExpenseCommand(arguments);
+            break;
+        case "filter":
+            parsedCommand = parseFilterCommand(arguments);
+            break;
+        case "export":
+            parsedCommand = parseExportCommand(arguments);
+            break;
+        case "clear":
+            parsedCommand = parseClearCommand(arguments);
+            break;
+        case "exit":
+            parsedCommand = new ExitCommand();
+            break;
+        case "help":
+            parsedCommand = new HelpCommand();
+            break;
+        case "list":
+            parsedCommand = new ListCommand();
+            break;
+        default:
+            logger.warning("Unknown command: " + commandWord);
+            parsedCommand = new UnknownCommand(commandWord);
+            break;
+        }
+
+        logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
+        return parsedCommand;
     }
 
     /**
@@ -64,14 +94,18 @@ public class Parser {
      * @return The IncomeCommand
      */
     private Command parseIncomeCommand(String args) {
+        logger.fine("Parsing income command with arguments: " + args);
         try {
             Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
 
             if (!parameters.containsKey("")) {
+                logger.warning("Missing amount parameter for income command");
                 return new InvalidCommand("Amount is required for income command.");
             }
 
             if (!parameters.containsKey("d")) {
+                logger.warning("Missing description parameter for income command");
                 return new InvalidCommand("Description is required for income command.");
             }
 
@@ -79,12 +113,16 @@ public class Parser {
             String description = parameters.get("d");
             List<String> tags = parseTags(parameters);
 
+            logger.fine("Creating IncomeCommand with amount=" + amount +
+                    ", description=" + description + ", tags=" + tags);
             return new IncomeCommand(amount, description, tags);
         } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in income command", e);
             return new InvalidCommand(
                     "Invalid amount format. Please provide a valid number with up to 2 decimal places."
             );
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing income command", e);
             return new InvalidCommand("Invalid income command: " + e.getMessage());
         }
     }
@@ -96,14 +134,18 @@ public class Parser {
      * @return The ExpenseCommand
      */
     private Command parseExpenseCommand(String args) {
+        logger.fine("Parsing expense command with arguments: " + args);
         try {
             Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
 
             if (!parameters.containsKey("")) {
+                logger.warning("Missing amount parameter for expense command");
                 return new InvalidCommand("Amount is required for expense command.");
             }
 
             if (!parameters.containsKey("d")) {
+                logger.warning("Missing description parameter for expense command");
                 return new InvalidCommand("Description is required for expense command.");
             }
 
@@ -117,53 +159,64 @@ public class Parser {
 
             List<String> tags = parseTags(parameters);
 
+            logger.fine("Creating ExpenseCommand with amount=" + amount +
+                    ", description=" + description + ", category=" + category +
+                    ", tags=" + tags);
             return new ExpenseCommand(amount, description, category, tags);
         } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
             return new InvalidCommand(
                     "Invalid amount format. Please provide a valid number with up to 2 decimal places."
             );
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing expense command", e);
             return new InvalidCommand("Invalid expense command: " + e.getMessage());
         }
     }
 
-    // TODO Parses arguments into a ListCommand.
-
-    // TODO: Parses arguments into a DeleteCommand.
-
-    // TODO Parses arguments into a SearchCommand.
-
     /**
-     * Parses arguments into a FilterCommand with specified start and end date
+     * Parses arguments into a FilterCommand.
+     *
      * @param args Command arguments
      * @return The FilterCommand
      */
-    // TODO Parses arguments into a FilterCommand.
     private Command parseFilterCommand(String args) {
+        logger.fine("Parsing filter command with arguments: " + args);
         try {
             Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
+
             if (!parameters.containsKey("d")) {
+                logger.warning("Missing date parameter for filter command");
                 return new InvalidCommand("Start date must be specified for filter command.");
             }
+
             LocalDate startDate = LocalDate.parse(parameters.get("d"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDate endDate;
+
             if (!parameters.containsKey("to")) {
+                logger.fine("No end date specified, using current date");
                 endDate = LocalDate.now();
             } else {
                 endDate = LocalDate.parse(parameters.get("to"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
+
             if (startDate.isAfter(endDate)) {
+                logger.warning("Start date is after end date: " + startDate + " > " + endDate);
                 return new InvalidCommand("Start date cannot be after end date.");
             }
+
+            logger.fine("Creating FilterCommand with startDate=" + startDate +
+                    ", endDate=" + endDate);
             return new FilterCommand(startDate, endDate);
         } catch (DateTimeParseException e) {
+            logger.log(Level.WARNING, "Date format error in filter command", e);
             return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing filter command", e);
             return new InvalidCommand("Invalid filter command: " + e.getMessage());
         }
     }
-
-    // TODO Parses arguments into a SummaryCommand.
 
     /**
      * Parses arguments into an ExportCommand.
@@ -172,19 +225,24 @@ public class Parser {
      * @return The ExportCommand
      */
     private Command parseExportCommand(String args) {
+        logger.fine("Parsing export command with arguments: " + args);
         try {
             Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
 
             String format = "csv"; // Default format
             if (parameters.containsKey("f")) {
                 format = parameters.get("f").toLowerCase();
                 if (!format.equals("csv") && !format.equals("txt")) {
+                    logger.warning("Invalid export format: " + format);
                     return new InvalidCommand("Export format must be either 'csv' or 'txt'.");
                 }
             }
 
+            logger.fine("Creating ExportCommand with format=" + format);
             return new ExportCommand(format);
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing export command", e);
             return new InvalidCommand("Invalid export command: " + e.getMessage());
         }
     }
@@ -196,7 +254,9 @@ public class Parser {
      * @return The ClearCommand
      */
     private Command parseClearCommand(String args) {
+        logger.fine("Parsing clear command with arguments: " + args);
         boolean isConfirmed = args.trim().equalsIgnoreCase("confirm");
+        logger.fine("Clear confirmation status: " + isConfirmed);
         return new ClearCommand(isConfirmed);
     }
 
@@ -286,4 +346,3 @@ public class Parser {
         return tags;
     }
 }
-
