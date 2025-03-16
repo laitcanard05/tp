@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class SummaryCommand implements Command {
     private final int month;
     private final int year;
+    static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
 
     /**
      * Constructs a SummaryCommand with the specified month and end year.
@@ -57,7 +58,6 @@ public class SummaryCommand implements Command {
 
         summaryDisplay += "\nTop Expense Categories\n";
         int categoryCount = 0;
-        final int  MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
         for (Map.Entry<Expense.Category, Double> expenseInCategory :
                 sortedCategorisedExpenses.entrySet()) {
             categoryCount++;

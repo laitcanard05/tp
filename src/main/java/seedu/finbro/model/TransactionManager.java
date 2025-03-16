@@ -54,9 +54,9 @@ public class TransactionManager {
      */
     public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
         return transactions.stream()
-                .filter(t -> (t.getDate().isEqual(startDate) || t.getDate().isAfter(startDate)) &&
-                        (t.getDate().isEqual(endDate) || t.getDate().isBefore(endDate)))
-                .collect(Collectors.toCollection(ArrayList::new));
+            .filter(t -> (t.getDate().isEqual(startDate) || t.getDate().isAfter(startDate)) &&
+                    (t.getDate().isEqual(endDate) || t.getDate().isBefore(endDate)))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -64,8 +64,8 @@ public class TransactionManager {
      */
     public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
         return transactions.stream()
-                .filter(t -> (t.getDescription().contains(keyword)))
-                .collect(Collectors.toCollection(ArrayList::new));
+            .filter(t -> (t.getDescription().contains(keyword)))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -73,8 +73,8 @@ public class TransactionManager {
      */
     public ArrayList<Transaction> getTransactionDuplicates(String description, double amount) {
         return transactions.stream()
-                .filter(t -> (t.getDescription().equals(description) && t.getAmount() == amount ))
-                .collect(Collectors.toCollection(ArrayList::new));
+            .filter(t -> (t.getDescription().equals(description) && t.getAmount() == amount ))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -101,9 +101,9 @@ public class TransactionManager {
      */
     public double getTotalIncome() {
         return transactions.stream()
-                .filter(t -> t instanceof Income)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+            .filter(t -> t instanceof Income)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
     }
 
     /**
@@ -113,9 +113,9 @@ public class TransactionManager {
      */
     public double getTotalExpenses() {
         return transactions.stream()
-                .filter(t -> t instanceof Expense)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+            .filter(t -> t instanceof Expense)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
     }
 
     /**
@@ -128,11 +128,11 @@ public class TransactionManager {
      */
     public double getMonthlyTotalIncome(int month, int year) {
         return transactions.stream()
-                .filter(t -> t instanceof Income)
-                .filter(t -> (t.getDate().getYear() == year &&
-                        t.getDate().getMonthValue() == month))
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+            .filter(t -> t instanceof Income)
+            .filter(t -> (t.getDate().getYear() == year &&
+                t.getDate().getMonthValue() == month))
+            .mapToDouble(Transaction::getAmount)
+            .sum();
     }
 
     /**
@@ -145,10 +145,10 @@ public class TransactionManager {
      */
     public double getMonthlyTotalExpense(int month, int year) {
         return transactions.stream()
-                .filter(t -> t instanceof Expense)
-                .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+            .filter(t -> t instanceof Expense)
+            .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
+            .mapToDouble(Transaction::getAmount)
+            .sum();
     }
 
     /**
@@ -164,15 +164,15 @@ public class TransactionManager {
         Map<Expense.Category, Double> categorisedExpenses = new HashMap<>();
 
         ArrayList<Transaction> filteredExpenses = transactions.stream()
-                .filter(t -> t instanceof Expense)
-                .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
-                .collect(Collectors.toCollection(ArrayList::new));
+             .filter(t -> t instanceof Expense)
+             .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
+             .collect(Collectors.toCollection(ArrayList::new));
         for (Transaction transaction : filteredExpenses) {
             if (transaction instanceof Expense) {
                 Expense.Category category = ((Expense) transaction).getCategory();
                 if (categorisedExpenses.putIfAbsent(category, transaction.getAmount()) != null) {
                     categorisedExpenses.replace(category, transaction.getAmount()+categorisedExpenses.get(category));
-                };
+                }
             }
         }
         return categorisedExpenses;
@@ -190,9 +190,9 @@ public class TransactionManager {
         Map<String, Double> taggedExpenses = new HashMap<>();
 
         ArrayList<Transaction> filteredTransactions = transactions.stream()
-                .filter(t -> t instanceof Expense)
-                .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
-                .collect(Collectors.toCollection(ArrayList::new));
+            .filter(t -> t instanceof Expense)
+            .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
+            .collect(Collectors.toCollection(ArrayList::new));
 
         for (Transaction transaction : filteredTransactions) {
             List<String> transactionTags = transaction.getTags();

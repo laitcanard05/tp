@@ -263,7 +263,8 @@ public class Parser {
         Map<String, String> parameters = parseParameters(args);
 
         try {
-            int month, year;
+            int month;
+            int year;
             if (!parameters.containsKey("m")) {
                 month = LocalDate.now().getMonthValue();
             } else {
