@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.ExitCommand;
+import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.ExportCommand;
 import seedu.finbro.logic.command.FilterCommand;
 import seedu.finbro.logic.command.HelpCommand;
