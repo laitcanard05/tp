@@ -60,6 +60,13 @@ public class TransactionManager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+
+    public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
+        return transactions.stream()
+                .filter(t -> (t.getDescription().contains(keyword)))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     /**
      * Calculates the current balance based on all transactions.
      *
