@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,6 +23,10 @@ import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
+import seedu.finbro.logic.command.DeleteCommand;
+import seedu.finbro.logic.command.SearchCommand;
+import seedu.finbro.logic.command.SummaryCommand;
+import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.model.Expense;
 
 /**
@@ -30,6 +35,7 @@ import seedu.finbro.model.Expense;
 public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
      * Parses user input into a Command.
@@ -59,8 +65,23 @@ public class Parser {
         case "expense":
             parsedCommand = parseExpenseCommand(arguments);
             break;
+        case "list":
+            parsedCommand = parseListCommand(arguments);
+            break;
+        case "delete":
+            parsedCommand = parseDeleteCommand(arguments);
+            break;
+        case "search":
+            parsedCommand = parseSearchCommand(arguments);
+            break;
         case "filter":
             parsedCommand = parseFilterCommand(arguments);
+            break;
+        case "balance":
+            parsedCommand = new BalanceCommand();
+            break;
+        case "summary":
+            parsedCommand = parseSummaryCommand(arguments);
             break;
         case "export":
             parsedCommand = parseExportCommand(arguments);
@@ -73,9 +94,6 @@ public class Parser {
             break;
         case "help":
             parsedCommand = new HelpCommand();
-            break;
-        case "list":
-            parsedCommand = new ListCommand();
             break;
         default:
             logger.warning("Unknown command: " + commandWord);
@@ -175,6 +193,76 @@ public class Parser {
     }
 
     /**
+     * Parses arguments into a ListCommand.
+     *
+     * @param args Command arguments
+     * @return The ListCommand
+     */
+    private Command parseListCommand(String args) {
+        try {
+            Map<String, String> parameters = parseParameters(args);
+
+            Integer limit = null;
+            if (parameters.containsKey("n")) {
+                limit = Integer.parseInt(parameters.get("n"));
+                if (limit <= 0) {
+                    return new InvalidCommand("Number of transactions must be positive.");
+                }
+            }
+
+            LocalDate date = null;
+            if (parameters.containsKey("d")) {
+                try {
+                    date = LocalDate.parse(parameters.get("d"), DATE_FORMATTER);
+                } catch (DateTimeParseException e) {
+                    return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
+                }
+            }
+
+            return new ListCommand(limit, date);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid number format.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid list command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a DeleteCommand.
+     *
+     * @param args Command arguments
+     * @return The DeleteCommand
+     */
+    private Command parseDeleteCommand(String args) {
+        try {
+            int index = Integer.parseInt(args.trim());
+            if (index <= 0) {
+                return new InvalidCommand("Index must be a positive integer.");
+            }
+            return new DeleteCommand(index);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid index. Please provide a valid number.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid delete command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a SearchCommand.
+     *
+     * @param args Command arguments
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(String args) {
+        if (args.trim().isEmpty()) {
+            return new InvalidCommand("Search command requires at least one keyword.");
+        }
+
+        List<String> keywords = Arrays.asList(args.trim().split("\\s+"));
+        return new SearchCommand(keywords);
+    }
+
+    /**
      * Parses arguments into a FilterCommand.
      *
      * @param args Command arguments
@@ -215,6 +303,40 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing filter command", e);
             return new InvalidCommand("Invalid filter command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a SummaryCommand.
+     *
+     * @param args Command arguments
+     * @return The SummaryCommand
+     */
+    private Command parseSummaryCommand(String args) {
+        try {
+            Map<String, String> parameters = parseParameters(args);
+
+            Integer month = null;
+            if (parameters.containsKey("m")) {
+                month = Integer.parseInt(parameters.get("m"));
+                if (month < 1 || month > 12) {
+                    return new InvalidCommand("Month must be between 1 and 12.");
+                }
+            }
+
+            Integer year = null;
+            if (parameters.containsKey("y")) {
+                year = Integer.parseInt(parameters.get("y"));
+                if (year < 1900 || year > 2100) {
+                    return new InvalidCommand("Year must be between 1900 and 2100.");
+                }
+            }
+
+            return new SummaryCommand(month, year);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid number format.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid summary command: " + e.getMessage());
         }
     }
 

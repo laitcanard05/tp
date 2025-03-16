@@ -1,37 +1,54 @@
 package seedu.finbro.logic.command;
-import seedu.finbro.model.TransactionManager;
+
 import seedu.finbro.model.Transaction;
+import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Represents a command to filter transactions by date.
+ */
 public class FilterCommand implements Command {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
+    /**
+     * Constructs a FilterCommand with the specified start and end dates.
+     *
+     * @param startDate The start date for filtering
+     * @param endDate   The end date for filtering, or null to filter to the present
+     */
     public FilterCommand(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
-        this.endDate = endDate;
+        this.endDate = endDate != null ? endDate : LocalDate.now();
     }
 
     /**
-     * Executes the command to filter transactions between the specified start date and end date
+     * Executes the command to filter transactions by date.
      *
-     * @param transactionManager The transaction manager to execute the command on
+     * @param transactionManager The transaction manager to filter transactions in
      * @param ui                 The UI to interact with the user
      * @param storage            The storage to save data
-     * @return The string representation of the filtered commands
+     * @return The response message from executing the command
      */
+    @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        ArrayList<Transaction>  filteredTransactions = transactionManager.getFilteredTransactions(startDate, endDate);
-        String filteredTransactionsDisplay = "Showing transactions from " +
-                startDate.toString() + " to " + endDate.toString() + ":\n";
-        for (int i = 0; i < filteredTransactions.size(); i++) {
-            filteredTransactionsDisplay += filteredTransactions.get(i).toString() + "\n";
+        List<Transaction> filteredTransactions = transactionManager.filterTransactions(startDate, endDate);
+
+        if (filteredTransactions.isEmpty()) {
+            return "No transactions found in the specified date range.";
         }
-        return filteredTransactionsDisplay;
+
+        StringBuilder response = new StringBuilder("Showing transactions from " +
+                startDate + " to " + endDate + ":\n");
+        for (int i = 0; i < filteredTransactions.size(); i++) {
+            response.append(i + 1).append(". ").append(filteredTransactions.get(i)).append("\n");
+        }
+
+        return response.toString().trim();
     }
 
     /**
@@ -44,4 +61,3 @@ public class FilterCommand implements Command {
         return false;
     }
 }
-

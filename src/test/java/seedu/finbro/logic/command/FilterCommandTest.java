@@ -45,7 +45,7 @@ class FilterCommandTest {
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("Showing transactions from 2025-03-14 to 2025-03-15:\n" +
-                "[Expense][Others] $6.30 - lunch\n", result);
+                "1. [Expense][Others] $6.30 - lunch", result);
     }
 
     /**

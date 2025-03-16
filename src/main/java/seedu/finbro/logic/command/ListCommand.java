@@ -1,36 +1,64 @@
 package seedu.finbro.logic.command;
 
+import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.util.stream.Collectors;
-
-// TODO add filtering of list by number and date
+import java.time.LocalDate;
+import java.util.List;
 
 /**
- * Represents a command to list all transactions.
+ * Represents a command to list transactions.
  */
 public class ListCommand implements Command {
+    private final Integer limit;
+    private final LocalDate date;
 
     /**
-     * Executes the command to list all transactions.
+     * Constructs a ListCommand with optional limit and date.
      *
-     * @param transactionManager The transaction manager to retrieve the transactions from
+     * @param limit The maximum number of transactions to list, or null for all
+     * @param date  The date to filter transactions by, or null for all dates
+     */
+    public ListCommand(Integer limit, LocalDate date) {
+        this.limit = limit;
+        this.date = date;
+    }
+
+    /**
+     * Executes the command to list transactions.
+     *
+     * @param transactionManager The transaction manager to list transactions from
      * @param ui                 The UI to interact with the user
-     * @param storage            The storage, if needed
-     * @return The response message containing the list of transactions
+     * @param storage            The storage to save data
+     * @return The response message from executing the command
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        if (!transactionManager.listTransactions().isEmpty()) {
-            return transactionManager.listTransactions()
-                    .stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining("\n"));
+        List<Transaction> transactionsToList;
+
+        if (date != null) {
+            transactionsToList = transactionManager.listTransactionsFromDate(date);
+            if (limit != null) {
+                transactionsToList = transactionsToList.subList(0, Math.min(limit, transactionsToList.size()));
+            }
+        } else if (limit != null) {
+            transactionsToList = transactionManager.listTransactions(limit);
         } else {
+            transactionsToList = transactionManager.listTransactions();
+        }
+
+        if (transactionsToList.isEmpty()) {
             return "No transactions found.";
         }
+
+        StringBuilder response = new StringBuilder("Here are your transactions:\n");
+        for (int i = 0; i < transactionsToList.size(); i++) {
+            response.append(i + 1).append(". ").append(transactionsToList.get(i)).append("\n");
+        }
+
+        return response.toString().trim();
     }
 
     /**
