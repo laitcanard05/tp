@@ -23,7 +23,6 @@ import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.UnknownCommand;
-import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.DeleteCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
