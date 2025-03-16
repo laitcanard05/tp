@@ -42,8 +42,6 @@ public class TransactionManager {
         return sortedTransactions;
     }
 
-    // TODO Lists a limited number of transactions in reverse chronological order.
-
     // TODO Lists transactions from a specific date in reverse chronological order.
 
     // TODO Searches for transactions whose descriptions contain any of the given keywords.
