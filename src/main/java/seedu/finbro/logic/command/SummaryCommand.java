@@ -5,7 +5,8 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 public class SummaryCommand implements Command {
@@ -35,10 +36,13 @@ public class SummaryCommand implements Command {
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         String monthString = new DateFormatSymbols().getMonths()[month-1];
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
-        summaryDisplay += String.format("Total Income: $%.2f\n", transactionManager.getMonthlyTotalIncome(month, year));
-        summaryDisplay += String.format("Total Expenses: $%.2f\n", transactionManager.getMonthlyTotalExpense(month, year));
+        summaryDisplay += String.format("Total Income: $%.2f\n",
+                transactionManager.getMonthlyTotalIncome(month, year));
+        summaryDisplay += String.format("Total Expenses: $%.2f\n",
+                transactionManager.getMonthlyTotalExpense(month, year));
 
-        Map<Expense.Category, Double> sortedCategorisedExpenses = transactionManager.getMonthlyCategorisedExpenses(month, year)
+        Map<Expense.Category, Double> sortedCategorisedExpenses =
+                transactionManager.getMonthlyCategorisedExpenses(month, year)
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
@@ -53,8 +57,9 @@ public class SummaryCommand implements Command {
 
         summaryDisplay += "\nTop Expense Categories\n";
         int categoryCount = 0;
-            final int  MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
-        for (Map.Entry<Expense.Category, Double> expenseInCategory : sortedCategorisedExpenses.entrySet()) {
+        final int  MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
+        for (Map.Entry<Expense.Category, Double> expenseInCategory :
+                sortedCategorisedExpenses.entrySet()) {
             categoryCount++;
             if (expenseInCategory.getValue() == 0) {
                 break;
@@ -67,7 +72,8 @@ public class SummaryCommand implements Command {
             }
         }
 
-        Map<String, Double> sortedTaggedExpenses = transactionManager.getMonthlyTaggedExpenses(month, year)
+        Map<String, Double> sortedTaggedExpenses =
+                transactionManager.getMonthlyTaggedExpenses(month, year)
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, Double> comparingByValue().reversed())

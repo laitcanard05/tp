@@ -49,7 +49,8 @@ public class TransactionManager {
      *
      * @param startDate the start date of the filter range (inclusive)
      * @param endDate the end date of the filter range (inclusive)
-     * @return a list of transactions that fall within the specified date range; returns an empty list if no transactions match
+     * @return a list of transactions that fall within the specified date range;
+     * returns an empty list if no transactions match
      */
     public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
         return transactions.stream()
@@ -122,12 +123,14 @@ public class TransactionManager {
      *
      * @param month the month for which to calculate total income (1-12)
      * @param year the year for which to calculate total income
-     * @return the total income for the specified month and year, or 0.0 if there are no transactions
+     * @return the total income for the specified month and year,
+     * or 0.0 if there are no transactions
      */
     public double getMonthlyTotalIncome(int month, int year) {
         return transactions.stream()
                 .filter(t -> t instanceof Income)
-                .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
+                .filter(t -> (t.getDate().getYear() == year &&
+                        t.getDate().getMonthValue() == month))
                 .mapToDouble(Transaction::getAmount)
                 .sum();
     }
@@ -137,7 +140,8 @@ public class TransactionManager {
      *
      * @param month the month for which to calculate total expenses (1-12)
      * @param year the year for which to calculate total expenses
-     * @return the total expense for the specified month and year, or 0.0 if there are no matching transactions
+     * @return the total expense for the specified month and year,
+     * or 0.0 if there are no matching transactions
      */
     public double getMonthlyTotalExpense(int month, int year) {
         return transactions.stream()
@@ -148,11 +152,13 @@ public class TransactionManager {
     }
 
     /**
-     * Calculates the total expenses for a specified month and year, categorized by expense type.
+     * Calculates the total expenses for a specified month and year,
+     * categorized by expense type.
      *
      * @param month the month for which to calculate categorized expenses (1-12)
      * @param year the year for which to calculate categorized expenses
-     * @return a map where keys are expense categories and values are total expenses for that category
+     * @return a map where keys are expense categories and values are
+     * total expenses for that category
      */
     public Map<Expense.Category, Double> getMonthlyCategorisedExpenses(int month, int year) {
         Map<Expense.Category, Double> categorisedExpenses = new HashMap<>();
@@ -173,7 +179,8 @@ public class TransactionManager {
     }
 
     /**
-     * Calculates the total expenses for a specified month and year, categorized by tags.
+     * Calculates the total expenses for a specified month and year,
+     * categorized by tags.
      *
      * @param month the month for which to calculate tagged expenses (1-12)
      * @param year the year for which to calculate tagged expenses
