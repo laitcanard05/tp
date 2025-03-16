@@ -61,6 +61,24 @@ public class TransactionManager {
     }
 
     /**
+     * @return stream of all transactions that contain keyword
+     */
+    public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
+        return transactions.stream()
+                .filter(t -> (t.getDescription().contains(keyword)))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * @return stream of all transactions that have exact same name and amount
+     */
+    public ArrayList<Transaction> getTransactionDuplicates(String description, double amount) {
+        return transactions.stream()
+                .filter(t -> (t.getDescription().equals(description) && t.getAmount() == amount ))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
      * Calculates the current balance based on all transactions.
      *
      * @return The current balance

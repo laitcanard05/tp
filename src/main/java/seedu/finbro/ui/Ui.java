@@ -95,6 +95,7 @@ public class Ui {
      * @param message The confirmation message to show
      * @return true if the user confirms, false otherwise
      */
+    //TODO: bulletproof readConfirmation inputs to just y/n and its allowed variants, repeat if invalid
     public boolean readConfirmation(String message) {
         logger.fine("Requesting user confirmation: " + message);
         System.out.println(LINE);
@@ -104,6 +105,14 @@ public class Ui {
         boolean confirmed = input.equals("y") || input.equals("yes");
         logger.fine("User confirmation result: " + confirmed);
         return confirmed;
+    }
+
+    public Boolean warnDuplicate() {
+        logger.info("Showing duplicate warning message");
+        System.out.println(LINE);
+        System.out.println("WARNING: one or more transactions with this name and description already exist.");
+        System.out.println("Please confirm if you would like to proceed entering this transaction anyway\n");
+        return readConfirmation("input duplicate transaction?");
     }
 
     @Override
