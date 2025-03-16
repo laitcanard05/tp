@@ -114,6 +114,13 @@ public class TransactionManager {
         transactions.clear();
     }
 
-    // TODO Returns the number of transactions.
+    /**
+     * Returns the number of transactions.
+     *
+     * @return The number of transactions
+     */
+    public int getTransactionCount() {
+        return transactions.size();
+    }
 }
 
