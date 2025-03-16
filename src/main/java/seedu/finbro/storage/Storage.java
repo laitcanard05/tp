@@ -1,10 +1,5 @@
 package seedu.finbro.storage;
 
-import seedu.finbro.model.Expense;
-import seedu.finbro.model.Income;
-import seedu.finbro.model.Transaction;
-import seedu.finbro.model.TransactionManager;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -18,11 +13,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import seedu.finbro.model.Expense;
+import seedu.finbro.model.Income;
+import seedu.finbro.model.Transaction;
+import seedu.finbro.model.TransactionManager;
 
 /**
  * Handles saving and loading of data.
  */
 public class Storage {
+    private static final Logger logger = Logger.getLogger(Storage.class.getName());
+
     private static final String DATA_DIRECTORY = "data";
     private static final String DATA_FILE = "finbro.txt";
     private static final String DEFAULT_EXPORT_DIRECTORY = "exports";
@@ -35,6 +39,7 @@ public class Storage {
      * Constructs a Storage with default file paths.
      */
     public Storage() {
+        logger.fine("Initializing Storage with default paths");
         this.dataFilePath = DATA_DIRECTORY + File.separator + DATA_FILE;
         this.exportDirectoryPath = DEFAULT_EXPORT_DIRECTORY;
         createDirectories();
@@ -47,6 +52,8 @@ public class Storage {
      * @param exportDirectoryPath The path to the export directory
      */
     public Storage(String dataFilePath, String exportDirectoryPath) {
+        logger.fine("Initializing Storage with custom paths: dataFile=" + dataFilePath +
+                ", exportDir=" + exportDirectoryPath);
         this.dataFilePath = dataFilePath;
         this.exportDirectoryPath = exportDirectoryPath;
         createDirectories();
@@ -59,14 +66,19 @@ public class Storage {
         try {
             Path dataDirectory = Paths.get(DATA_DIRECTORY);
             if (!Files.exists(dataDirectory)) {
+                logger.info("Creating data directory: " + dataDirectory);
                 Files.createDirectory(dataDirectory);
             }
 
             Path exportDirectory = Paths.get(exportDirectoryPath);
             if (!Files.exists(exportDirectory)) {
+                logger.info("Creating export directory: " + exportDirectory);
                 Files.createDirectory(exportDirectory);
             }
+
+            logger.fine("Directory setup completed successfully");
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error creating directories", e);
             System.err.println("Error creating directories: " + e.getMessage());
         }
     }
@@ -77,33 +89,46 @@ public class Storage {
      * @return A TransactionManager containing loaded transactions
      */
     public TransactionManager loadTransactions() {
+        logger.info("Loading transactions from: " + dataFilePath);
         TransactionManager transactionManager = new TransactionManager();
 
         try {
             File file = new File(dataFilePath);
 
             if (!file.exists()) {
+                logger.info("Data file does not exist. Starting with empty transactions.");
                 return transactionManager;
             }
 
             Scanner scanner = new Scanner(file);
+            int lineCount = 0;
+            int successCount = 0;
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                lineCount++;
+
                 if (line.trim().isEmpty()) {
+                    logger.fine("Skipping empty line at line " + lineCount);
                     continue;
                 }
 
+                logger.fine("Parsing line " + lineCount + ": " + line);
                 Transaction transaction = parseTransaction(line);
                 if (transaction != null) {
                     transactionManager.addTransaction(transaction);
+                    successCount++;
+                    logger.fine("Successfully parsed transaction: " + transaction);
                 }
             }
 
             scanner.close();
+            logger.info("Loaded " + successCount + " transactions from " + lineCount + " lines");
         } catch (FileNotFoundException e) {
+            logger.log(Level.SEVERE, "Data file not found", e);
             System.err.println("Data file not found: " + e.getMessage());
         } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading data", e);
             System.err.println("Error loading data: " + e.getMessage());
         }
 
@@ -121,6 +146,7 @@ public class Storage {
             String[] parts = line.split("\\|");
 
             if (parts.length < 5) {
+                logger.warning("Invalid data format: " + line);
                 System.err.println("Invalid data format: " + line);
                 return null;
             }
@@ -136,15 +162,22 @@ public class Storage {
             }
 
             if ("INCOME".equals(type)) {
+                logger.fine("Parsed income transaction: date=" + date +
+                        ", amount=" + amount + ", description=" + description);
                 return new Income(amount, description, date, tags);
             } else if ("EXPENSE".equals(type)) {
                 Expense.Category category = Expense.Category.fromString(parts[4]);
+                logger.fine("Parsed expense transaction: date=" + date +
+                        ", amount=" + amount + ", description=" + description +
+                        ", category=" + category);
                 return new Expense(amount, description, date, category, tags);
             } else {
+                logger.warning("Unknown transaction type: " + type);
                 System.err.println("Unknown transaction type: " + type);
                 return null;
             }
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing transaction: " + line, e);
             System.err.println("Error parsing transaction: " + e.getMessage());
             return null;
         }
@@ -156,15 +189,22 @@ public class Storage {
      * @param transactionManager The TransactionManager containing transactions to save
      */
     public void saveTransactions(TransactionManager transactionManager) {
+        logger.info("Saving transactions to: " + dataFilePath);
         try {
             FileWriter writer = new FileWriter(dataFilePath);
+            List<Transaction> transactions = transactionManager.listTransactions();
 
-            for (Transaction transaction : transactionManager.listTransactions()) {
-                writer.write(formatTransaction(transaction) + "\n");
+            logger.fine("Writing " + transactions.size() + " transactions to file");
+            for (Transaction transaction : transactions) {
+                String formattedTransaction = formatTransaction(transaction);
+                writer.write(formattedTransaction + "\n");
+                logger.fine("Wrote transaction: " + formattedTransaction);
             }
 
             writer.close();
+            logger.info("Successfully saved " + transactions.size() + " transactions");
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error saving data", e);
             System.err.println("Error saving data: " + e.getMessage());
         }
     }
@@ -213,12 +253,16 @@ public class Storage {
         String fileName = "finbro_export_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
         String filePath = exportDirectoryPath + File.separator + fileName;
 
+        logger.info("Exporting transactions to CSV: " + filePath);
+
         try (FileWriter writer = new FileWriter(filePath)) {
             // Write header
             writer.write("Type,Date,Amount,Description,Category,Tags\n");
+            logger.fine("Wrote CSV header");
 
             // Write transactions
-            for (Transaction transaction : transactionManager.listTransactions()) {
+            List<Transaction> transactions = transactionManager.listTransactions();
+            for (Transaction transaction : transactions) {
                 String type = transaction instanceof Income ? "Income" : "Expense";
                 String category = transaction instanceof Expense
                         ? ((Expense) transaction).getCategory().toString()
@@ -228,14 +272,22 @@ public class Storage {
                 // Escape CSV values properly
                 String description = "\"" + transaction.getDescription().replace("\"", "\"\"") + "\"";
 
-                writer.write(String.format("%s,%s,%.2f,%s,%s,%s\n",
+                String line = String.format("%s,%s,%.2f,%s,%s,%s\n",
                         type,
                         transaction.getDate().format(DATE_FORMATTER),
                         transaction.getAmount(),
                         description,
                         category,
-                        tags));
+                        tags);
+
+                writer.write(line);
+                logger.fine("Wrote CSV transaction: " + line.trim());
             }
+
+            logger.info("Successfully exported " + transactions.size() + " transactions to CSV");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error exporting to CSV", e);
+            throw e;
         }
 
         return filePath;
@@ -252,11 +304,14 @@ public class Storage {
         String fileName = "finbro_export_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".txt";
         String filePath = exportDirectoryPath + File.separator + fileName;
 
+        logger.info("Exporting transactions to TXT: " + filePath);
+
         try (FileWriter writer = new FileWriter(filePath)) {
             // Write header
             writer.write("FinBro Export - " + LocalDate.now().format(DATE_FORMATTER) + "\n\n");
             writer.write("TRANSACTIONS:\n");
             writer.write("--------------------------------------------------------------------------------\n");
+            logger.fine("Wrote TXT header");
 
             // Write transactions
             List<Transaction> transactions = transactionManager.listTransactions();
@@ -274,6 +329,7 @@ public class Storage {
                 }
 
                 writer.write("--------------------------------------------------------------------------------\n");
+                logger.fine("Wrote TXT transaction #" + (i + 1));
             }
 
             // Write summary
@@ -282,6 +338,12 @@ public class Storage {
             writer.write("Total Income: $" + String.format("%.2f", transactionManager.getTotalIncome()) + "\n");
             writer.write("Total Expenses: $" + String.format("%.2f", transactionManager.getTotalExpenses()) + "\n");
             writer.write("Current Balance: $" + String.format("%.2f", transactionManager.getBalance()) + "\n");
+            logger.fine("Wrote TXT summary");
+
+            logger.info("Successfully exported " + transactions.size() + " transactions to TXT");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error exporting to TXT", e);
+            throw e;
         }
 
         return filePath;

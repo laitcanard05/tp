@@ -14,7 +14,7 @@ Prerequisites: JDK 17 (use the exact version), update Intellij to the most recen
    > Task :processResources NO-SOURCE
    > Task :classes
    
-   > Task :FinBro.main()
+   > Task :Duke.main()
    Hello from
     ____        _        
    |  _ \ _   _| | _____ 

@@ -1,9 +1,8 @@
-package seedu.finbro;
+package seedu.finbro.logic.command;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
