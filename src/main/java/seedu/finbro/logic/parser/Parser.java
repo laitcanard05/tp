@@ -11,8 +11,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import seedu.finbro.logic.command.*;
 import seedu.finbro.model.Expense;
+import seedu.finbro.logic.command.BalanceCommand;
+import seedu.finbro.logic.command.ClearCommand;
+import seedu.finbro.logic.command.Command;
+import seedu.finbro.logic.command.ExitCommand;
+import seedu.finbro.logic.command.ExpenseCommand;
+import seedu.finbro.logic.command.ExportCommand;
+import seedu.finbro.logic.command.FilterCommand;
+import seedu.finbro.logic.command.HelpCommand;
+import seedu.finbro.logic.command.IncomeCommand;
+import seedu.finbro.logic.command.InvalidCommand;
+import seedu.finbro.logic.command.ListCommand;
+import seedu.finbro.logic.command.SearchCommand;
+import seedu.finbro.logic.command.UnknownCommand;
+
 
 /**
  * Parses user input and creates the corresponding command.
@@ -85,10 +98,10 @@ public class Parser {
     }
 
     /**
-     * Parses arguments into an IncomeCommand.
+     * Parses arguments into a SearchCommand.
      *
      * @param args Command arguments
-     * @return The IncomeCommand
+     * @return The SearchCommand
      */
     private Command parseSearchCommand(String args) {
         logger.fine("Parsing search command with arguments: " + args);

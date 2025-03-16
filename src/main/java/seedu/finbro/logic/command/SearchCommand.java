@@ -5,7 +5,6 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -17,8 +16,8 @@ public class SearchCommand implements Command {
 
     private final String keyword;
 
-    public SearchCommand(String KEYWORD) {
-        this.keyword = KEYWORD;
+    public SearchCommand(String keyword) {
+        this.keyword = keyword;
     }
 
     /**
