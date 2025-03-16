@@ -25,6 +25,7 @@ import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.command.SummaryCommand;
 
 
 /**
@@ -254,6 +255,38 @@ public class Parser {
     }
 
     /**
+     * Parses arguments into a SummaryCommand with specified month and year
+     * @param args Command arguments
+     * @return The SummaryCommand
+     */
+    private Command parseSummaryCommand(String args) {
+        Map<String, String> parameters = parseParameters(args);
+
+        try {
+            int month, year;
+            if (!parameters.containsKey("m")) {
+                month = LocalDate.now().getMonthValue();
+            } else {
+                month = Integer.parseInt(parameters.get("m"));
+                if (month < 1 || month > 12) {
+                    return new InvalidCommand("Month input must be between 1 and 12.");
+                }
+            }
+            if (!parameters.containsKey("y")) {
+                year = LocalDate.now().getYear();
+            } else {
+                year = Integer.parseInt(parameters.get("y"));
+                if (year % 1000 == 0 || year > LocalDate.now().getYear()) {
+                    return new InvalidCommand("Year input must be 4-digit.");
+                }
+            }
+            return new SummaryCommand(month, year);
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid summary command: " + e.getMessage());
+        }
+    }
+
+    /**
      * Parses arguments into an ExportCommand.
      *
      * @param args Command arguments
@@ -313,6 +346,7 @@ public class Parser {
         // Process the rest of the parameters
         String currentPrefix = null;
         StringBuilder currentValue = new StringBuilder();
+        int tagCount = 0;
 
         for (int i = 0; i < tokens.length; i++) {
             String token = tokens[i];
@@ -333,6 +367,10 @@ public class Parser {
                 // Extract the new prefix and start building its value
                 int slashIndex = token.indexOf('/');
                 currentPrefix = token.substring(0, slashIndex);
+                if (currentPrefix.equals("t")) {
+                    tagCount++;
+                    currentPrefix += tagCount;
+                }
                 currentValue.append(token.substring(slashIndex + 1));
             } else if (currentPrefix != null) {
                 // Continue building the current parameter value
@@ -373,7 +411,7 @@ public class Parser {
 
         // Look for parameters with prefix 't'
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            if (entry.getKey().equals("t")) {
+            if (entry.getKey().startsWith("t")) {
                 tags.add(entry.getValue());
             }
         }
