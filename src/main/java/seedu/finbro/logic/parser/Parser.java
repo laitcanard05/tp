@@ -73,6 +73,9 @@ public class Parser {
         case "filter":
             parsedCommand = parseFilterCommand(arguments);
             break;
+        case "summary":
+            parsedCommand = parseSummaryCommand(arguments);
+            break;
         case "export":
             parsedCommand = parseExportCommand(arguments);
             break;
