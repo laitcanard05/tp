@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Manages transactions in the FinBro application.
@@ -115,7 +114,7 @@ public class TransactionManager {
      * @return List of transactions within the date range
      */
     // TODO Filters transactions between the specified start and end dates.
-    public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
+    public ArrayList<Transaction> filterTransactions(LocalDate startDate, LocalDate endDate) {
         assert startDate != null : "Start date cannot be null";
         assert endDate != null : "End date cannot be null";
         assert !startDate.isAfter(endDate) : "Start date cannot be after end date";
