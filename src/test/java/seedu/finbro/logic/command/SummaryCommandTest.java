@@ -2,123 +2,174 @@ package seedu.finbro.logic.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import seedu.finbro.logic.parser.Parser;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.Income;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.text.DateFormatSymbols;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.List;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests for the SummaryCommand class.
+ * Test class for Ui.
+ * Tests the user interface functionality by capturing system output and
+ * simulating user input to verify correct behavior.
  */
-public class SummaryCommandTest {
+class SummaryCommandTest { ;
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;
-    private int currentMonth;
-    private int currentYear;
-    private int lastMonth;
-    private int lastMonthYear;
+    private Parser parser;
 
+    /**
+     * Sets up the test environment before each test.
+     * Redirects System.out to allow output verification.
+     */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         transactionManager = new TransactionManager();
         ui = new Ui();
         storage = new Storage();
-        
-        LocalDate now = LocalDate.now();
-        currentMonth = now.getMonthValue();
-        currentYear = now.getYear();
-        
-        LocalDate lastMonthDate = now.minusMonths(1);
-        lastMonth = lastMonthDate.getMonthValue();
-        lastMonthYear = lastMonthDate.getYear();
-
-        // Add current month transactions
-        transactionManager.addTransaction(
-                new Income(1000, "Salary",
-                        LocalDate.of(currentYear, currentMonth, 15), 
-                        Arrays.asList("work")));
-        transactionManager.addTransaction(
-                new Expense(200, "Groceries",
-                        LocalDate.of(currentYear, currentMonth, 16),
-                        Expense.Category.FOOD, Arrays.asList("essential")));
-        transactionManager.addTransaction(
-                new Expense(100, "Electricity",
-                        LocalDate.of(currentYear, currentMonth, 17),
-                        Expense.Category.BILLS, Arrays.asList("home", "monthly")));
-        
-        // Add last month transactions
-        transactionManager.addTransaction(
-                new Income(900, "Last month salary",
-                        LocalDate.of(lastMonthYear, lastMonth, 15), 
-                        Arrays.asList("work")));
-        transactionManager.addTransaction(
-                new Expense(150, "Last month groceries",
-                        LocalDate.of(lastMonthYear, lastMonth, 16),
-                        Expense.Category.FOOD, Arrays.asList("essential")));
+        parser = new Parser();
     }
 
+    /**
+     * Tests that the financial summary for a month with no transactions
+     *     displays zero total income and zero total expenses only
+     */
     @Test
-    public void executeCurrentMonthSummarySuccess() {
-        SummaryCommand command = new SummaryCommand(currentMonth, currentYear);
+    void noTransactionsInMonth_returnsZeroIncomeAndExpenses() {
+        SummaryCommand command = new SummaryCommand(LocalDate.now().getMonthValue(),
+            LocalDate.now().getYear());
         String result = command.execute(transactionManager, ui, storage);
-        
-        String monthName = new DateFormatSymbols().getMonths()[currentMonth-1];
-        assertTrue(result.contains("Financial Summary for " + monthName + " " + currentYear));
-        assertTrue(result.contains("Total Income: $1000.00"));
-        assertTrue(result.contains("Total Expenses: $300.00"));
-        assertTrue(result.contains("1. Food: $200.00"));
-        assertTrue(result.contains("2. Bills: $100.00"));
-        assertTrue(result.contains("Tags Summary"));
-        assertTrue(result.contains("essential: $200.00"));
-        assertTrue(result.contains("home: $100.00"));
-        assertTrue(result.contains("monthly: $100.00"));
+
+        assertEquals("Financial Summary for March 2025:\n\n" +
+            "Total Income: $0.00\nTotal Expenses: $0.00\n", result);
     }
 
+    /**
+     * Tests that the financial summary for a month with transactions
+     *     that have no specified category and no tags
+     *     displays only the category "Others" and no tags summary
+     */
     @Test
-    public void executeSpecificMonthSummarySuccess() {
-        SummaryCommand command = new SummaryCommand(lastMonth, lastMonthYear);
+    void noCategoriesOrTags_returnsIncomeAndExpenses() {
+        transactionManager.addTransaction(new Expense(6.30,
+            "lunch", null, null));
+        transactionManager.addTransaction(new Expense(14.00,
+            "buy books", null, null));
+        transactionManager.addTransaction(new Income(2000,
+            "Monthly salary", null));
+
+        SummaryCommand command = new SummaryCommand(3, 2025);
         String result = command.execute(transactionManager, ui, storage);
-        
-        String monthName = new DateFormatSymbols().getMonths()[lastMonth-1];
-        assertTrue(result.contains("Financial Summary for " + monthName + " " + lastMonthYear));
-        assertTrue(result.contains("Total Income: $900.00"));
-        assertTrue(result.contains("Total Expenses: $150.00"));
-        assertTrue(result.contains("1. Food: $150.00"));
-        assertTrue(result.contains("Tags Summary"));
-        assertTrue(result.contains("essential: $150.00"));
+
+        assertEquals("""
+            Financial Summary for March 2025:
+            
+            Total Income: $2000.00
+            Total Expenses: $20.30
+           
+            Top Expense Categories:
+            1. Others: $20.30
+            """, result);
     }
 
+    /**
+     * Tests that the financial summary only displays top three categories
+     *     even if there are more than 3 categories for all transactions
+     *     in the month
+     */
     @Test
-    public void executeEmptyMonthSummarySuccess() {
-        // Use a month with no transactions
-        int emptyMonth = (currentMonth % 12) + 1;
-        if (emptyMonth == lastMonth) {
-            emptyMonth = (emptyMonth % 12) + 1;
-        }
-        
-        SummaryCommand command = new SummaryCommand(emptyMonth, currentYear);
+    void moreThanThreeCategories_returnsTopThreeCategories() {
+        transactionManager.addTransaction(new Expense(6.30,
+            "lunch", Expense.Category.fromString("Food"), null));
+        transactionManager.addTransaction(new Expense(75,
+            "New Shoes", Expense.Category.fromString("Shopping"), null));
+        transactionManager.addTransaction(new Expense(10.80,
+            "Bus fare", Expense.Category.fromString("Transport"), null));
+        transactionManager.addTransaction(new Expense(45.99,
+            "Movie tickets", Expense.Category.fromString("Entertainment"), null));
+
+        SummaryCommand command = new SummaryCommand(3, 2025);
         String result = command.execute(transactionManager, ui, storage);
-        
-        String monthName = new DateFormatSymbols().getMonths()[emptyMonth-1];
-        assertTrue(result.contains("Financial Summary for " + monthName + " " + currentYear));
-        assertTrue(result.contains("Total Income: $0.00"));
-        assertTrue(result.contains("Total Expenses: $0.00"));
-        // The new implementation doesn't include the "No expenses recorded" message
-        // It will just not show the categories and tags sections
+
+        assertEquals("""
+            Financial Summary for March 2025:
+           
+            Total Income: $0.00
+            Total Expenses: $138.09
+            
+            Top Expense Categories:
+            1. Shopping: $75.00
+            2. Entertainment: $45.99
+            3. Transport: $10.80
+            """, result);
     }
 
+    /**
+     * Tests that the financial summary for a month with transactions
+     *     with multiple tags and categories displays the total expenses
+     *     in the top three categories and all tags
+     */
     @Test
-    public void isExitReturnsFalse() {
-        SummaryCommand command = new SummaryCommand(currentMonth, currentYear);
+    void multipleCategoriesAndTags_returnsTopCategoriesAndAllTags() {
+        List<String> tagSet1 = List.of("monthly", "home");
+        List<String> tagSet2 = List.of("work", "monthly");
+        List<String> tagSet3 = List.of("weekend");
+        List<String> tagSet4 = List.of("work");
+        transactionManager.addTransaction(new Expense(6.30,
+            "lunch", Expense.Category.fromString("Food"), null));
+        transactionManager.addTransaction(new Expense(75,
+            "New Shoes", Expense.Category.fromString("Shopping"), null));
+        transactionManager.addTransaction(new Expense(10.80,
+            "Bus fare", Expense.Category.fromString("Transport"), null));
+        transactionManager.addTransaction(new Expense(45.99,
+            "Movie tickets", Expense.Category.fromString("Entertainment"), tagSet3));
+        transactionManager.addTransaction(new Expense(150.20,
+            "Electricity bill", Expense.Category.fromString("Bills"), tagSet1));
+        transactionManager.addTransaction(new Income(3000,
+            "Monthly salary", tagSet2));
+        transactionManager.addTransaction(new Expense(25.50,
+            "Lunch with colleagues", Expense.Category.fromString("Food"), tagSet4));
+
+        SummaryCommand command = new SummaryCommand(3, 2025);
+        String result = command.execute(transactionManager, ui, storage);
+
+        assertEquals("""
+            Financial Summary for March 2025:
+           
+            Total Income: $3000.00
+            Total Expenses: $313.79
+            
+            Top Expense Categories:
+            1. Bills: $150.20
+            2. Shopping: $75.00
+            3. Entertainment: $45.99
+            
+            Tags Summary:
+            1. monthly: $3150.20
+            2. work: $3025.50
+            3. home: $150.20
+            4. weekend: $45.99
+            """, result);
+    }
+
+    /**
+     * Tests that isExit returns false.
+     */
+    @Test
+    void isExit_returnsFalse() {
+        SummaryCommand command = new SummaryCommand(LocalDate.now().getMonthValue(),
+            LocalDate.now().getYear());
         assertFalse(command.isExit());
     }
+
+
 }

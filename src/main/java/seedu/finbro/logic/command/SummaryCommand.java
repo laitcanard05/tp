@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Represents a command to view a financial summary.
  */
 public class SummaryCommand implements Command {
-    private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
+    private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 3;
     private final int month;
     private final int year;
 
@@ -61,7 +61,7 @@ public class SummaryCommand implements Command {
             return summaryDisplay;
         }
 
-        summaryDisplay += "\nTop Expense Categories\n";
+        summaryDisplay += "\nTop Expense Categories:\n";
         int categoryCount = 0;
         for (Map.Entry<Expense.Category, Double> expenseInCategory :
                 sortedCategorisedExpenses.entrySet()) {
@@ -77,8 +77,8 @@ public class SummaryCommand implements Command {
             }
         }
 
-        Map<String, Double> sortedTaggedExpenses =
-                transactionManager.getMonthlyTaggedExpenses(month, year)
+        Map<String, Double> sortedTaggedTransactions =
+                transactionManager.getMonthlyTaggedTransactions(month, year)
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, Double> comparingByValue().reversed())
@@ -87,13 +87,13 @@ public class SummaryCommand implements Command {
                         Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        if (sortedTaggedExpenses.isEmpty()) {
+        if (sortedTaggedTransactions.isEmpty()) {
             return summaryDisplay;
         }
 
-        summaryDisplay += "\nTags Summary\n";
+        summaryDisplay += "\nTags Summary:\n";
         int tagCount = 0;
-        for (Map.Entry<String, Double> expenseInTag : sortedTaggedExpenses.entrySet()) {
+        for (Map.Entry<String, Double> expenseInTag : sortedTaggedTransactions.entrySet()) {
             tagCount++;
             if (expenseInTag.getValue() == 0) {
                 break;
