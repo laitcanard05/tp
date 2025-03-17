@@ -1,7 +1,11 @@
 package seedu.finbro.model;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -124,7 +128,7 @@ public class TransactionManager {
      * @param month the month for which to calculate total income (1-12)
      * @param year the year for which to calculate total income
      * @return the total income for the specified month and year,
-     * or 0.0 if there are no transactions
+     *     or 0.0 if there are no transactions
      */
     public double getMonthlyTotalIncome(int month, int year) {
         return transactions.stream()
@@ -141,7 +145,7 @@ public class TransactionManager {
      * @param month the month for which to calculate total expenses (1-12)
      * @param year the year for which to calculate total expenses
      * @return the total expense for the specified month and year,
-     * or 0.0 if there are no matching transactions
+     *     or 0.0 if there are no matching transactions
      */
     public double getMonthlyTotalExpense(int month, int year) {
         return transactions.stream()
@@ -158,7 +162,7 @@ public class TransactionManager {
      * @param month the month for which to calculate categorized expenses (1-12)
      * @param year the year for which to calculate categorized expenses
      * @return a map where keys are expense categories and values are
-     * total expenses for that category
+     *     total expenses for that category
      */
     public Map<Expense.Category, Double> getMonthlyCategorisedExpenses(int month, int year) {
         Map<Expense.Category, Double> categorisedExpenses = new HashMap<>();

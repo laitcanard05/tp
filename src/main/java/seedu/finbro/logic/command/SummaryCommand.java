@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class SummaryCommand implements Command {
     private final int month;
     private final int year;
-    static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
+    private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
 
     /**
      * Constructs a SummaryCommand with the specified month and end year.
