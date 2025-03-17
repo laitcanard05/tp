@@ -21,7 +21,7 @@ ____________________________________________________________
 New income added: [Income] $3000.00 - Monthly salary [work]
 ____________________________________________________________
 > ____________________________________________________________
-New income added: [Income] $500.50 - Freelance design project [graphic-design]
+New income added: [Income] $500.50 - Freelance design project [side-hustle, graphic-design]
 ____________________________________________________________
 > ____________________________________________________________
 New income added: [Income] $1200.00 - Tax refund
@@ -33,7 +33,7 @@ ____________________________________________________________
 New expense added: [Expense][Shopping] $75.00 - New shoes
 ____________________________________________________________
 > ____________________________________________________________
-New expense added: [Expense][Bills] $150.20 - Electricity bill [home]
+New expense added: [Expense][Bills] $150.20 - Electricity bill [monthly, home]
 ____________________________________________________________
 > ____________________________________________________________
 New expense added: [Expense][Transport] $10.80 - Bus fare
