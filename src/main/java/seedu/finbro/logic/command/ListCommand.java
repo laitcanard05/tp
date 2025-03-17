@@ -4,9 +4,7 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.util.stream.Collectors;
-
-// TODO add filtering of list by number and date
+// TODO add filtering of list by date
 
 /**
  * Represents a command to list all transactions.
@@ -23,14 +21,16 @@ public class ListCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        if (!transactionManager.listTransactions().isEmpty()) {
-            return transactionManager.listTransactions()
-                    .stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining("\n"));
-        } else {
+        if (transactionManager.listTransactions().isEmpty()) {
             return "No transactions found.";
         }
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < transactionManager.listTransactions().size(); i++) {
+            String entry = transactionManager.getIndexNum(i) + ". " +
+                           transactionManager.listTransactions().get(i).toString();
+            result.append(entry).append("\n");
+        }
+        return result.toString();
     }
 
     /**

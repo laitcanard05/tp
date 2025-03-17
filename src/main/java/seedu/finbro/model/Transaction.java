@@ -12,6 +12,7 @@ public abstract class Transaction {
     protected final String description;
     protected final LocalDate date;
     protected final List<String> tags;
+    protected int indexNum;
 
     /**
      * Constructs a Transaction with the specified amount, description, and optional tags.

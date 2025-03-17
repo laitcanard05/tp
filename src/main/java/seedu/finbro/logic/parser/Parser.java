@@ -15,6 +15,7 @@ import seedu.finbro.model.Expense;
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
+import seedu.finbro.logic.command.DeleteCommand;
 import seedu.finbro.logic.command.ExitCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.ExportCommand;
@@ -129,6 +130,9 @@ public class Parser {
         case "view":
             parsedCommand = new BalanceCommand();
             break;
+        case "delete":
+            parsedCommand = parseDeleteCommand(arguments);
+            break;
         default:
             logger.warning("Unknown command: " + commandWord);
             parsedCommand = new UnknownCommand(commandWord);
@@ -138,6 +142,24 @@ public class Parser {
         assert parsedCommand != null : "Parsed command cannot be null";
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
+    }
+
+    private Command parseDeleteCommand(String args) {
+        logger.fine("Parsing delete command with arguments: " + args);
+        try {
+            int index = Integer.parseInt(args.trim());
+            if (index <= 0) {
+                logger.warning("Invalid index provided for delete command: " + index);
+                return new InvalidCommand("Index must be a positive integer.");
+            }
+            return new DeleteCommand(index);
+        } catch (NumberFormatException e) {
+            logger.warning("Non-integer index provided for delete command: " + args);
+            return new InvalidCommand("Invalid index format. Please enter a positive integer.");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Unknown error while parsing delete command", e);
+            return new InvalidCommand("An error occurred while processing the delete command.");
+        }
     }
 
     /**

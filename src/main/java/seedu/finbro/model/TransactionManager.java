@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
  * Manages transactions in the FinBro application.
  */
 public class TransactionManager {
+    private static final int INDEX_OFFSET = 1;
     private final List<Transaction> transactions;
+
 
     /**
      * Constructs a TransactionManager with an empty list of transactions.
@@ -22,16 +24,31 @@ public class TransactionManager {
     }
 
     /**
-     * Adds a transaction to the manager.
+     * Adds a transaction to the list of transactions and increments the transaction index.
      *
-     * @param transaction The transaction to add
+     * @param transaction The transaction to be added. Must not be null.
      */
     public void addTransaction(Transaction transaction) {
         assert transaction != null : "Cannot add null transaction";
         transactions.add(transaction);
+        transaction.indexNum = transactions.size();
     }
 
     // TODO Deletes a transaction at the specified index.
+    public void deleteTransaction(int index) {
+        assert index >= 0 : "Index must be non-negative";
+        assert index < transactions.size() : "Index must be within the bounds of the transaction list";
+        transactions.remove(index - INDEX_OFFSET);
+        for (int i = index; i < transactions.size(); i++) {
+            transactions.get(i).indexNum -= INDEX_OFFSET;
+        }
+    }
+
+    public int getIndexNum(int index) {
+        assert index >= 0 : "Index must be non-negative";
+        assert index < transactions.size() : "Index must be within the bounds of the transaction list";
+        return transactions.get(index).indexNum;
+    }
 
     /**
      * Lists all transactions in reverse chronological order.
