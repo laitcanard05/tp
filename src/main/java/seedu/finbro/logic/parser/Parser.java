@@ -25,6 +25,11 @@ import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
+import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.model.TransactionManager;
+import seedu.finbro.storage.Storage;
+import seedu.finbro.ui.Ui;
+
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.DeleteCommand;
@@ -37,6 +42,9 @@ public class Parser {
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    // Track if a clear confirmation is pending
+    private boolean clearCommandPending = false;
+
     /**
      * Parses user input into a Command.
      *
@@ -45,17 +53,43 @@ public class Parser {
      */
     public Command parseCommand(String userInput) {
         assert userInput != null : "User input cannot be null";
-        
+
         logger.fine("Parsing user input: " + userInput);
         userInput = userInput.trim();
         if (userInput.isEmpty()) {
             logger.fine("Empty input, returning HelpCommand");
+            clearCommandPending = false;
             return new HelpCommand();
         }
 
         String[] parts = userInput.split("\\s+", 2);
         String commandWord = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
+
+        // Handle y/n responses if a clear confirmation is pending
+        if (clearCommandPending) {
+            if (commandWord.equals("y") || commandWord.equals("yes")) {
+                clearCommandPending = false;
+                logger.fine("Clear command confirmed with 'y'");
+                return new ClearCommand(true);
+            } else if (commandWord.equals("n") || commandWord.equals("no")) {
+                clearCommandPending = false;
+                logger.fine("Clear command cancelled with 'n'");
+                return new Command() {
+                    @Override
+                    public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+                        return "Clear operation cancelled.";
+                    }
+
+                    @Override
+                    public boolean isExit() {
+                        return false;
+                    }
+                };
+            }
+            // If not y/n, reset the pending flag
+            clearCommandPending = false;
+        }
 
         assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
         logger.fine("Command word: " + commandWord + ", Arguments: " + arguments);
@@ -92,6 +126,10 @@ public class Parser {
             break;
         case "clear":
             parsedCommand = parseClearCommand(arguments);
+            // Set the flag if this is the initial clear command (without confirm)
+            if (arguments.trim().isEmpty()) {
+                clearCommandPending = true;
+            }
             break;
         case "exit":
             parsedCommand = new ExitCommand();
@@ -395,7 +433,7 @@ public class Parser {
      */
     private Map<String, String> parseParameters(String paramString) {
         assert paramString != null : "Parameter string cannot be null";
-        
+
         Map<String, String> parameters = new HashMap<>();
         String[] tokens = paramString.trim().split("\\s+");
 
@@ -407,7 +445,6 @@ public class Parser {
         // Process the rest of the parameters
         String currentPrefix = null;
         StringBuilder currentValue = new StringBuilder();
-        int tagCount = 0;
 
         for (int i = 0; i < tokens.length; i++) {
             String token = tokens[i];
@@ -430,10 +467,6 @@ public class Parser {
                 int slashIndex = token.indexOf('/');
                 assert slashIndex >= 0 : "Expected slash in parameter token";
                 currentPrefix = token.substring(0, slashIndex);
-                if (currentPrefix.equals("t")) {
-                    tagCount++;
-                    currentPrefix += tagCount;
-                }
                 currentValue.append(token.substring(slashIndex + 1));
             } else if (currentPrefix != null) {
                 // Continue building the current parameter value
@@ -460,11 +493,11 @@ public class Parser {
     private double parseAmount(String amountStr) throws NumberFormatException {
         assert amountStr != null : "Amount string cannot be null";
         assert !amountStr.trim().isEmpty() : "Amount string cannot be empty";
-        
+
         if (!AMOUNT_PATTERN.matcher(amountStr).matches()) {
             throw new NumberFormatException("Invalid amount format.");
         }
-        
+
         double amount = Double.parseDouble(amountStr);
         assert amount > 0 : "Amount must be greater than zero";
         return amount;
@@ -481,7 +514,7 @@ public class Parser {
 
         // Look for parameters with prefix 't'
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            if (entry.getKey().startsWith("t")) {
+            if (entry.getKey().equals("t")) {
                 tags.add(entry.getValue());
             }
         }
