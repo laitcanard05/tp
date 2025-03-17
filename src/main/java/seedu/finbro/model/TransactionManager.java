@@ -113,7 +113,6 @@ public class TransactionManager {
      * @param endDate   The end date (inclusive)
      * @return List of transactions within the date range
      */
-    // TODO Filters transactions between the specified start and end dates.
     public ArrayList<Transaction> filterTransactions(LocalDate startDate, LocalDate endDate) {
         assert startDate != null : "Start date cannot be null";
         assert endDate != null : "End date cannot be null";
