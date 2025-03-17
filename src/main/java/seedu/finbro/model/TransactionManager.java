@@ -218,6 +218,33 @@ public class TransactionManager {
         return taggedTransactions;
     }
 
+    /**
+     * Updates an existing transaction with a new transaction.
+     *
+     * @param originalTransaction The transaction to be updated
+     * @param updatedTransaction The new transaction with updated details
+     * @return true if the transaction was successfully updated, false otherwise
+     */
+    public boolean updateTransaction(Transaction originalTransaction, Transaction updatedTransaction) {
+        int index = -1;
+
+        // Find the index of the original transaction
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).equals(originalTransaction)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1) {
+            return false;
+        }
+
+        // Remove the original and add the updated transaction at the same index
+        transactions.remove(index);
+        transactions.add(index, updatedTransaction);
+        return true;
+    }
 
     /**
      * Clears all transactions.
