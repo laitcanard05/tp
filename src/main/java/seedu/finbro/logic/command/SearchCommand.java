@@ -6,6 +6,7 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a command to search for transactions.

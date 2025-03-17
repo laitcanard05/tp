@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import seedu.finbro.model.Expense;
+import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.ExitCommand;
@@ -22,9 +24,9 @@ import seedu.finbro.logic.command.HelpCommand;
 import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
+import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.DeleteCommand;
-import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.model.Expense;
@@ -59,6 +61,10 @@ public class Parser {
 
         Command parsedCommand;
         switch (commandWord) {
+
+        case "search":
+            parsedCommand = parseSearchCommand(arguments);
+            break;
         case "income":
             parsedCommand = parseIncomeCommand(arguments);
             break;
@@ -70,9 +76,6 @@ public class Parser {
             break;
         case "delete":
             parsedCommand = parseDeleteCommand(arguments);
-            break;
-        case "search":
-            parsedCommand = parseSearchCommand(arguments);
             break;
         case "filter":
             parsedCommand = parseFilterCommand(arguments);
@@ -103,6 +106,21 @@ public class Parser {
 
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
+    }
+
+    /**
+     * Parses arguments into a SearchCommand.
+     *
+     * @param args Command arguments
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(String args) {
+        if (args.trim().isEmpty()) {
+            return new InvalidCommand("Search command requires at least one keyword.");
+        }
+
+        List<String> keywords = Arrays.asList(args.trim().split("\\s+"));
+        return new SearchCommand(keywords);
     }
 
     /**

@@ -42,6 +42,13 @@ public class ExpenseCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         Expense expense = new Expense(amount, description, category, tags);
+        //if the list of this transaction's duplicates is NOT empty, warn the user
+        if (!transactionManager.getTransactionDuplicates(description, amount).isEmpty()) {
+            //if the user wishes to cancel the transaction, they will enter "no" which will return false
+            if (!ui.warnDuplicate()) {
+                return "Transaction cancelled by user";
+            }
+        }
         transactionManager.addTransaction(expense);
         storage.saveTransactions(transactionManager);
         return "New expense added: " + expense;
