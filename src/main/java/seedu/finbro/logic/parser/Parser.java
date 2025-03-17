@@ -28,8 +28,6 @@ import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.DeleteCommand;
 import seedu.finbro.logic.command.SummaryCommand;
-import seedu.finbro.logic.command.BalanceCommand;
-import seedu.finbro.model.Expense;
 
 /**
  * Parses user input and creates the corresponding command.
@@ -263,21 +261,6 @@ public class Parser {
         } catch (Exception e) {
             return new InvalidCommand("Invalid delete command: " + e.getMessage());
         }
-    }
-
-    /**
-     * Parses arguments into a SearchCommand.
-     *
-     * @param args Command arguments
-     * @return The SearchCommand
-     */
-    private Command parseSearchCommand(String args) {
-        if (args.trim().isEmpty()) {
-            return new InvalidCommand("Search command requires at least one keyword.");
-        }
-
-        List<String> keywords = Arrays.asList(args.trim().split("\\s+"));
-        return new SearchCommand(keywords);
     }
 
     /**

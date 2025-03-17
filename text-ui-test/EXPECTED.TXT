@@ -100,9 +100,9 @@ Net Balance: $4273.01
 Expenses by Category:
 Transport: $10.80 (2.5%)
 Food: $145.50 (34.0%)
-Bills: $150.20 (35.1%)
 Shopping: $75.00 (17.5%)
 Entertainment: $45.99 (10.8%)
+Bills: $150.20 (35.1%)
 ____________________________________________________________
 > ____________________________________________________________
 Financial Summary for February 2025:
@@ -113,7 +113,7 @@ Net Balance: $0.00
 No expenses recorded for this period.
 ____________________________________________________________
 > ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250316.csv
+Data exported successfully to: exports/finbro_export_20250317.csv
 ____________________________________________________________
 > ____________________________________________________________
 Transaction deleted: [Income] $1200.00 - Tax refund
@@ -155,7 +155,7 @@ Total Income: $5500.50
 Total Expenses: $457.49
 ____________________________________________________________
 > ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250316.txt
+Data exported successfully to: exports/finbro_export_20250317.txt
 ____________________________________________________________
 > ____________________________________________________________
 Goodbye! Thank you for using FinBro.
