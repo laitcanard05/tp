@@ -17,6 +17,7 @@ public class ExportCommand implements Command {
      */
     public ExportCommand(String format) {
         this.format = format != null ? format.toLowerCase() : "csv";
+        assert this.format.equals("csv") || this.format.equals("txt") : "Export format must be either 'csv' or 'txt'";
     }
 
     /**
@@ -29,6 +30,11 @@ public class ExportCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert storage != null : "Storage cannot be null";
+        assert format != null : "Export format cannot be null";
+        assert format.equals("csv") || format.equals("txt") : "Export format must be either 'csv' or 'txt'";
+        
         String filePath;
         try {
             if ("txt".equals(format)) {
@@ -37,6 +43,7 @@ public class ExportCommand implements Command {
                 // Default to CSV
                 filePath = storage.exportToCsv(transactionManager);
             }
+            assert filePath != null && !filePath.isEmpty() : "Export file path cannot be null or empty";
             return "Data exported successfully to: " + filePath;
         } catch (Exception e) {
             return "Error exporting data: " + e.getMessage();

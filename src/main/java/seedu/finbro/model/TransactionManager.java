@@ -3,6 +3,7 @@ package seedu.finbro.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -29,9 +30,10 @@ public class TransactionManager {
      * @param transaction The transaction to add
      */
     public void addTransaction(Transaction transaction) {
+        assert transaction != null : "Cannot add null transaction";
         transactions.add(transaction);
-        logger.info("Added " + transaction.getClass().getSimpleName() + 
-                " with amount $" + transaction.getAmount() + 
+        logger.info("Added " + transaction.getClass().getSimpleName() +
+                " with amount $" + transaction.getAmount() +
                 " and description: " + transaction.getDescription());
     }
 
@@ -47,8 +49,8 @@ public class TransactionManager {
             throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
         }
         Transaction removed = transactions.remove(index - 1); // Convert from 1-based to 0-based
-        logger.info("Deleted " + removed.getClass().getSimpleName() + 
-                " with amount $" + removed.getAmount() + 
+        logger.info("Deleted " + removed.getClass().getSimpleName() +
+                " with amount $" + removed.getAmount() +
                 " at index " + index);
     }
 
@@ -58,6 +60,7 @@ public class TransactionManager {
      * @return List of all transactions in reverse chronological order
      */
     public List<Transaction> listTransactions() {
+        assert transactions != null : "Transactions list cannot be null";
         // Sort by date in reverse chronological order
         List<Transaction> sortedTransactions = new ArrayList<>(transactions);
         Collections.sort(sortedTransactions, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
@@ -111,16 +114,23 @@ public class TransactionManager {
      * @param endDate   The end date (inclusive)
      * @return List of transactions within the date range
      */
-    public List<Transaction> filterTransactions(LocalDate startDate, LocalDate endDate) {
-        return listTransactions().stream()
-                .filter(t -> !t.getDate().isBefore(startDate) && !t.getDate().isAfter(endDate))
-                .collect(Collectors.toList());
+    // TODO Filters transactions between the specified start and end dates.
+    public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
+        assert startDate != null : "Start date cannot be null";
+        assert endDate != null : "End date cannot be null";
+        assert !startDate.isAfter(endDate) : "Start date cannot be after end date";
+        return transactions.stream()
+                .filter(t -> (t.getDate().isEqual(startDate) || t.getDate().isAfter(startDate)) &&
+                        (t.getDate().isEqual(endDate) || t.getDate().isBefore(endDate)))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
      * @return stream of all transactions that contain keyword
      */
     public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
+        assert keyword != null : "Search keyword cannot be null";
+        assert !keyword.trim().isEmpty() : "Search keyword cannot be empty";
         return transactions.stream()
                 .filter(t -> (t.getDescription().contains(keyword)))
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -130,6 +140,8 @@ public class TransactionManager {
      * @return stream of all transactions that have exact same name and amount
      */
     public ArrayList<Transaction> getTransactionDuplicates(String description, double amount) {
+        assert description != null : "Description cannot be null";
+        assert amount > 0 : "Amount must be greater than zero";
         return transactions.stream()
                 .filter(t -> (t.getDescription().equals(description) && t.getAmount() == amount ))
                 .collect(Collectors.toCollection(ArrayList::new));

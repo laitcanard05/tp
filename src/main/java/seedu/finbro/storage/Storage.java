@@ -52,6 +52,8 @@ public class Storage {
      * @param exportDirectoryPath The path to the export directory
      */
     public Storage(String dataFilePath, String exportDirectoryPath) {
+        assert dataFilePath != null : "Data file path cannot be null";
+        assert exportDirectoryPath != null : "Export directory path cannot be null";
         logger.fine("Initializing Storage with custom paths: dataFile=" + dataFilePath +
                 ", exportDir=" + exportDirectoryPath);
         this.dataFilePath = dataFilePath;
@@ -197,13 +199,18 @@ public class Storage {
      * @param transactionManager The TransactionManager containing transactions to save
      */
     public void saveTransactions(TransactionManager transactionManager) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert dataFilePath != null : "Data file path cannot be null";
+        
         logger.info("Saving transactions to: " + dataFilePath);
         try {
             FileWriter writer = new FileWriter(dataFilePath);
             List<Transaction> transactions = transactionManager.listTransactions();
 
+            assert transactions != null : "Transactions list cannot be null";
             logger.fine("Writing " + transactions.size() + " transactions to file");
             for (Transaction transaction : transactions) {
+                assert transaction != null : "Transaction cannot be null";
                 String formattedTransaction = formatTransaction(transaction);
                 writer.write(formattedTransaction + "\n");
                 logger.fine("Wrote transaction: " + formattedTransaction);
@@ -224,25 +231,34 @@ public class Storage {
      * @return The formatted string
      */
     private String formatTransaction(Transaction transaction) {
+        assert transaction != null : "Transaction cannot be null";
         StringBuilder sb = new StringBuilder();
 
         if (transaction instanceof Income) {
             sb.append("INCOME");
         } else if (transaction instanceof Expense) {
             sb.append("EXPENSE");
+        } else {
+            assert false : "Unknown transaction type: " + transaction.getClass().getName();
         }
 
+        assert transaction.getDate() != null : "Transaction date cannot be null";
         sb.append("|").append(transaction.getDate().format(DATE_FORMATTER));
         sb.append("|").append(transaction.getAmount());
+        
+        assert transaction.getDescription() != null : "Transaction description cannot be null";
         sb.append("|").append(transaction.getDescription());
 
         if (transaction instanceof Expense) {
-            sb.append("|").append(((Expense) transaction).getCategory());
+            Expense expense = (Expense) transaction;
+            assert expense.getCategory() != null : "Expense category cannot be null";
+            sb.append("|").append(expense.getCategory());
         } else {
             sb.append("|"); // Empty category for income
         }
 
         sb.append("|");
+        assert transaction.getTags() != null : "Transaction tags cannot be null";
         if (!transaction.getTags().isEmpty()) {
             sb.append(String.join(",", transaction.getTags()));
         }
@@ -258,6 +274,9 @@ public class Storage {
      * @throws IOException if an I/O error occurs
      */
     public String exportToCsv(TransactionManager transactionManager) throws IOException {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert exportDirectoryPath != null : "Export directory path cannot be null";
+        
         String fileName = "finbro_export_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
         String filePath = exportDirectoryPath + File.separator + fileName;
 
@@ -270,16 +289,23 @@ public class Storage {
 
             // Write transactions
             List<Transaction> transactions = transactionManager.listTransactions();
+            assert transactions != null : "Transactions list cannot be null";
+            
             for (Transaction transaction : transactions) {
+                assert transaction != null : "Transaction cannot be null";
                 String type = transaction instanceof Income ? "Income" : "Expense";
                 String category = transaction instanceof Expense
                         ? ((Expense) transaction).getCategory().toString()
                         : "";
+                
+                assert transaction.getTags() != null : "Transaction tags cannot be null";
                 String tags = String.join(";", transaction.getTags());
 
                 // Escape CSV values properly
+                assert transaction.getDescription() != null : "Transaction description cannot be null";
                 String description = "\"" + transaction.getDescription().replace("\"", "\"\"") + "\"";
 
+                assert transaction.getDate() != null : "Transaction date cannot be null";
                 String line = String.format("%s,%s,%.2f,%s,%s,%s\n",
                         type,
                         transaction.getDate().format(DATE_FORMATTER),

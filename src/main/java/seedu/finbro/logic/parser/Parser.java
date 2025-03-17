@@ -44,6 +44,8 @@ public class Parser {
      * @return The command based on the user input
      */
     public Command parseCommand(String userInput) {
+        assert userInput != null : "User input cannot be null";
+        
         logger.fine("Parsing user input: " + userInput);
         userInput = userInput.trim();
         if (userInput.isEmpty()) {
@@ -55,6 +57,7 @@ public class Parser {
         String commandWord = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
 
+        assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
         logger.fine("Command word: " + commandWord + ", Arguments: " + arguments);
 
         Command parsedCommand;
@@ -102,6 +105,7 @@ public class Parser {
             break;
         }
 
+        assert parsedCommand != null : "Parsed command cannot be null";
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
     }
@@ -390,6 +394,8 @@ public class Parser {
      * @return A map of parameter prefixes to values
      */
     private Map<String, String> parseParameters(String paramString) {
+        assert paramString != null : "Parameter string cannot be null";
+        
         Map<String, String> parameters = new HashMap<>();
         String[] tokens = paramString.trim().split("\\s+");
 
@@ -404,6 +410,7 @@ public class Parser {
 
         for (int i = 0; i < tokens.length; i++) {
             String token = tokens[i];
+            assert token != null : "Token cannot be null";
 
             // Skip the first token if it was already processed as the main parameter
             if (i == 0 && parameters.containsKey("")) {
@@ -420,6 +427,7 @@ public class Parser {
 
                 // Extract the new prefix and start building its value
                 int slashIndex = token.indexOf('/');
+                assert slashIndex >= 0 : "Expected slash in parameter token";
                 currentPrefix = token.substring(0, slashIndex);
                 currentValue.append(token.substring(slashIndex + 1));
             } else if (currentPrefix != null) {
@@ -433,6 +441,7 @@ public class Parser {
             parameters.put(currentPrefix, currentValue.toString().trim());
         }
 
+        assert parameters != null : "Parsed parameters map cannot be null";
         return parameters;
     }
 
@@ -444,10 +453,16 @@ public class Parser {
      * @throws NumberFormatException if the string is not a valid amount
      */
     private double parseAmount(String amountStr) throws NumberFormatException {
+        assert amountStr != null : "Amount string cannot be null";
+        assert !amountStr.trim().isEmpty() : "Amount string cannot be empty";
+        
         if (!AMOUNT_PATTERN.matcher(amountStr).matches()) {
             throw new NumberFormatException("Invalid amount format.");
         }
-        return Double.parseDouble(amountStr);
+        
+        double amount = Double.parseDouble(amountStr);
+        assert amount > 0 : "Amount must be greater than zero";
+        return amount;
     }
 
     /**

@@ -23,6 +23,8 @@ public abstract class Transaction {
      * @param tags Optional tags for categorizing the transaction
      */
     public Transaction(double amount, String description, List<String> tags) {
+        assert amount >= 0 : "Transaction amount should be non-negative";
+        assert description != null : "Transaction description cannot be null";
         this.amount = amount;
         this.description = description;
         this.date = LocalDate.now(); // Default to current date
@@ -39,6 +41,9 @@ public abstract class Transaction {
      * @param tags Optional tags for categorizing the transaction
      */
     public Transaction(double amount, String description, LocalDate date, List<String> tags) {
+        assert amount >= 0 : "Transaction amount should be non-negative";
+        assert description != null : "Transaction description cannot be null";
+        assert date != null : "Transaction date cannot be null";
         this.amount = amount;
         this.description = description;
         this.date = date;
@@ -80,6 +85,7 @@ public abstract class Transaction {
      * @return The tags associated with the transaction
      */
     public List<String> getTags() {
+        assert tags != null : "Tags list cannot be null";
         return new ArrayList<>(tags); // Return a copy to prevent modification
     }
 

@@ -25,6 +25,9 @@ public class ExpenseCommand implements Command {
      * @param tags        The tags for the expense
      */
     public ExpenseCommand(double amount, String description, Expense.Category category, List<String> tags) {
+        assert amount > 0 : "Expense amount must be greater than zero";
+        assert description != null : "Description cannot be null";
+        assert !description.trim().isEmpty() : "Description cannot be empty";
         this.amount = amount;
         this.description = description;
         this.category = category;
@@ -41,6 +44,10 @@ public class ExpenseCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert ui != null : "UI cannot be null";
+        assert storage != null : "Storage cannot be null";
+        
         Expense expense = new Expense(amount, description, category, tags);
         //if the list of this transaction's duplicates is NOT empty, warn the user
         if (!transactionManager.getTransactionDuplicates(description, amount).isEmpty()) {
