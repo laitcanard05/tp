@@ -202,8 +202,8 @@ public class TransactionManager {
     public Map<String, Double> getMonthlyTaggedTransactions(int month, int year) {
         Map<String, Double> taggedTransactions = new HashMap<>();
 
+
         ArrayList<Transaction> filteredTransactions = transactions.stream()
-            .filter(t -> t instanceof Expense)
             .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -217,6 +217,7 @@ public class TransactionManager {
         }
         return taggedTransactions;
     }
+
 
     /**
      * Clears all transactions.
