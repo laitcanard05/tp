@@ -28,6 +28,7 @@ import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.DeleteCommand;
+import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
@@ -135,6 +136,12 @@ public class Parser {
         case "help":
             parsedCommand = new HelpCommand();
             break;
+        case "list":
+            parsedCommand = new ListCommand();
+            break;
+        case "view":
+            parsedCommand = new BalanceCommand();
+            break;
         default:
             logger.warning("Unknown command: " + commandWord);
             parsedCommand = new UnknownCommand(commandWord);
@@ -153,12 +160,22 @@ public class Parser {
      * @return The SearchCommand
      */
     private Command parseSearchCommand(String args) {
-        if (args.trim().isEmpty()) {
-            return new InvalidCommand("Search command requires at least one keyword.");
-        }
+        logger.fine("Parsing search command with arguments: " + args);
+        try {
+            Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
 
-        List<String> keywords = Arrays.asList(args.trim().split("\\s+"));
-        return new SearchCommand(keywords);
+            if (!parameters.containsKey("")) {
+                logger.warning("Missing keyword for search command");
+                return new InvalidCommand("keyword is required for search command.");
+            }
+
+            logger.fine("Searching transactions with keyword=" + args);
+            return new SearchCommand(args);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing income command", e);
+            return new InvalidCommand("Invalid income command: " + e.getMessage());
+        }
     }
 
     /**
@@ -348,8 +365,7 @@ public class Parser {
     }
 
     /**
-     * Parses arguments into a SummaryCommand with specified month and year.
-     *
+     * Parses arguments into a SummaryCommand with specified month and year
      * @param args Command arguments
      * @return The SummaryCommand
      */
