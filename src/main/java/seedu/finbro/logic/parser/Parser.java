@@ -135,6 +135,7 @@ public class Parser {
             break;
         case "delete":
             parsedCommand = parseDeleteCommand(arguments);
+            break;
         case "edit":
             parsedCommand = parseEditCommand(arguments);
             break;
