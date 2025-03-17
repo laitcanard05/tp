@@ -199,11 +199,10 @@ public class TransactionManager {
      * @param year the year for which to calculate tagged expenses
      * @return a map where keys are tags and values are total expenses associated with that tag
      */
-    public Map<String, Double> getMonthlyTaggedExpenses(int month, int year) {
+    public Map<String, Double> getMonthlyTaggedTransactions(int month, int year) {
         Map<String, Double> taggedExpenses = new HashMap<>();
 
         ArrayList<Transaction> filteredTransactions = transactions.stream()
-            .filter(t -> t instanceof Expense)
             .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -217,6 +216,7 @@ public class TransactionManager {
         }
         return taggedExpenses;
     }
+
 
     /**
      * Clears all transactions.

@@ -30,7 +30,6 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-
 /**
  * Parses user input and creates the corresponding command.
  */
@@ -104,6 +103,9 @@ public class Parser {
             break;
         case "filter":
             parsedCommand = parseFilterCommand(arguments);
+            break;
+        case "summary":
+            parsedCommand = parseSummaryCommand(arguments);
             break;
         case "export":
             parsedCommand = parseExportCommand(arguments);
