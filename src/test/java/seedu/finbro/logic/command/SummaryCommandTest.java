@@ -88,10 +88,14 @@ class SummaryCommandTest { ;
      */
     @Test
     void moreThanThreeCategories_returnsTopThreeCategories() {
-        transactionManager.addTransaction(new Expense(6.30, "lunch", Expense.Category.fromString("Food"), null));
-        transactionManager.addTransaction(new Expense(75, "New Shoes", Expense.Category.fromString("Shopping"), null));
-        transactionManager.addTransaction(new Expense(10.80, "Bus fare", Expense.Category.fromString("Transport"), null));
-        transactionManager.addTransaction(new Expense(45.99, "Movie tickets", Expense.Category.fromString("Entertainment"), null));
+        transactionManager.addTransaction(new Expense(6.30,
+            "lunch", Expense.Category.fromString("Food"), null));
+        transactionManager.addTransaction(new Expense(75,
+            "New Shoes", Expense.Category.fromString("Shopping"), null));
+        transactionManager.addTransaction(new Expense(10.80,
+            "Bus fare", Expense.Category.fromString("Transport"), null));
+        transactionManager.addTransaction(new Expense(45.99,
+            "Movie tickets", Expense.Category.fromString("Entertainment"), null));
 
         SummaryCommand command = new SummaryCommand(3, 2025);
         String result = command.execute(transactionManager, ui, storage);
@@ -120,13 +124,20 @@ class SummaryCommandTest { ;
         List<String> tagSet2 = List.of("work", "monthly");
         List<String> tagSet3 = List.of("weekend");
         List<String> tagSet4 = List.of("work");
-        transactionManager.addTransaction(new Expense(6.30, "lunch", Expense.Category.fromString("Food"), null));
-        transactionManager.addTransaction(new Expense(75, "New Shoes", Expense.Category.fromString("Shopping"), null));
-        transactionManager.addTransaction(new Expense(10.80, "Bus fare", Expense.Category.fromString("Transport"), null));
-        transactionManager.addTransaction(new Expense(45.99, "Movie tickets", Expense.Category.fromString("Entertainment"), tagSet3));
-        transactionManager.addTransaction(new Expense(150.20, "Electricity bill", Expense.Category.fromString("Bills"), tagSet1));
-        transactionManager.addTransaction(new Income(3000, "Monthly salary", tagSet2));
-        transactionManager.addTransaction(new Expense(25.50, "Lunch with colleagues", Expense.Category.fromString("Food"), tagSet4));
+        transactionManager.addTransaction(new Expense(6.30,
+            "lunch", Expense.Category.fromString("Food"), null));
+        transactionManager.addTransaction(new Expense(75,
+            "New Shoes", Expense.Category.fromString("Shopping"), null));
+        transactionManager.addTransaction(new Expense(10.80,
+            "Bus fare", Expense.Category.fromString("Transport"), null));
+        transactionManager.addTransaction(new Expense(45.99,
+            "Movie tickets", Expense.Category.fromString("Entertainment"), tagSet3));
+        transactionManager.addTransaction(new Expense(150.20,
+            "Electricity bill", Expense.Category.fromString("Bills"), tagSet1));
+        transactionManager.addTransaction(new Income(3000,
+            "Monthly salary", tagSet2));
+        transactionManager.addTransaction(new Expense(25.50,
+            "Lunch with colleagues", Expense.Category.fromString("Food"), tagSet4));
 
         SummaryCommand command = new SummaryCommand(3, 2025);
         String result = command.execute(transactionManager, ui, storage);
