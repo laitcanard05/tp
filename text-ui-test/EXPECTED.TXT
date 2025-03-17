@@ -46,14 +46,14 @@ New expense added: [Expense][Food] $120.00 - Groceries [essential]
 ____________________________________________________________
 > ____________________________________________________________
 Are you sure you want to clear all data? This action cannot be undone.
-Type 'clear confirm' to proceed, or simply type 'y' to confirm, 'n' to cancel.
+Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
 > ____________________________________________________________
 Clear operation cancelled.
 ____________________________________________________________
 > ____________________________________________________________
 Are you sure you want to clear all data? This action cannot be undone.
-Type 'clear confirm' to proceed, or simply type 'y' to confirm, 'n' to cancel.
+Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
 > ____________________________________________________________
 All data has been cleared.

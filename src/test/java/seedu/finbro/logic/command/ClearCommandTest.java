@@ -42,7 +42,7 @@ class ClearCommandTest {
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("Are you sure you want to clear all data? This action cannot be undone.\n" +
-                "Type 'clear confirm' to proceed, or simply type 'y' to confirm, 'n' to cancel.", result);
+                "Type 'y' to confirm, 'n' to cancel.", result);
     }
 
     /**
