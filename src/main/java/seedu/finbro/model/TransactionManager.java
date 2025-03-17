@@ -50,7 +50,7 @@ public class TransactionManager {
      * @param startDate the start date of the filter range (inclusive)
      * @param endDate the end date of the filter range (inclusive)
      * @return a list of transactions that fall within the specified date range;
-     * returns an empty list if no transactions match
+     *     returns an empty list if no transactions match
      */
     public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
         return transactions.stream()
