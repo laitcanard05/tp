@@ -11,20 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import seedu.finbro.logic.command.*;
 import seedu.finbro.model.Expense;
-import seedu.finbro.logic.command.BalanceCommand;
-import seedu.finbro.logic.command.ClearCommand;
-import seedu.finbro.logic.command.Command;
-import seedu.finbro.logic.command.ExitCommand;
-import seedu.finbro.logic.command.ExpenseCommand;
-import seedu.finbro.logic.command.ExportCommand;
-import seedu.finbro.logic.command.FilterCommand;
-import seedu.finbro.logic.command.HelpCommand;
-import seedu.finbro.logic.command.IncomeCommand;
-import seedu.finbro.logic.command.InvalidCommand;
-import seedu.finbro.logic.command.ListCommand;
-import seedu.finbro.logic.command.SearchCommand;
-import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
@@ -293,6 +281,39 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing filter command", e);
             return new InvalidCommand("Invalid filter command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a SummaryCommand with specified month and year
+     * @param args Command arguments
+     * @return The SummaryCommand
+     */
+    private Command parseSummaryCommand(String args) {
+        Map<String, String> parameters = parseParameters(args);
+
+        try {
+            int month;
+            int year;
+            if (!parameters.containsKey("m")) {
+                month = LocalDate.now().getMonthValue();
+            } else {
+                month = Integer.parseInt(parameters.get("m"));
+                if (month < 1 || month > 12) {
+                    return new InvalidCommand("Month input must be between 1 and 12.");
+                }
+            }
+            if (!parameters.containsKey("y")) {
+                year = LocalDate.now().getYear();
+            } else {
+                year = Integer.parseInt(parameters.get("y"));
+                if (year % 1000 == 0 || year > LocalDate.now().getYear()) {
+                    return new InvalidCommand("Year input must be 4-digit.");
+                }
+            }
+            return new SummaryCommand(month, year);
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid summary command: " + e.getMessage());
         }
     }
 
