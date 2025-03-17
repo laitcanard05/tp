@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Tests for the ExpenseCommand class.
  */
-public class ExpenseCommandTest {
+class ExpenseCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;

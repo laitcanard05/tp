@@ -16,14 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the TransactionManager class.
  */
-public class TransactionManagerTest {
+class TransactionManagerTest {
     private TransactionManager transactionManager;
     private Income income1;
     private Income income2;
     private Expense expense1;
     private Expense expense2;
-    private final LocalDate february2025 = LocalDate.of(2025, 2, 1);
-    private final LocalDate march2025 = LocalDate.of(2025, 3, 1);
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +45,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void addTransaction_validTransaction_success() {
+    void addTransaction_validTransaction_success() {
         TransactionManager manager = new TransactionManager();
         assertEquals(0, manager.getTransactionCount());
 
@@ -58,7 +56,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void getFilteredTransactions_validDateRange_returnsCorrectTransactions() {
+    void getFilteredTransactions_validDateRange_returnsCorrectTransactions() {
         // Filter February 2025 transactions
         ArrayList<Transaction> filteredTransactions = transactionManager.getFilteredTransactions(
                 LocalDate.of(2025, 2, 1),
@@ -84,7 +82,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void searchTransactions_validKeyword_returnsMatchingTransactions() {
+    void searchTransactions_validKeyword_returnsMatchingTransactions() {
         List<String> keywords = Arrays.asList("salary");
         List<Transaction> results = transactionManager.searchTransactions(keywords);
         
@@ -100,7 +98,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void listTransactionsFromDate_validDate_returnsTransactionsFromDate() {
+    void listTransactionsFromDate_validDate_returnsTransactionsFromDate() {
         List<Transaction> results = transactionManager.listTransactionsFromDate(LocalDate.of(2025, 2, 15));
         
         assertEquals(2, results.size());
@@ -109,7 +107,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void getMonthlyTotalIncome_validMonth_returnsCorrectTotal() {
+    void getMonthlyTotalIncome_validMonth_returnsCorrectTotal() {
         double totalIncome = transactionManager.getMonthlyTotalIncome(2, 2025);
         assertEquals(3500.0, totalIncome);
         
@@ -119,7 +117,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void getMonthlyTotalExpense_validMonth_returnsCorrectTotal() {
+    void getMonthlyTotalExpense_validMonth_returnsCorrectTotal() {
         double totalExpense = transactionManager.getMonthlyTotalExpense(2, 2025);
         assertEquals(100.5, totalExpense);
         
@@ -129,7 +127,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void getMonthlyCategorisedExpenses_validMonth_returnsCorrectCategories() {
+    void getMonthlyCategorisedExpenses_validMonth_returnsCorrectCategories() {
         Map<Expense.Category, Double> categorizedExpenses = transactionManager.getMonthlyCategorisedExpenses(2, 2025);
         
         assertEquals(2, categorizedExpenses.size());
@@ -140,7 +138,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void getMonthlyTaggedExpenses_validMonth_returnsCorrectTags() {
+    void getMonthlyTaggedExpenses_validMonth_returnsCorrectTags() {
         Map<String, Double> taggedExpenses = transactionManager.getMonthlyTaggedTransactions(2, 2025);
         
         assertEquals(1, taggedExpenses.size());
@@ -149,7 +147,7 @@ public class TransactionManagerTest {
     }
 
     @Test
-    public void clearTransactions_removesAllTransactions() {
+    void clearTransactions_removesAllTransactions() {
         assertEquals(4, transactionManager.getTransactionCount());
 
         transactionManager.clearTransactions();

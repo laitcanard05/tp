@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for the Transaction class and its subclasses.
  */
-public class TransactionTest {
+class TransactionTest {
 
     @Test
-    public void incomeConstructorValidParametersSuccess() {
+    void incomeConstructorValidParametersSuccess() {
         double amount = 3000.00;
         String description = "Monthly salary";
         List<String> tags = Collections.singletonList("work");
@@ -28,21 +28,21 @@ public class TransactionTest {
     }
 
     @Test
-    public void incomeToStringCorrectFormat() {
+    void incomeToStringCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.singletonList("work"));
         String expected = "[Income] $3000.00 - Monthly salary [work]";
         assertEquals(expected, income.toString());
     }
 
     @Test
-    public void incomeToStringNoTagsCorrectFormat() {
+    void incomeToStringNoTagsCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.emptyList());
         String expected = "[Income] $3000.00 - Monthly salary";
         assertEquals(expected, income.toString());
     }
 
     @Test
-    public void expenseConstructorValidParametersSuccess() {
+    void expenseConstructorValidParametersSuccess() {
         double amount = 25.50;
         String description = "Lunch";
         Expense.Category category = Expense.Category.FOOD;
@@ -58,27 +58,27 @@ public class TransactionTest {
     }
 
     @Test
-    public void expenseConstructorNullCategoryDefaultsToOthers() {
+    void expenseConstructorNullCategoryDefaultsToOthers() {
         Expense expense = new Expense(25.50, "Lunch", null, Collections.emptyList());
         assertEquals(Expense.Category.OTHERS, expense.getCategory());
     }
 
     @Test
-    public void expenseToStringCorrectFormat() {
+    void expenseToStringCorrectFormat() {
         Expense expense = new Expense(25.50, "Lunch", Expense.Category.FOOD, Collections.singletonList("work"));
         String expected = "[Expense][Food] $25.50 - Lunch [work]";
         assertEquals(expected, expense.toString());
     }
 
     @Test
-    public void expenseToStringNoTagsCorrectFormat() {
+    void expenseToStringNoTagsCorrectFormat() {
         Expense expense = new Expense(25.50, "Lunch", Expense.Category.FOOD, Collections.emptyList());
         String expected = "[Expense][Food] $25.50 - Lunch";
         assertEquals(expected, expense.toString());
     }
 
     @Test
-    public void expenseCategoryFromStringValidCategoryReturnsCorrectCategory() {
+    void expenseCategoryFromStringValidCategoryReturnsCorrectCategory() {
         assertEquals(Expense.Category.FOOD, Expense.Category.fromString("Food"));
         assertEquals(Expense.Category.TRANSPORT, Expense.Category.fromString("Transport"));
         assertEquals(Expense.Category.SHOPPING, Expense.Category.fromString("Shopping"));
@@ -88,13 +88,13 @@ public class TransactionTest {
     }
 
     @Test
-    public void expenseCategoryFromStringInvalidCategoryReturnsOthers() {
+    void expenseCategoryFromStringInvalidCategoryReturnsOthers() {
         assertEquals(Expense.Category.OTHERS, Expense.Category.fromString("NotACategory"));
         assertEquals(Expense.Category.OTHERS, Expense.Category.fromString(null));
     }
 
     @Test
-    public void expenseCategoryFromStringCaseInsensitive() {
+    void expenseCategoryFromStringCaseInsensitive() {
         assertEquals(Expense.Category.FOOD, Expense.Category.fromString("food"));
         assertEquals(Expense.Category.FOOD, Expense.Category.fromString("FOOD"));
         assertEquals(Expense.Category.FOOD, Expense.Category.fromString("Food"));

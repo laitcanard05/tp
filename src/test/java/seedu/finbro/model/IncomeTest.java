@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Tests for the Income class.
  */
-public class IncomeTest {
+class IncomeTest {
 
     @Test
-    public void constructorValidParametersSuccess() {
+    void constructorValidParametersSuccess() {
         double amount = 3000.00;
         String description = "Monthly salary";
         List<String> tags = Collections.singletonList("work");
@@ -30,7 +30,7 @@ public class IncomeTest {
     }
 
     @Test
-    public void constructorWithDateValidParametersSuccess() {
+    void constructorWithDateValidParametersSuccess() {
         double amount = 3000.00;
         String description = "Monthly salary";
         LocalDate date = LocalDate.of(2025, 3, 15);
@@ -45,28 +45,28 @@ public class IncomeTest {
     }
 
     @Test
-    public void constructorNullTagsUsesEmptyList() {
+    void constructorNullTagsUsesEmptyList() {
         Income income = new Income(3000.00, "Monthly salary", null);
         assertNotNull(income.getTags());
         assertEquals(0, income.getTags().size());
     }
 
     @Test
-    public void toStringCorrectFormat() {
+    void toStringCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.singletonList("work"));
         String expected = "[Income] $3000.00 - Monthly salary [work]";
         assertEquals(expected, income.toString());
     }
 
     @Test
-    public void toStringMultipleTagsCorrectFormat() {
+    void toStringMultipleTagsCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Arrays.asList("work", "january"));
         String expected = "[Income] $3000.00 - Monthly salary [work, january]";
         assertEquals(expected, income.toString());
     }
 
     @Test
-    public void toStringNoTagsCorrectFormat() {
+    void toStringNoTagsCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.emptyList());
         String expected = "[Income] $3000.00 - Monthly salary";
         assertEquals(expected, income.toString());

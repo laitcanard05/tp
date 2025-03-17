@@ -3,7 +3,6 @@ package seedu.finbro;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,10 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the LoggingConfig class.
  */
-public class LoggingConfigTest {
-    @TempDir
-    Path tempDir;
-
+class LoggingConfigTest {
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
     private Field configuredField;
@@ -61,7 +57,7 @@ public class LoggingConfigTest {
     }
 
     @Test
-    public void initCreatesLogDirectory() throws IllegalAccessException, InstantiationException {
+    void initCreatesLogDirectory() throws IllegalAccessException {
         // Ensure configured is false
         configuredField.set(null, false);
         
@@ -74,7 +70,7 @@ public class LoggingConfigTest {
     }
 
     @Test
-    public void initSkipsIfAlreadyConfigured() throws IllegalAccessException {
+    void initSkipsIfAlreadyConfigured() throws IllegalAccessException {
         // Set as already configured
         configuredField.set(null, true);
         
@@ -90,7 +86,7 @@ public class LoggingConfigTest {
     }
 
     @Test
-    public void initHandlesIOException() throws IllegalAccessException, NoSuchFieldException, IOException {
+    void initHandlesIOException() throws IllegalAccessException, IOException {
         // Since we can't modify final fields, we'll need to manipulate the environment to force an IOException
         
         // Set as not configured

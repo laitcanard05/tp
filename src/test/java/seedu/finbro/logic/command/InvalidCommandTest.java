@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Tests for the InvalidCommand class.
  */
-public class InvalidCommandTest {
+class InvalidCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;

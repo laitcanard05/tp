@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Tests for the DeleteCommand class.
  */
-public class DeleteCommandTest {
+class DeleteCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;
@@ -35,7 +35,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void executeValidIndexSuccess() {
+    void executeValidIndexSuccess() {
         DeleteCommand command = new DeleteCommand(2);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -44,7 +44,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void executeInvalidIndexTooLargeError() {
+    void executeInvalidIndexTooLargeError() {
         DeleteCommand command = new DeleteCommand(4);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -53,7 +53,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void executeInvalidIndexZeroError() {
+    void executeInvalidIndexZeroError() {
         DeleteCommand command = new DeleteCommand(0);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -62,7 +62,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void executeInvalidIndexNegativeError() {
+    void executeInvalidIndexNegativeError() {
         DeleteCommand command = new DeleteCommand(-1);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -71,7 +71,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void isExitReturnsFalse() {
+    void isExitReturnsFalse() {
         DeleteCommand command = new DeleteCommand(1);
         assertFalse(command.isExit());
     }

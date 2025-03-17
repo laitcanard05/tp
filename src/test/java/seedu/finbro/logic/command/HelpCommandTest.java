@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the HelpCommand class.
  */
-public class HelpCommandTest {
+class HelpCommandTest {
     private HelpCommand helpCommand;
     private TransactionManager transactionManager;
     private Ui ui;

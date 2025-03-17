@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the SearchCommand class.
  */
-public class SearchCommandTest {
+class SearchCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;
@@ -40,7 +40,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeOneKeywordOneMatchSuccess() {
+    void executeOneKeywordOneMatchSuccess() {
         List<String> keywords = Collections.singletonList("salary");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -51,7 +51,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeOneKeywordMultipleMatchesSuccess() {
+    void executeOneKeywordMultipleMatchesSuccess() {
         List<String> keywords = Collections.singletonList("work");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -62,7 +62,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeMultipleKeywordsMultipleMatchesSuccess() {
+    void executeMultipleKeywordsMultipleMatchesSuccess() {
         List<String> keywords = Arrays.asList("salary", "grocery");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -73,7 +73,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeCaseInsensitiveMatching() {
+    void executeCaseInsensitiveMatching() {
         List<String> keywords = Arrays.asList("SALARY", "grocery");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -84,7 +84,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executePartialWordMatching() {
+    void executePartialWordMatching() {
         List<String> keywords = Collections.singletonList("sal");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -94,7 +94,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeNoMatchingTransactionsFound() {
+    void executeNoMatchingTransactionsFound() {
         List<String> keywords = Collections.singletonList("nonexistent");
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -103,7 +103,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void executeEmptyKeywordsListReturnsNoMatches() {
+    void executeEmptyKeywordsListReturnsNoMatches() {
         List<String> keywords = Collections.emptyList();
         SearchCommand command = new SearchCommand(keywords);
         String result = command.execute(transactionManager, ui, storage);
@@ -112,7 +112,7 @@ public class SearchCommandTest {
     }
 
     @Test
-    public void isExitReturnsFalse() {
+    void isExitReturnsFalse() {
         SearchCommand command = new SearchCommand(Collections.singletonList("keyword"));
         assertFalse(command.isExit());
     }

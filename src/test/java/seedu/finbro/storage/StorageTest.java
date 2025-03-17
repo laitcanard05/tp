@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the Storage class.
  */
-public class StorageTest {
+class StorageTest {
     @TempDir
     Path tempDir;
 
@@ -62,7 +62,7 @@ public class StorageTest {
     }
 
     @Test
-    public void saveAndLoadTransactionsSuccess() {
+    void saveAndLoadTransactionsSuccess() {
         // Save transactions
         storage.saveTransactions(transactionManager);
         
@@ -94,7 +94,7 @@ public class StorageTest {
     }
 
     @Test
-    public void loadTransactionsEmptyFileSuccess() throws IOException {
+    void loadTransactionsEmptyFileSuccess() throws IOException {
         // Create empty file
         Files.createFile(dataFile);
         
@@ -104,7 +104,7 @@ public class StorageTest {
     }
 
     @Test
-    public void loadTransactionsNonExistentFileReturnsEmptyManager() {
+    void loadTransactionsNonExistentFileReturnsEmptyManager() {
         // Don't create the file
         
         // Load transactions and verify
@@ -113,7 +113,7 @@ public class StorageTest {
     }
 
     @Test
-    public void exportToCsvSuccess() throws IOException {
+    void exportToCsvSuccess() throws IOException {
         // Export to CSV
         String csvFilePath = storage.exportToCsv(transactionManager);
         
@@ -129,7 +129,7 @@ public class StorageTest {
     }
 
     @Test
-    public void exportToTxtSuccess() throws IOException {
+    void exportToTxtSuccess() throws IOException {
         // Export to TXT
         String txtFilePath = storage.exportToTxt(transactionManager);
         
@@ -150,7 +150,7 @@ public class StorageTest {
     }
 
     @Test
-    public void formatTransactionHandlesTags() throws IOException {
+    void formatTransactionHandlesTags() {
         // Create transaction with tags
         transactionManager = new TransactionManager();
         transactionManager.addTransaction(new Income(1000, "Salary", 
@@ -168,7 +168,7 @@ public class StorageTest {
     }
 
     @Test
-    public void exportFilenamesUseCurrentDate() throws IOException {
+    void exportFilenamesUseCurrentDate() throws IOException {
         // Export files
         String csvFilePath = storage.exportToCsv(transactionManager);
         String txtFilePath = storage.exportToTxt(transactionManager);

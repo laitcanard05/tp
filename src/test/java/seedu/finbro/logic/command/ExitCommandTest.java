@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the ExitCommand class.
  */
-public class ExitCommandTest {
+class ExitCommandTest {
     private ExitCommand exitCommand;
     private TransactionManager transactionManager;
     private Ui ui;

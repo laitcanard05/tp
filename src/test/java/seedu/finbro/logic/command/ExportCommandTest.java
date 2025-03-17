@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the ExportCommand class.
  */
-public class ExportCommandTest {
+class ExportCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;

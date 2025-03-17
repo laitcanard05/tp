@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the ListCommand class.
  */
-public class ListCommandTest {
+class ListCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;
@@ -46,7 +46,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeNoParametersListsAllTransactions() {
+    void executeNoParametersListsAllTransactions() {
         ListCommand command = new ListCommand(null, null);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -58,7 +58,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeWithLimitListsLimitedTransactions() {
+    void executeWithLimitListsLimitedTransactions() {
         ListCommand command = new ListCommand(2, null);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -69,7 +69,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeWithDateListsFilteredTransactions() {
+    void executeWithDateListsFilteredTransactions() {
         ListCommand command = new ListCommand(null, today);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -81,7 +81,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeWithDateAndLimitListsFilteredLimitedTransactions() {
+    void executeWithDateAndLimitListsFilteredLimitedTransactions() {
         ListCommand command = new ListCommand(1, today);
         String result = command.execute(transactionManager, ui, storage);
         
@@ -93,7 +93,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeEmptyTransactionManagerNoTransactionsFound() {
+    void executeEmptyTransactionManagerNoTransactionsFound() {
         transactionManager = new TransactionManager(); // Empty transaction manager
         ListCommand command = new ListCommand(null, null);
         String result = command.execute(transactionManager, ui, storage);
@@ -102,7 +102,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void executeWithDateNoMatchingTransactionsFound() {
+    void executeWithDateNoMatchingTransactionsFound() {
         ListCommand command = new ListCommand(null, today.plusDays(10));
         String result = command.execute(transactionManager, ui, storage);
         
@@ -110,7 +110,7 @@ public class ListCommandTest {
     }
 
     @Test
-    public void isExitReturnsFalse() {
+    void isExitReturnsFalse() {
         ListCommand command = new ListCommand(null, null);
         assertFalse(command.isExit());
     }
