@@ -73,7 +73,7 @@ public class SummaryCommand implements Command {
         }
 
         Map<String, Double> sortedTaggedExpenses =
-                transactionManager.getMonthlyTaggedExpenses(month, year)
+                transactionManager.getMonthlyTaggedTransactions(month, year)
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, Double> comparingByValue().reversed())

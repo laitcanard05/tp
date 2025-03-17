@@ -199,7 +199,7 @@ public class TransactionManager {
      * @param year the year for which to calculate tagged transactions
      * @return a map where keys are tags and values are total transactions associated with that tag
      */
-    public Map<String, Double> getMonthlyTaggedExpenses(int month, int year) {
+    public Map<String, Double> getMonthlyTaggedTransactions(int month, int year) {
         Map<String, Double> taggedTransactions = new HashMap<>();
 
         ArrayList<Transaction> filteredTransactions = transactions.stream()
