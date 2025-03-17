@@ -6,6 +6,8 @@ import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +21,7 @@ public class FilterCommand implements Command {
      * Constructs a FilterCommand with the specified start and end dates.
      *
      * @param startDate The start date for filtering
-     * @param endDate   The end date for filtering, or null to filter to the present
+     * @param endDate   The end date of the filter, should not be before startDate
      */
     public FilterCommand(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
@@ -36,10 +38,12 @@ public class FilterCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        List<Transaction> filteredTransactions = transactionManager.filterTransactions(startDate, endDate);
+        ArrayList<Transaction> filteredTransactions = transactionManager.getFilteredTransactions(startDate, endDate);
 
         if (filteredTransactions.isEmpty()) {
-            return "No transactions found in the specified date range.";
+            return String.format("There are no transactions between %s and %s.",
+                    startDate.format(DateTimeFormatter.ofPattern("MMM d yyyy")),
+                    endDate.format(DateTimeFormatter.ofPattern("MMM d yyyy")));
         }
 
         StringBuilder response = new StringBuilder("Showing transactions from " +

@@ -5,69 +5,106 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.TextStyle;
-import java.util.Locale;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Represents a command to view a financial summary.
  */
 public class SummaryCommand implements Command {
-    private final Integer month;
-    private final Integer year;
+    private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 5;
+    private final int month;
+    private final int year;
 
     /**
-     * Constructs a SummaryCommand with optional month and year.
+     * Constructs a SummaryCommand with the specified month and end year.
      *
-     * @param month The month to get a summary for, or null for the current month
-     * @param year  The year to get a summary for, or null for the current year
+     * @param month the month in which transactions will be used for the summary
+     * @param year the year in which transactions will be used for the summary
      */
-    public SummaryCommand(Integer month, Integer year) {
-        LocalDate now = LocalDate.now();
-        this.month = month != null ? month : now.getMonthValue();
-        this.year = year != null ? year : now.getYear();
+    public SummaryCommand(int month, int year) {
+        this.month = month;
+        this.year = year;
     }
 
     /**
-     * Executes the command to view a financial summary.
+     * Executes the command to display a summary of the transactions in the specified month and year
+     * Summary includes total income, total expenses, top 5 expense categories
      *
-     * @param transactionManager The transaction manager to get the summary from
+     * @param transactionManager The transaction manager to execute the command on
      * @param ui                 The UI to interact with the user
      * @param storage            The storage to save data
-     * @return The response message from executing the command
+     * @return The string representation of the summary
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        double monthlyIncome = transactionManager.getMonthlyIncome(month, year);
-        double monthlyExpenses = transactionManager.getMonthlyExpenses(month, year);
-        double balance = monthlyIncome - monthlyExpenses;
+        String monthString = new DateFormatSymbols().getMonths()[month-1];
+        String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
+        summaryDisplay += String.format("Total Income: $%.2f\n",
+                transactionManager.getMonthlyTotalIncome(month, year));
+        summaryDisplay += String.format("Total Expenses: $%.2f\n",
+                transactionManager.getMonthlyTotalExpense(month, year));
 
-        Map<Expense.Category, Double> expensesByCategory =
-                transactionManager.getMonthlyExpensesByCategory(month, year);
+        Map<Expense.Category, Double> sortedCategorisedExpenses =
+                transactionManager.getMonthlyCategorisedExpenses(month, year)
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        String monthName = Month.of(month).getDisplayName(TextStyle.FULL, Locale.US);
-
-        StringBuilder response = new StringBuilder();
-        response.append("Financial Summary for ").append(monthName).append(" ").append(year).append(":\n");
-        response.append("Total Income: $").append(String.format("%.2f", monthlyIncome)).append("\n");
-        response.append("Total Expenses: $").append(String.format("%.2f", monthlyExpenses)).append("\n");
-        response.append("Net Balance: $").append(String.format("%.2f", balance)).append("\n\n");
-
-        if (!expensesByCategory.isEmpty()) {
-            response.append("Expenses by Category:\n");
-            for (Map.Entry<Expense.Category, Double> entry : expensesByCategory.entrySet()) {
-                response.append(entry.getKey()).append(": $")
-                        .append(String.format("%.2f", entry.getValue()))
-                        .append(" (").append(String.format("%.1f", entry.getValue() / monthlyExpenses * 100))
-                        .append("%)\n");
-            }
-        } else {
-            response.append("No expenses recorded for this period.");
+        if (sortedCategorisedExpenses.isEmpty()) {
+            return summaryDisplay;
         }
 
-        return response.toString().trim();
+        summaryDisplay += "\nTop Expense Categories\n";
+        int categoryCount = 0;
+        for (Map.Entry<Expense.Category, Double> expenseInCategory :
+                sortedCategorisedExpenses.entrySet()) {
+            categoryCount++;
+            if (expenseInCategory.getValue() == 0) {
+                break;
+            }
+            summaryDisplay += String.format("%d. %s: $%.2f\n", categoryCount,
+                    expenseInCategory.getKey().toString(),
+                    expenseInCategory.getValue());
+            if (categoryCount >= MAXIMUM_CATEGORIES_TO_DISPLAY) {
+                break;
+            }
+        }
+
+        Map<String, Double> sortedTaggedExpenses =
+                transactionManager.getMonthlyTaggedExpenses(month, year)
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Double> comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+        if (sortedTaggedExpenses.isEmpty()) {
+            return summaryDisplay;
+        }
+
+        summaryDisplay += "\nTags Summary\n";
+        int tagCount = 0;
+        for (Map.Entry<String, Double> expenseInTag : sortedTaggedExpenses.entrySet()) {
+            tagCount++;
+            if (expenseInTag.getValue() == 0) {
+                break;
+            }
+            summaryDisplay += String.format("%d. %s: $%.2f\n", tagCount,
+                    expenseInTag.getKey(),
+                    expenseInTag.getValue());
+        }
+
+        return summaryDisplay;
     }
 
     /**
