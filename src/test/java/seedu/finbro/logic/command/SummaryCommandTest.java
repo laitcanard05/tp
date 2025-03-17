@@ -10,7 +10,6 @@ import seedu.finbro.ui.Ui;
 
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -76,8 +75,8 @@ public class SummaryCommandTest {
         assertTrue(result.contains("Financial Summary for " + monthName + " " + currentYear));
         assertTrue(result.contains("Total Income: $1000.00"));
         assertTrue(result.contains("Total Expenses: $300.00"));
-        assertTrue(result.contains("1. FOOD: $200.00"));
-        assertTrue(result.contains("2. BILLS: $100.00"));
+        assertTrue(result.contains("1. Food: $200.00"));
+        assertTrue(result.contains("2. Bills: $100.00"));
         assertTrue(result.contains("Tags Summary"));
         assertTrue(result.contains("essential: $200.00"));
         assertTrue(result.contains("home: $100.00"));
@@ -93,7 +92,7 @@ public class SummaryCommandTest {
         assertTrue(result.contains("Financial Summary for " + monthName + " " + lastMonthYear));
         assertTrue(result.contains("Total Income: $900.00"));
         assertTrue(result.contains("Total Expenses: $150.00"));
-        assertTrue(result.contains("1. FOOD: $150.00"));
+        assertTrue(result.contains("1. Food: $150.00"));
         assertTrue(result.contains("Tags Summary"));
         assertTrue(result.contains("essential: $150.00"));
     }

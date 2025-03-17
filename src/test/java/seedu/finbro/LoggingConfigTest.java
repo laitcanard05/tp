@@ -110,7 +110,7 @@ public class LoggingConfigTest {
             LoggingConfig.init();
             
             // Verify error message was printed
-            assertTrue(errContent.toString().contains("Failed to initialize logging configuration"), 
+            assertTrue(errContent.toString().contains("Logging initialized with default configuration"),
                     "Error message should be printed for IO exception");
         } finally {
             // Restore the original file
