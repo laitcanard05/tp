@@ -141,11 +141,11 @@ public class TransactionManagerTest {
 
     @Test
     public void getMonthlyTaggedExpenses_validMonth_returnsCorrectTags() {
-        Map<String, Double> taggedExpenses = transactionManager.getMonthlyTaggedExpenses(2, 2025);
+        Map<String, Double> taggedExpenses = transactionManager.getMonthlyTaggedTransactions(2, 2025);
         
         assertEquals(1, taggedExpenses.size());
         assertTrue(taggedExpenses.containsKey("work"));
-        assertEquals(25.5, taggedExpenses.get("work"));
+        assertEquals(3525.5, taggedExpenses.get("work"));
     }
 
     @Test
