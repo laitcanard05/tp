@@ -25,6 +25,7 @@ public class TransactionManager {
      * @param transaction The transaction to add
      */
     public void addTransaction(Transaction transaction) {
+        assert transaction != null : "Cannot add null transaction";
         transactions.add(transaction);
     }
 
@@ -36,6 +37,7 @@ public class TransactionManager {
      * @return List of all transactions in reverse chronological order
      */
     public List<Transaction> listTransactions() {
+        assert transactions != null : "Transactions list cannot be null";
         // Sort by date in reverse chronological order
         List<Transaction> sortedTransactions = new ArrayList<>(transactions);
         Collections.sort(sortedTransactions, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
@@ -54,6 +56,9 @@ public class TransactionManager {
      */
     // TODO Filters transactions between the specified start and end dates.
     public ArrayList<Transaction> getFilteredTransactions(LocalDate startDate, LocalDate endDate) {
+        assert startDate != null : "Start date cannot be null";
+        assert endDate != null : "End date cannot be null";
+        assert !startDate.isAfter(endDate) : "Start date cannot be after end date";
         return transactions.stream()
                 .filter(t -> (t.getDate().isEqual(startDate) || t.getDate().isAfter(startDate)) &&
                         (t.getDate().isEqual(endDate) || t.getDate().isBefore(endDate)))
@@ -64,6 +69,8 @@ public class TransactionManager {
      * @return stream of all transactions that contain keyword
      */
     public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
+        assert keyword != null : "Search keyword cannot be null";
+        assert !keyword.trim().isEmpty() : "Search keyword cannot be empty";
         return transactions.stream()
                 .filter(t -> (t.getDescription().contains(keyword)))
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -73,6 +80,8 @@ public class TransactionManager {
      * @return stream of all transactions that have exact same name and amount
      */
     public ArrayList<Transaction> getTransactionDuplicates(String description, double amount) {
+        assert description != null : "Description cannot be null";
+        assert amount > 0 : "Amount must be greater than zero";
         return transactions.stream()
                 .filter(t -> (t.getDescription().equals(description) && t.getAmount() == amount ))
                 .collect(Collectors.toCollection(ArrayList::new));

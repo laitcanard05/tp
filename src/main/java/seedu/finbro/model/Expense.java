@@ -59,6 +59,7 @@ public class Expense extends Transaction {
      */
     public Expense(double amount, String description, Category category, List<String> tags) {
         super(amount, description, tags);
+        assert amount > 0 : "Expense amount must be greater than zero";
         this.category = category != null ? category : Category.OTHERS;
     }
 
@@ -73,6 +74,7 @@ public class Expense extends Transaction {
      */
     public Expense(double amount, String description, LocalDate date, Category category, List<String> tags) {
         super(amount, description, date, tags);
+        assert amount > 0 : "Expense amount must be greater than zero";
         this.category = category != null ? category : Category.OTHERS;
     }
 
