@@ -30,8 +30,8 @@ public class ClearCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         if (!isConfirmed) {
-            return "Are you sure you want to clear all data? This action cannot be undone. " +
-                    "Type 'clear confirm' to confirm.";
+            return "Are you sure you want to clear all data? This action cannot be undone.\n" +
+                    "Type 'y' to confirm, 'n' to cancel.";
         }
 
         transactionManager.clearTransactions();

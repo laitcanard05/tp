@@ -21,7 +21,7 @@ ____________________________________________________________
 New income added: [Income] $3000.00 - Monthly salary [work]
 ____________________________________________________________
 > ____________________________________________________________
-New income added: [Income] $500.50 - Freelance design project [side-hustle, graphic-design]
+New income added: [Income] $500.50 - Freelance design project [graphic-design]
 ____________________________________________________________
 > ____________________________________________________________
 New income added: [Income] $1200.00 - Tax refund
@@ -33,7 +33,7 @@ ____________________________________________________________
 New expense added: [Expense][Shopping] $75.00 - New shoes
 ____________________________________________________________
 > ____________________________________________________________
-New expense added: [Expense][Bills] $150.20 - Electricity bill [monthly, home]
+New expense added: [Expense][Bills] $150.20 - Electricity bill [home]
 ____________________________________________________________
 > ____________________________________________________________
 New expense added: [Expense][Transport] $10.80 - Bus fare
@@ -45,18 +45,18 @@ ____________________________________________________________
 New expense added: [Expense][Food] $120.00 - Groceries [essential]
 ____________________________________________________________
 > ____________________________________________________________
-Are you sure you want to clear all data? This action cannot be undone. Type 'clear confirm' to confirm.
+Are you sure you want to clear all data? This action cannot be undone.
+Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
 > ____________________________________________________________
-Unknown command: n
-Type 'help' to see available commands.
+Clear operation cancelled.
 ____________________________________________________________
 > ____________________________________________________________
-Are you sure you want to clear all data? This action cannot be undone. Type 'clear confirm' to confirm.
+Are you sure you want to clear all data? This action cannot be undone.
+Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
 > ____________________________________________________________
-Unknown command: y
-Type 'help' to see available commands.
+All data has been cleared.
 ____________________________________________________________
 > ____________________________________________________________
 New income added: [Income] $2000.00 - New job payment [work]
