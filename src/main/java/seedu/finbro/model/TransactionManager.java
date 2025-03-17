@@ -249,15 +249,16 @@ public class TransactionManager {
     }
 
     /**
-     * Calculates the total expenses for a specified month and year,
-     * categorized by tags.
+     * Calculates the total transactions for a specified month and year,
+     *     categorized by tags.
      *
-     * @param month the month for which to calculate tagged expenses (1-12)
-     * @param year the year for which to calculate tagged expenses
-     * @return a map where keys are tags and values are total expenses associated with that tag
+     * @param month the month for which to calculate tagged transactions (1-12)
+     * @param year the year for which to calculate tagged transactions
+     * @return a map where keys are tags and values are total transactions associated with that tag
      */
     public Map<String, Double> getMonthlyTaggedTransactions(int month, int year) {
-        Map<String, Double> taggedExpenses = new HashMap<>();
+        Map<String, Double> taggedTransactions = new HashMap<>();
+
 
         ArrayList<Transaction> filteredTransactions = transactions.stream()
             .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
@@ -266,12 +267,12 @@ public class TransactionManager {
         for (Transaction transaction : filteredTransactions) {
             List<String> transactionTags = transaction.getTags();
             for (String tag : transactionTags) {
-                if (taggedExpenses.putIfAbsent(tag, transaction.getAmount()) != null) {
-                    taggedExpenses.replace(tag, transaction.getAmount()+taggedExpenses.get(tag));
+                if (taggedTransactions.putIfAbsent(tag, transaction.getAmount()) != null) {
+                    taggedTransactions.replace(tag, transaction.getAmount()+taggedTransactions.get(tag));
                 }
             }
         }
-        return taggedExpenses;
+        return taggedTransactions;
     }
 
 
