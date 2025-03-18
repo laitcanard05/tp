@@ -14,10 +14,8 @@ import java.util.regex.Pattern;
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
-
 import seedu.finbro.logic.command.DeleteCommand;
 import seedu.finbro.logic.command.EditCommand;
-
 import seedu.finbro.logic.command.ExitCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.ExportCommand;
@@ -40,6 +38,7 @@ import seedu.finbro.ui.Ui;
 public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Track if a clear confirmation is pending
     private boolean clearCommandPending = false;
@@ -95,7 +94,6 @@ public class Parser {
 
         Command parsedCommand;
         switch (commandWord) {
-
         case "search":
             parsedCommand = parseSearchCommand(arguments);
             break;
@@ -105,8 +103,18 @@ public class Parser {
         case "expense":
             parsedCommand = parseExpenseCommand(arguments);
             break;
+        case "list":
+            parsedCommand = parseListCommand(arguments);
+            break;
+        case "delete":
+            parsedCommand = parseDeleteCommand(arguments);
+            break;
         case "filter":
             parsedCommand = parseFilterCommand(arguments);
+            break;
+        case "balance":
+        case "view": // Support for "view" as an alias for "balance"
+            parsedCommand = new BalanceCommand();
             break;
         case "summary":
             parsedCommand = parseSummaryCommand(arguments);
@@ -127,15 +135,6 @@ public class Parser {
         case "help":
             parsedCommand = new HelpCommand();
             break;
-        case "list":
-            parsedCommand = new ListCommand();
-            break;
-        case "view":
-            parsedCommand = new BalanceCommand();
-            break;
-        case "delete":
-            parsedCommand = parseDeleteCommand(arguments);
-            break;
         case "edit":
             parsedCommand = parseEditCommand(arguments);
             break;
@@ -150,23 +149,6 @@ public class Parser {
         return parsedCommand;
     }
 
-    private Command parseDeleteCommand(String args) {
-        logger.fine("Parsing delete command with arguments: " + args);
-        try {
-            int index = Integer.parseInt(args.trim());
-            if (index <= 0) {
-                logger.warning("Invalid index provided for delete command: " + index);
-                return new InvalidCommand("Index must be a positive integer.");
-            }
-            return new DeleteCommand(index);
-        } catch (NumberFormatException e) {
-            logger.warning("Non-integer index provided for delete command: " + args);
-            return new InvalidCommand("Invalid index format. Please enter a positive integer.");
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Unknown error while parsing delete command", e);
-            return new InvalidCommand("An error occurred while processing the delete command.");
-        }
-    }
 
     /**
      * Parses arguments into a SearchCommand.
@@ -177,6 +159,10 @@ public class Parser {
     private Command parseSearchCommand(String args) {
         logger.fine("Parsing search command with arguments: " + args);
         try {
+            if (args.trim().isEmpty()) {
+                return new InvalidCommand("Search command requires at least one keyword.");
+            }
+
             Map<String, String> parameters = parseParameters(args);
             logger.fine("Parsed parameters: " + parameters);
 
@@ -309,6 +295,61 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing expense command", e);
             return new InvalidCommand("Invalid expense command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a ListCommand.
+     *
+     * @param args Command arguments
+     * @return The ListCommand
+     */
+    private Command parseListCommand(String args) {
+        try {
+            Map<String, String> parameters = parseParameters(args);
+
+            Integer limit = null;
+            if (parameters.containsKey("n")) {
+                limit = Integer.parseInt(parameters.get("n"));
+                if (limit <= 0) {
+                    return new InvalidCommand("Number of transactions must be positive.");
+                }
+            }
+
+            LocalDate date = null;
+            if (parameters.containsKey("d")) {
+                try {
+                    date = LocalDate.parse(parameters.get("d"), DATE_FORMATTER);
+                } catch (DateTimeParseException e) {
+                    return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
+                }
+            }
+
+            return new ListCommand(limit, date);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid number format.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid list command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a DeleteCommand.
+     *
+     * @param args Command arguments
+     * @return The DeleteCommand
+     */
+    private Command parseDeleteCommand(String args) {
+        try {
+            int index = Integer.parseInt(args.trim());
+            if (index <= 0) {
+                return new InvalidCommand("Index must be a positive integer.");
+            }
+            return new DeleteCommand(index);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid index. Please provide a valid number.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid delete command: " + e.getMessage());
         }
     }
 

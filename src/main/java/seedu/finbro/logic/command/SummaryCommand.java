@@ -1,4 +1,5 @@
 package seedu.finbro.logic.command;
+
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
@@ -9,6 +10,9 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a command to view a financial summary.
+ */
 public class SummaryCommand implements Command {
     private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 3;
     private final int month;
@@ -34,6 +38,7 @@ public class SummaryCommand implements Command {
      * @param storage            The storage to save data
      * @return The string representation of the summary
      */
+    @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         String monthString = new DateFormatSymbols().getMonths()[month-1];
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
@@ -99,8 +104,6 @@ public class SummaryCommand implements Command {
         }
 
         return summaryDisplay;
-
-
     }
 
     /**

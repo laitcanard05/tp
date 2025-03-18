@@ -2,20 +2,16 @@ package seedu.finbro.logic.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.Income;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * Tests for ClearCommand.
- */
 class SearchCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
@@ -86,9 +82,7 @@ class SearchCommandTest {
      */
     @Test
     void isExit_returnsFalse() {
-        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"),
-                LocalDate.parse("2025-03-15"));
+        SearchCommand command = new SearchCommand("keyword");
         assertFalse(command.isExit());
     }
 }
-
