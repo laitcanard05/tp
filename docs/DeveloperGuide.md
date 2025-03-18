@@ -2,55 +2,63 @@
 
 ## Introduction
 
-FinBro is a personal finance management application that operates via a Command Line Interface (CLI). This developer guide provides detailed information about the architecture, implementation, and design decisions of the FinBro application to help new developers understand the codebase and contribute effectively.
+FinBro is a personal finance management application that operates through a Command Line Interface (CLI). This developer guide provides comprehensive information about the architecture, implementation, and design decisions behind FinBro to help developers understand the codebase and contribute effectively.
 
-## Setting Up
+## Setting Up the Development Environment
 
 ### Prerequisites
 - JDK 17
 - Gradle 7.6.2 or higher
-- IntelliJ IDEA (recommended, not mandatory)
+- IntelliJ IDEA (recommended)
 
 ### Getting Started
 
 1. Clone the repository:
-```
-git clone https://github.com/AY2425S2-CS2113-W13-3/tp.git
-```
+   ```
+   git clone https://github.com/AY2425S2-CS2113-W13-3/tp.git
+   ```
 
 2. Import the project as a Gradle project in IntelliJ IDEA:
-    - Open IntelliJ IDEA
-    - Click on "Import Project"
-    - Select the `build.gradle` file in the project root directory
-    - Follow the prompts to complete the import
+   - Open IntelliJ IDEA
+   - Select "Import Project"
+   - Navigate to the project directory and select the `build.gradle` file
+   - Follow the prompts to complete the import
 
 3. Verify the setup:
-    - Run the tests: `./gradlew test`
-    - Run the application: `./gradlew run`
+   - Run the tests: `./gradlew test`
+   - Run the application: `./gradlew run`
 
-## Design
+## Architecture
 
-### Architecture
-
-The FinBro application follows a layered architecture with clear separation of concerns:
+FinBro follows a layered architecture pattern with clear separation of concerns:
 
 ![Architecture Diagram](docs/images/architecture.png)
 
-#### Components:
+### Component Overview
 
-1. **Main Component** (`FinBro.java`): The entry point of the application that coordinates between other components.
+#### 1. Main Component (`FinBro.java`)
+- Serves as the entry point of the application
+- Coordinates interactions between other components
+- Manages the main execution flow
 
-2. **UI Component** (`Ui.java`): Handles user interaction through the command line interface.
+#### 2. UI Component (`Ui.java`)
+- Handles all user interaction through the command line
+- Displays messages, prompts, and results to the user
+- Captures and forwards user input to the parser
 
-3. **Logic Component**:
-    - `Parser.java`: Parses user input and creates command objects.
-    - `Command` classes: Implement the Command pattern for different functionalities.
+#### 3. Logic Component
+- **Parser (`Parser.java`)**: Converts user input into command objects
+- **Command Classes**: Implement specific functionalities using the Command pattern
 
-4. **Model Component**:
-    - `Transaction` classes: Represent the core data structures.
-    - `TransactionManager`: Manages the collection of transactions and provides operations on them.
+#### 4. Model Component
+- **Transaction Classes**: Define the core data structures
+- **TransactionManager**: Manages the collection of transactions
+- Implements business logic and operations on the data model
 
-5. **Storage Component** (`Storage.java`): Handles saving and loading of data.
+#### 5. Storage Component (`Storage.java`)
+- Handles persistence of data
+- Manages saving and loading of transaction data
+- Supports data export in various formats
 
 ### Class Structure
 
@@ -76,9 +84,11 @@ seedu.finbro/
     └── Ui.java                  # User interface
 ```
 
-### Sequence Diagrams
+## Sequence Diagrams
 
-#### Adding a Transaction
+### Adding a Transaction
+
+The following sequence diagram illustrates the process when a user adds a new transaction:
 
 ```
 User -> FinBro: input command
@@ -93,38 +103,76 @@ FinBro -> Ui: showMessage(result)
 Ui --> User: display result
 ```
 
-### Design Patterns
+## Design Patterns
 
-The application implements several design patterns:
+FinBro implements several design patterns to enhance maintainability and extensibility:
 
-1. **Command Pattern**: All user actions are encapsulated as command objects implementing the `Command` interface.
+### 1. Command Pattern
+All user actions are encapsulated as command objects implementing the `Command` interface. This allows for:
+- Uniform handling of different commands
+- Easy addition of new commands
+- Support for operations like undo/redo (future enhancement)
 
-2. **Singleton Pattern**: The `TransactionManager` is implemented as a singleton to ensure only one instance manages the transactions.
+### 2. Singleton Pattern
+The `TransactionManager` is implemented as a singleton to ensure:
+- Only one instance manages the transactions
+- Consistent state across the application
+- Centralized access to transaction data
 
-3. **Factory Method Pattern**: The `Parser` class acts as a factory, creating the appropriate command objects based on user input.
+### 3. Factory Method Pattern
+The `Parser` class serves as a factory, creating appropriate command objects based on user input. Benefits include:
+- Encapsulation of command creation logic
+- Separation of command execution from creation
+- Enhanced extensibility when adding new commands
 
-4. **Model-View-Controller (MVC)**: The application follows an MVC-like structure with:
-    - Model: `Transaction` classes and `TransactionManager`
-    - View: `Ui` class
-    - Controller: `Command` classes and `FinBro` class
+### 4. Model-View-Controller (MVC)
+The application follows an MVC-like structure:
+- **Model**: `Transaction` classes and `TransactionManager`
+- **View**: `Ui` class
+- **Controller**: `Command` classes and `FinBro` class
 
-## Implementation
+## Implementation Details
 
 ### Key Features
 
 #### 1. Transaction Management
 
-Transactions are represented by an abstract `Transaction` class with concrete implementations `Income` and `Expense`. The `TransactionManager` provides operations to add, delete, search, and filter transactions.
+Transactions are represented by an abstract `Transaction` class with concrete implementations `Income` and `Expense`.
 
-##### Notable aspects:
-- Flexible tag system for categorizing transactions
+**Key aspects:**
+- Flexible tag system for categorization
 - Predefined categories for expenses
-- Date-based tracking and filtering
+- Date-based tracking
+
+**Implementation:**
+```java
+public abstract class Transaction {
+    protected final double amount;
+    protected final String description;
+    protected final LocalDate date;
+    protected final List<String> tags;
+    // ...
+}
+
+public class Income extends Transaction {
+    // Income-specific implementation
+}
+
+public class Expense extends Transaction {
+    private final Category category;
+    // Expense-specific implementation
+}
+```
 
 #### 2. Command Parsing
 
-The `Parser` class converts user input into appropriate command objects. It handles parameter extraction, validation, and command creation.
+The `Parser` class converts user input into appropriate command objects through several phases:
+1. Tokenization of input
+2. Extraction of command word
+3. Parameter parsing
+4. Command object creation
 
+**Implementation Example:**
 ```java
 public Command parseCommand(String userInput) {
     String[] parts = userInput.split("\\s+", 2);
@@ -143,26 +191,28 @@ public Command parseCommand(String userInput) {
 
 #### 3. Data Persistence
 
-The `Storage` class handles saving and loading of transaction data, as well as data export in different formats.
+The `Storage` class manages saving and loading of transaction data using a custom text-based format.
 
-##### File formats:
-- Internal data: Custom text format with fields separated by '|'
-- Export formats: CSV and TXT
+**File formats:**
+- **Internal storage**: Text file with fields separated by '|' delimiter
+- **Export formats**: CSV and TXT
+
+**Implementation:**
+- Transactions are serialized to text format for persistence
+- Data is loaded into memory at application startup
+- Changes are saved to disk after each transaction modification
 
 #### 4. Financial Summaries
 
-The `SummaryCommand` generates financial reports for specified time periods, showing income, expenses by category, and overall balance.
-
-### Error Handling
-
-The application implements robust error handling:
-- Input validation in the parser
-- Exception handling for data operations
-- User-friendly error messages
+The `SummaryCommand` generates financial reports with the following capabilities:
+- Filtering by time period (month/year)
+- Categorized expense breakdown
+- Tag-based transaction analysis
+- Income vs. expense comparison
 
 ## Testing
 
-### Test Structure
+### Structure
 
 Tests are organized following the same package structure as the main code:
 
@@ -193,31 +243,45 @@ Run a specific test:
 ./gradlew test --tests "seedu.finbro.model.TransactionTest"
 ```
 
-### Text UI Tests
+### Text UI Testing
 
-Text UI testing checks the application's output against expected output:
+Text UI testing verifies application behavior by comparing output against expected results:
 
-1. Run the application with test input:
+1. Run tests:
 ```
 cd text-ui-test
 ./runtest.sh
 ```
 
-2. The script compares the actual output (`ACTUAL.TXT`) with the expected output (`EXPECTED.TXT`).
+2. The script compares the actual output against predefined expected output.
 
 ## Future Enhancements
 
-Potential improvements for future versions:
+### Planned Features
 
-1. **Recurring Transactions**: Support for automatically adding recurring income or expenses.
+1. **Recurring Transactions**
+   - Automatic addition of regular income/expenses
+   - Customizable recurrence patterns
 
-2. **Budget Setting**: Allow users to set budgets for different expense categories.
+2. **Budget Management**
+   - Setting spending limits by category
+   - Alerts when approaching budget thresholds
+   - Visual budget utilization indicators
 
-3. **Data Visualization**: Add simple text-based charts and graphs for financial analysis.
+3. **Data Visualization**
+   - Text-based charts for spending patterns
+   - Trend analysis for income/expenses over time
+   - Category distribution visualization
 
-4. **Multiple Accounts**: Support for tracking multiple financial accounts.
+4. **Multiple Accounts**
+   - Support for tracking different financial accounts
+   - Transfer operations between accounts
+   - Consolidated and per-account reporting
 
-5. **Investment Tracking**: Add functionality to track investments and their performance.
+5. **Investment Tracking**
+   - Basic portfolio management
+   - Investment performance metrics
+   - Asset allocation tracking
 
 ## Appendix
 
