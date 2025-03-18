@@ -47,15 +47,18 @@ public class TransactionManager {
      * @throws IndexOutOfBoundsException if the index is out of range
      */
     public void deleteTransaction(int index) {
+        assert index >= 0 : "Index must be non-negative";
+        assert index < transactions.size() : "Index must be within the bounds of the transaction list";
+
         if (index < 1 || index > transactions.size()) {
             logger.warning("Attempt to delete transaction at invalid index: " + index);
             throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
         }
-        Transaction removed = transactions.remove(index - 1); // Convert from 1-based to 0-based
+        Transaction removed = transactions.remove(index - INDEX_OFFSET); // Convert from 1-based to 0-based
         
         // Update the index numbers for all transactions after the deleted one
-        for (int i = index - 1; i < transactions.size(); i++) {
-            transactions.get(i).indexNum = i + 1;
+        for (int i = index; i < transactions.size(); i++) {
+            transactions.get(i).indexNum -= INDEX_OFFSET;
         }
         
         logger.info("Deleted " + removed.getClass().getSimpleName() +
