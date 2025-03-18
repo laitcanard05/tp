@@ -39,7 +39,7 @@ class SearchCommandTest {
 
 
     /**
-     * Tests that the execute method returns the message displaying the filtered transactions
+     * The following 4 tests ensure that the search method returns only messages containing the keyword
      */
     @Test
     void searchSmallA_shouldDisplayATransactions() {
@@ -86,3 +86,4 @@ class SearchCommandTest {
         assertFalse(command.isExit());
     }
 }
+

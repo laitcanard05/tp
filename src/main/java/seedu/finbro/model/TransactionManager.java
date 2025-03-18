@@ -163,7 +163,7 @@ public class TransactionManager {
     /**
      * @return stream of all transactions that have exact same name and amount
      */
-    public ArrayList<Transaction> getTransactionDuplicates(String description, double amount) {
+    public ArrayList<Transaction> getTransactionDuplicates(double amount, String description) {
         assert description != null : "Description cannot be null";
         assert amount > 0 : "Amount must be greater than zero";
         return transactions.stream()

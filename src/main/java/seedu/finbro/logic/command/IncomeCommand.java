@@ -40,7 +40,7 @@ public class IncomeCommand implements Command {
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         Income income = new Income(amount, description, tags);
         //if the list of this transaction's duplicates is NOT empty, warn the user
-        if (!transactionManager.getTransactionDuplicates(description, amount).isEmpty()) {
+        if (!transactionManager.getTransactionDuplicates(amount, description).isEmpty()) {
             //if the user wishes to cancel the transaction, they will enter "no" which will return false
             if (!ui.warnDuplicate()) {
                 return "Transaction cancelled by user";
