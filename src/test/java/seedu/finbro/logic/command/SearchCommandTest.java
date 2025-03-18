@@ -43,7 +43,7 @@ class SearchCommandTest {
 
 
     /**
-     * Tests that the execute method returns the message displaying the filtered transactions
+     * The following 4 tests ensure that the search method returns only messages containing the keyword
      */
     @Test
     void searchSmallA_shouldDisplayATransactions() {
@@ -54,9 +54,6 @@ class SearchCommandTest {
         assertEquals(aExists +"\n"+ abExists +"\n"+ abcExists +"\n"+ abcdExists, result);
     }
 
-    /**
-     * Tests that the execute method returns the message displaying the filtered transactions
-     */
     @Test
     void searchSmallC_shouldDisplayCTransactions() {
         SearchCommand command = new SearchCommand("c");
@@ -86,8 +83,7 @@ class SearchCommandTest {
      */
     @Test
     void isExit_returnsFalse() {
-        FilterCommand command = new FilterCommand(LocalDate.parse("2025-03-14"),
-                LocalDate.parse("2025-03-15"));
+        SearchCommand command = new SearchCommand("keyword");
         assertFalse(command.isExit());
     }
 }
