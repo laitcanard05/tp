@@ -38,7 +38,8 @@ public class DeleteCommand implements Command {
             }
 
             // Get the transaction to display in the confirmation message
-            String transactionToDelete = transactionManager.listTransactions().get(transactionIndex - INDEX_OFFSET).toString();
+            String transactionToDelete = transactionManager.listTransactions()
+                                         .get(transactionIndex - INDEX_OFFSET).toString();
 
             // Delete the transaction
             transactionManager.deleteTransaction(transactionIndex);
