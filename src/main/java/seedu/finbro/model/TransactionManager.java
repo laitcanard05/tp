@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
  */
 public class TransactionManager {
     private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
+    private static final int INDEX_OFFSET = 1;
     private final List<Transaction> transactions;
+
 
     /**
      * Constructs a TransactionManager with an empty list of transactions.
@@ -25,13 +27,14 @@ public class TransactionManager {
     }
 
     /**
-     * Adds a transaction to the manager.
+     * Adds a transaction to the list of transactions and increments the transaction index.
      *
-     * @param transaction The transaction to add
+     * @param transaction The transaction to be added. Must not be null.
      */
     public void addTransaction(Transaction transaction) {
         assert transaction != null : "Cannot add null transaction";
         transactions.add(transaction);
+        transaction.indexNum = transactions.size();
         logger.info("Added " + transaction.getClass().getSimpleName() +
                 " with amount $" + transaction.getAmount() +
                 " and description: " + transaction.getDescription());
@@ -49,9 +52,27 @@ public class TransactionManager {
             throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
         }
         Transaction removed = transactions.remove(index - 1); // Convert from 1-based to 0-based
+        
+        // Update the index numbers for all transactions after the deleted one
+        for (int i = index - 1; i < transactions.size(); i++) {
+            transactions.get(i).indexNum = i + 1;
+        }
+        
         logger.info("Deleted " + removed.getClass().getSimpleName() +
                 " with amount $" + removed.getAmount() +
                 " at index " + index);
+    }
+
+    /**
+     * Gets the index number of a transaction at the specified position.
+     *
+     * @param index The index in the list (0-based)
+     * @return The transaction's index number (1-based)
+     */
+    public int getIndexNum(int index) {
+        assert index >= 0 : "Index must be non-negative";
+        assert index < transactions.size() : "Index must be within the bounds of the transaction list";
+        return transactions.get(index).indexNum;
     }
 
     /**
@@ -275,6 +296,33 @@ public class TransactionManager {
         return taggedTransactions;
     }
 
+    /**
+     * Updates an existing transaction with a new transaction.
+     *
+     * @param originalTransaction The transaction to be updated
+     * @param updatedTransaction The new transaction with updated details
+     * @return true if the transaction was successfully updated, false otherwise
+     */
+    public boolean updateTransaction(Transaction originalTransaction, Transaction updatedTransaction) {
+        int index = -1;
+
+        // Find the index of the original transaction
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).equals(originalTransaction)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1) {
+            return false;
+        }
+
+        // Remove the original and add the updated transaction at the same index
+        transactions.remove(index);
+        transactions.add(index, updatedTransaction);
+        return true;
+    }
 
     /**
      * Clears all transactions.

@@ -12,10 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import seedu.finbro.model.Expense;
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
+import seedu.finbro.logic.command.DeleteCommand;
+import seedu.finbro.logic.command.EditCommand;
 import seedu.finbro.logic.command.ExitCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.ExportCommand;
@@ -25,9 +26,9 @@ import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.InvalidCommand;
 import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
-import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.command.SummaryCommand;
-import seedu.finbro.logic.command.DeleteCommand;
+import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
@@ -94,7 +95,6 @@ public class Parser {
 
         Command parsedCommand;
         switch (commandWord) {
-
         case "search":
             parsedCommand = parseSearchCommand(arguments);
             break;
@@ -114,6 +114,7 @@ public class Parser {
             parsedCommand = parseFilterCommand(arguments);
             break;
         case "balance":
+        case "view": // Support for "view" as an alias for "balance"
             parsedCommand = new BalanceCommand();
             break;
         case "summary":
@@ -135,6 +136,9 @@ public class Parser {
         case "help":
             parsedCommand = new HelpCommand();
             break;
+        case "edit":
+            parsedCommand = parseEditCommand(arguments);
+            break;
         default:
             logger.warning("Unknown command: " + commandWord);
             parsedCommand = new UnknownCommand(commandWord);
@@ -145,6 +149,7 @@ public class Parser {
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
     }
+
 
     /**
      * Parses arguments into a SearchCommand.
@@ -173,6 +178,38 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing income command", e);
             return new InvalidCommand("Invalid income command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into an EditCommand.
+     *
+     * @param args Command arguments
+     * @return The EditCommand
+     */
+    private Command parseEditCommand(String args) {
+        logger.fine("Parsing edit command with arguments: " + args);
+        try {
+            String[] parts = args.trim().split("\\s+", 2);
+
+            if (parts.length < 2) {
+                logger.warning("Missing parameters for edit command");
+                return new InvalidCommand("Please provide a transaction keyword and parameters to edit.");
+            }
+
+            String keyword = parts[0];
+            Map<String, String> parameters = parseParameters(parts[1]);
+
+            if (parameters.isEmpty()) {
+                logger.warning("No edit parameters provided");
+                return new InvalidCommand("Please specify at least one parameter to edit.");
+            }
+
+            logger.fine("Creating EditCommand with keyword=" + keyword + ", parameters=" + parameters);
+            return new EditCommand(keyword, parameters);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing edit command", e);
+            return new InvalidCommand("Invalid edit command: " + e.getMessage());
         }
     }
 

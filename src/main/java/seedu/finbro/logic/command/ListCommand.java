@@ -27,6 +27,15 @@ public class ListCommand implements Command {
     }
 
     /**
+     * Default constructor for ListCommand with no parameters.
+     * This maintains backward compatibility with existing code.
+     */
+    public ListCommand() {
+        this.limit = null;
+        this.date = null;
+    }
+
+    /**
      * Executes the command to list transactions.
      *
      * @param transactionManager The transaction manager to list transactions from
