@@ -118,7 +118,7 @@ Total Expenses: $0.00
 
 ____________________________________________________________
 > ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250317.csv
+Data exported successfully to: exports/finbro_export_20250318.csv
 ____________________________________________________________
 > ____________________________________________________________
 Transaction deleted: [Income] $1200.00 - Tax refund
@@ -160,7 +160,7 @@ Total Income: $2000.00
 Total Expenses: $30.00
 ____________________________________________________________
 > ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250317.txt
+Data exported successfully to: exports/finbro_export_20250318.txt
 ____________________________________________________________
 > ____________________________________________________________
 Goodbye! Thank you for using FinBro.
