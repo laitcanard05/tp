@@ -8,33 +8,45 @@ import seedu.finbro.ui.Ui;
  * Represents a command to delete a transaction.
  */
 public class DeleteCommand implements Command {
-
     private final int transactionIndex;
 
     /**
-     * Constructs a deleteCommand with the specified transaction index.
+     * Constructs a DeleteCommand with the specified index.
      *
-     * @param transactionIndex The index of the transaction to delete.
+     * @param transactionIndex The index of the transaction to delete (1-based)
+     *
      */
     public DeleteCommand(int transactionIndex) {
         this.transactionIndex = transactionIndex;
     }
 
     /**
-     * Executes the delete command to remove a transaction.
+     * Executes the command to delete a transaction.
      *
-     * @param transactionManager The transaction manager to manage transactions.
-     * @param ui                 The UI to interact with the user.
-     * @param storage            The storage for persistence (if needed).
-     * @return The response message after deleting the transaction.
+     * @param transactionManager The transaction manager to delete the transaction from
+     * @param ui                 The UI to interact with the user
+     * @param storage            The storage to save data
+     * @return The response message from executing the command
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        if (transactionIndex < 1 || transactionIndex > transactionManager.listTransactions().size()) {
-            return "Invalid transaction index.";
+        try {
+            if (transactionIndex < 1 || transactionIndex > transactionManager.getTransactionCount()) {
+                return "Invalid transaction index. There are only " +
+                        transactionManager.getTransactionCount() + " transactions.";
+            }
+
+            // Get the transaction to display in the confirmation message
+            String transactionToDelete = transactionManager.listTransactions().get(transactionIndex - 1).toString();
+
+            // Delete the transaction
+            transactionManager.deleteTransaction(transactionIndex);
+            storage.saveTransactions(transactionManager);
+
+            return "Transaction deleted: " + transactionToDelete;
+        } catch (IndexOutOfBoundsException e) {
+            return "Error: " + e.getMessage();
         }
-        transactionManager.deleteTransaction(transactionIndex);
-        return "Transaction " + transactionIndex + " has been deleted.";
     }
 
     /**

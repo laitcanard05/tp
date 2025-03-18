@@ -3,11 +3,13 @@ package seedu.finbro.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents a financial transaction in the FinBro application.
  */
 public abstract class Transaction {
+    private static final Logger logger = Logger.getLogger(Transaction.class.getName());
     protected final double amount;
     protected final String description;
     protected final LocalDate date;
@@ -28,6 +30,7 @@ public abstract class Transaction {
         this.description = description;
         this.date = LocalDate.now(); // Default to current date
         this.tags = tags != null ? tags : new ArrayList<>();
+        logger.fine("Created new transaction with amount $" + amount + " and description: " + description);
     }
 
     /**
@@ -46,6 +49,8 @@ public abstract class Transaction {
         this.description = description;
         this.date = date;
         this.tags = tags != null ? tags : new ArrayList<>();
+        logger.fine("Created new transaction with amount $"
+                + amount + ", description: " + description + ", date: " + date);
     }
 
     /**

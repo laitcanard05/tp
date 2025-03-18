@@ -2,11 +2,13 @@ package seedu.finbro.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents an expense transaction in the FinBro application.
  */
 public class Expense extends Transaction {
+    private static final Logger logger = Logger.getLogger(Expense.class.getName());
     public enum Category {
         FOOD("Food"),
         TRANSPORT("Transport"),
@@ -34,15 +36,18 @@ public class Expense extends Transaction {
          */
         public static Category fromString(String str) {
             if (str == null) {
+                logger.fine("Null category string provided, defaulting to OTHERS");
                 return OTHERS;
             }
 
             for (Category category : Category.values()) {
                 if (category.toString().equalsIgnoreCase(str)) {
+                    logger.fine("Category string '" + str + "' matched to " + category);
                     return category;
                 }
             }
 
+            logger.fine("No matching category found for '" + str + "', defaulting to OTHERS");
             return OTHERS;
         }
     }
@@ -61,6 +66,7 @@ public class Expense extends Transaction {
         super(amount, description, tags);
         assert amount > 0 : "Expense amount must be greater than zero";
         this.category = category != null ? category : Category.OTHERS;
+        logger.fine("Created new expense in category " + this.category + " with amount $" + amount);
     }
 
     /**
@@ -76,6 +82,8 @@ public class Expense extends Transaction {
         super(amount, description, date, tags);
         assert amount > 0 : "Expense amount must be greater than zero";
         this.category = category != null ? category : Category.OTHERS;
+        logger.fine("Created new expense in category "
+                + this.category + " with amount $" + amount + " for date " + date);
     }
 
     /**

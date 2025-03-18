@@ -1,17 +1,19 @@
 package seedu.finbro.model;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * Manages transactions in the FinBro application.
  */
 public class TransactionManager {
+    private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
     private static final int INDEX_OFFSET = 1;
     private final List<Transaction> transactions;
 
@@ -21,6 +23,7 @@ public class TransactionManager {
      */
     public TransactionManager() {
         this.transactions = new ArrayList<>();
+        logger.info("Created new TransactionManager");
     }
 
     /**
@@ -32,18 +35,43 @@ public class TransactionManager {
         assert transaction != null : "Cannot add null transaction";
         transactions.add(transaction);
         transaction.indexNum = transactions.size();
+        logger.info("Added " + transaction.getClass().getSimpleName() +
+                " with amount $" + transaction.getAmount() +
+                " and description: " + transaction.getDescription());
     }
 
-    // TODO Deletes a transaction at the specified index.
+    /**
+     * Deletes a transaction at the specified index.
+     *
+     * @param index The index of the transaction to delete (1-based)
+     * @throws IndexOutOfBoundsException if the index is out of range
+     */
     public void deleteTransaction(int index) {
         assert index >= 0 : "Index must be non-negative";
         assert index < transactions.size() : "Index must be within the bounds of the transaction list";
-        transactions.remove(index - INDEX_OFFSET);
+
+        if (index < 1 || index > transactions.size()) {
+            logger.warning("Attempt to delete transaction at invalid index: " + index);
+            throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
+        }
+        Transaction removed = transactions.remove(index - INDEX_OFFSET); // Convert from 1-based to 0-based
+        
+        // Update the index numbers for all transactions after the deleted one
         for (int i = index; i < transactions.size(); i++) {
             transactions.get(i).indexNum -= INDEX_OFFSET;
         }
+        
+        logger.info("Deleted " + removed.getClass().getSimpleName() +
+                " with amount $" + removed.getAmount() +
+                " at index " + index);
     }
 
+    /**
+     * Gets the index number of a transaction at the specified position.
+     *
+     * @param index The index in the list (0-based)
+     * @return The transaction's index number (1-based)
+     */
     public int getIndexNum(int index) {
         assert index >= 0 : "Index must be non-negative";
         assert index < transactions.size() : "Index must be within the bounds of the transaction list";
@@ -63,9 +91,45 @@ public class TransactionManager {
         return sortedTransactions;
     }
 
-    // TODO Lists transactions from a specific date in reverse chronological order.
+    /**
+     * Lists a limited number of transactions in reverse chronological order.
+     *
+     * @param limit The maximum number of transactions to return
+     * @return List of transactions, limited to the specified number
+     */
+    public List<Transaction> listTransactions(int limit) {
+        List<Transaction> allTransactions = listTransactions();
+        return allTransactions.subList(0, Math.min(limit, allTransactions.size()));
+    }
 
-    // TODO Searches for transactions whose descriptions contain any of the given keywords.
+    /**
+     * Lists transactions from a specific date in reverse chronological order.
+     *
+     * @param date The date to filter transactions from
+     * @return List of transactions from the specified date
+     */
+    public List<Transaction> listTransactionsFromDate(LocalDate date) {
+        return listTransactions().stream()
+                .filter(t -> !t.getDate().isBefore(date))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Searches for transactions whose descriptions contain any of the given keywords.
+     *
+     * @param keywords The keywords to search for
+     * @return List of transactions matching the search criteria
+     */
+    public List<Transaction> searchTransactions(List<String> keywords) {
+        if (keywords == null || keywords.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return listTransactions().stream()
+                .filter(t -> keywords.stream()
+                        .anyMatch(k -> t.getDescription().toLowerCase().contains(k.toLowerCase())))
+                .collect(Collectors.toList());
+    }
 
     /**
      * Retrieves a list of transactions that occurred within the specified date range, inclusive.
@@ -267,7 +331,9 @@ public class TransactionManager {
      * Clears all transactions.
      */
     public void clearTransactions() {
+        int count = transactions.size();
         transactions.clear();
+        logger.info("Cleared " + count + " transactions");
     }
 
     /**
@@ -279,4 +345,3 @@ public class TransactionManager {
         return transactions.size();
     }
 }
-
