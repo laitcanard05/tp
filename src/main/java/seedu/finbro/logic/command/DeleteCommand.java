@@ -8,6 +8,7 @@ import seedu.finbro.ui.Ui;
  * Represents a command to delete a transaction.
  */
 public class DeleteCommand implements Command {
+    private static final int INDEX_OFFSET = 1;
     private final int transactionIndex;
 
     /**
@@ -37,7 +38,8 @@ public class DeleteCommand implements Command {
             }
 
             // Get the transaction to display in the confirmation message
-            String transactionToDelete = transactionManager.listTransactions().get(transactionIndex - 1).toString();
+            String transactionToDelete = transactionManager.listTransactions()
+                                         .get(transactionIndex - INDEX_OFFSET).toString();
 
             // Delete the transaction
             transactionManager.deleteTransaction(transactionIndex);
