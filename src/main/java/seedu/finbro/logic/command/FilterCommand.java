@@ -5,6 +5,7 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+import java.util.logging.Logger;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
  * Represents a command to filter transactions by date.
  */
 public class FilterCommand implements Command {
+    private static final Logger logger = Logger.getLogger(FilterCommand.class.getName());
     private final LocalDate startDate;
     private final LocalDate endDate;
 
@@ -37,6 +39,12 @@ public class FilterCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert ui != null : "UI cannot be null";
+        assert storage != null : "Storage cannot be null";
+        logger.info("Executing filter command");
+
+        logger.info("Filtering transactions between " + startDate + " and " + endDate);
         ArrayList<Transaction> filteredTransactions = transactionManager.getFilteredTransactions(startDate, endDate);
 
         if (filteredTransactions.isEmpty()) {
@@ -45,6 +53,7 @@ public class FilterCommand implements Command {
                     endDate.format(DateTimeFormatter.ofPattern("MMM d yyyy")));
         }
 
+        logger.info("Generating filtered transactions display");
         StringBuilder response = new StringBuilder("Showing transactions from " +
                 startDate + " to " + endDate + ":\n");
         for (int i = 0; i < filteredTransactions.size(); i++) {

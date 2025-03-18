@@ -5,6 +5,7 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+import java.util.logging.Logger;
 import java.text.DateFormatSymbols;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  */
 public class SummaryCommand implements Command {
     private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 3;
+    private static final Logger logger = Logger.getLogger(SummaryCommand.class.getName());
     private final int month;
     private final int year;
 
@@ -40,52 +42,67 @@ public class SummaryCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert ui != null : "UI cannot be null";
+        assert storage != null : "Storage cannot be null";
+
+        logger.info("Executing summary command");
+
         String monthString = new DateFormatSymbols().getMonths()[month-1];
+        logger.info(String.format("Calculating total income and total expenses for %s %d",
+            monthString, year));
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
         summaryDisplay += String.format("Total Income: $%.2f\n",
-                transactionManager.getMonthlyTotalIncome(month, year));
+            transactionManager.getMonthlyTotalIncome(month, year));
         summaryDisplay += String.format("Total Expenses: $%.2f\n",
-                transactionManager.getMonthlyTotalExpense(month, year));
+            transactionManager.getMonthlyTotalExpense(month, year));
 
+        logger.info(String.format("Calculating total expenses for top categories for %s %d",
+                monthString, year));
         Map<Expense.Category, Double> sortedCategorisedExpenses =
-                transactionManager.getMonthlyCategorisedExpenses(month, year)
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+            transactionManager.getMonthlyCategorisedExpenses(month, year)
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        if (sortedCategorisedExpenses.isEmpty()) {
-            return summaryDisplay;
+        if (!sortedCategorisedExpenses.isEmpty()) {
+            summaryDisplay += "\nTop Expense Categories:\n";
+            int categoryCount = 0;
+            for (Map.Entry<Expense.Category, Double> expenseInCategory :
+                    sortedCategorisedExpenses.entrySet()) {
+                categoryCount++;
+                assert expenseInCategory.getKey() != null: "Category cannot be null";
+                assert expenseInCategory.getValue() <=
+                        transactionManager.getMonthlyTotalExpense(month, year):
+                        "Total expenses in one category cannot be greater " +
+                                "than total expenses for the month";
+                if (expenseInCategory.getValue() == 0) {
+                    break;
+                }
+                summaryDisplay += String.format("%d. %s: $%.2f\n", categoryCount,
+                        expenseInCategory.getKey().toString(),
+                        expenseInCategory.getValue());
+                if (categoryCount >= MAXIMUM_CATEGORIES_TO_DISPLAY) {
+                    break;
+                }
+            }
         }
 
-        summaryDisplay += "\nTop Expense Categories:\n";
-        int categoryCount = 0;
-        for (Map.Entry<Expense.Category, Double> expenseInCategory :
-                sortedCategorisedExpenses.entrySet()) {
-            categoryCount++;
-            if (expenseInCategory.getValue() == 0) {
-                break;
-            }
-            summaryDisplay += String.format("%d. %s: $%.2f\n", categoryCount,
-                    expenseInCategory.getKey().toString(),
-                    expenseInCategory.getValue());
-            if (categoryCount >= MAXIMUM_CATEGORIES_TO_DISPLAY) {
-                break;
-            }
-        }
-
+        logger.info(String.format("Calculating total expenses for each tag for %s %d",
+                monthString, year));
         Map<String, Double> sortedTaggedTransactions =
-                transactionManager.getMonthlyTaggedTransactions(month, year)
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, Double> comparingByValue().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+            transactionManager.getMonthlyTaggedTransactions(month, year)
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.<String, Double> comparingByValue().reversed())
+            .collect(Collectors.toMap(
+                 Map.Entry::getKey,
+                 Map.Entry::getValue,
+                 (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
         if (sortedTaggedTransactions.isEmpty()) {
             return summaryDisplay;
@@ -95,12 +112,18 @@ public class SummaryCommand implements Command {
         int tagCount = 0;
         for (Map.Entry<String, Double> expenseInTag : sortedTaggedTransactions.entrySet()) {
             tagCount++;
+            assert expenseInTag.getKey() != null: "Tag cannot be null";
+            assert expenseInTag.getValue() <=
+                transactionManager.getMonthlyTotalExpense(month, year) +
+                transactionManager.getMonthlyTotalIncome(month, year):
+                "Total transaction amount in one tag cannot be greater " +
+                "than total transaction amount for the month";
             if (expenseInTag.getValue() == 0) {
                 break;
             }
             summaryDisplay += String.format("%d. %s: $%.2f\n", tagCount,
-                    expenseInTag.getKey(),
-                    expenseInTag.getValue());
+                expenseInTag.getKey(),
+                expenseInTag.getValue());
         }
 
         return summaryDisplay;
