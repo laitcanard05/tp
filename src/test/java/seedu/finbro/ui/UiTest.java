@@ -106,7 +106,8 @@ class UiTest {
     @Test
     void readCommand_shouldReturnUserInput() {
         String expectedInput = "add expense 50.00 food";
-        ByteArrayInputStream inContent = new ByteArrayInputStream((expectedInput + "\n").getBytes());
+        ByteArrayInputStream inContent =
+                new ByteArrayInputStream((expectedInput + System.lineSeparator()).getBytes());
         System.setIn(inContent);
         ui = new Ui(new Scanner(System.in));
 
@@ -119,7 +120,7 @@ class UiTest {
      */
     @Test
     void readConfirmation_shouldReturnTrueForYesInput() {
-        String input = "y\n";
+        String input = "y" + System.lineSeparator();
         ByteArrayInputStream inContent = new ByteArrayInputStream(input.getBytes());
         System.setIn(inContent);
         ui = new Ui(new Scanner(System.in));
@@ -133,7 +134,7 @@ class UiTest {
      */
     @Test
     void readConfirmation_shouldReturnTrueForYesFullInput() {
-        String input = "yes\n";
+        String input = "yes" + System.lineSeparator();
         ByteArrayInputStream inContent = new ByteArrayInputStream(input.getBytes());
         System.setIn(inContent);
         ui = new Ui(new Scanner(System.in));
@@ -147,7 +148,7 @@ class UiTest {
      */
     @Test
     void readConfirmation_shouldReturnFalseForNonYesInput() {
-        String input = "n\n";
+        String input = "n" + System.lineSeparator();
         ByteArrayInputStream inContent = new ByteArrayInputStream(input.getBytes());
         System.setIn(inContent);
         ui = new Ui(new Scanner(System.in));

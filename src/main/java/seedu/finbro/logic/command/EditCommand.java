@@ -65,7 +65,6 @@ public class EditCommand implements Command {
         }
 
         // Update the transaction
-        // Update the transaction
         Transaction originalTransaction = matchingTransactions.get(0);
         Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
 

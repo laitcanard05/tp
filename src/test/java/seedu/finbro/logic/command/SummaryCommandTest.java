@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  * Tests the user interface functionality by capturing system output and
  * simulating user input to verify correct behavior.
  */
-class SummaryCommandTest { ;
+class SummaryCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;

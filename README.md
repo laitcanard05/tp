@@ -1,66 +1,83 @@
-# FinBro project
+# FinBro - Personal Finance Manager
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _FinBro_. Given below are instructions on how to use it.
+![FinBro Logo](docs/images/finbro_logo.png)
 
-## Setting up in Intellij
+## Overview
 
-Prerequisites: JDK 17 (use the exact version), update Intellij to the most recent version.
+FinBro is a streamlined command-line application designed to help you efficiently manage your personal finances. With its intuitive CLI interface, FinBro enables you to track your income and expenses, categorize transactions, generate financial summaries, and export your financial data—all from the comfort of your terminal.
 
-1. **Ensure Intellij JDK 17 is defined as an SDK**, as described [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk) -- this step is not needed if you have used JDK 17 in a previous Intellij project.
-1. **Import the project _as a Gradle project_**, as described [here](https://se-education.org/guides/tutorials/intellijImportGradleProject.html).
-1. **Verify the setup**: After the importing is complete, locate the `src/main/java/seedu/duke/Duke.java` file, right-click it, and choose `Run Duke.main()`. If the setup is correct, you should see something like the below:
+## Key Features
+
+* **Transaction Management**: Record income and expenses with detailed descriptions and custom tags
+* **Categorization System**: Organize expenses into predefined categories for better financial insights
+* **Smart Search**: Find transactions using keywords or date ranges
+* **Real-time Balance**: View your current financial position at any time
+* **Financial Analysis**: Generate comprehensive summaries to understand your spending patterns
+* **Data Export**: Export your financial records in CSV or TXT formats for external analysis
+
+## Quick Start Guide
+
+1. Ensure you have Java 17 installed on your computer
+2. Download the latest version of FinBro from the [releases page](https://github.com/yourusername/finbro/releases)
+3. Run the application using the command:
    ```
-   > Task :compileJava
-   > Task :processResources NO-SOURCE
-   > Task :classes
-   
-   > Task :Duke.main()
-   Hello from
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   
-   What is your name?
+   java -jar FinBro.jar
    ```
-   Type some word and press enter to let the execution proceed to the end.
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+## Command Examples
 
-## Build automation using Gradle
+### Adding Income
+```
+income 3000 d/Monthly salary t/work
+```
 
-* This project uses Gradle for build automation and dependency management. It includes a basic build script as well (i.e. the `build.gradle` file).
-* If you are new to Gradle, refer to the [Gradle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/gradle.html).
+### Recording an Expense
+```
+expense 25.50 d/Lunch c/Food t/work
+```
 
-## Testing
+### Checking Your Balance
+```
+balance
+```
 
-### I/O redirection tests
-
-* To run _I/O redirection_ tests (aka _Text UI tests_), navigate to the `text-ui-test` and run the `runtest(.bat/.sh)` script.
-
-### JUnit tests
-
-* A skeleton JUnit test (`src/test/java/seedu/duke/DukeTest.java`) is provided with this project template. 
-* If you are new to JUnit, refer to the [JUnit Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/junit.html).
-
-## Checkstyle
-
-* A sample CheckStyle rule configuration is provided in this project.
-* If you are new to Checkstyle, refer to the [Checkstyle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/checkstyle.html).
-
-## CI using GitHub Actions
-
-The project uses [GitHub actions](https://github.com/features/actions) for CI. When you push a commit to this repo or PR against it, GitHub actions will run automatically to build and verify the code as updated by the commit/PR.
+### Viewing a Monthly Summary
+```
+summary m/2 y/2025
+```
 
 ## Documentation
 
-`/docs` folder contains a skeleton version of the project documentation.
+* [User Guide](docs/UserGuide.md) - Comprehensive instructions for using FinBro
+* [Developer Guide](docs/DeveloperGuide.md) - Technical documentation for developers
 
-Steps for publishing documentation to the public: 
-1. If you are using this project template for an individual project, go your fork on GitHub.<br>
-   If you are using this project template for a team project, go to the team fork on GitHub.
-1. Click on the `settings` tab.
-1. Scroll down to the `GitHub Pages` section.
-1. Set the `source` as `master branch /docs folder`.
-1. Optionally, use the `choose a theme` button to choose a theme for your documentation.
+## Project Structure
+
+```
+finbro/
+├── src/
+│   ├── main/java/seedu/finbro/
+│   │   ├── FinBro.java           # Main application class
+│   │   ├── logic/                # Command processing logic
+│   │   ├── model/                # Data models
+│   │   ├── storage/              # Data persistence
+│   │   └── ui/                   # User interface
+│   └── test/java/seedu/finbro/   # Test classes
+├── data/                         # Data storage directory
+├── docs/                         # Documentation
+├── build.gradle                  # Build configuration
+└── README.md                     # This file
+```
+
+## System Requirements
+
+* Java 17 or higher
+* Support for text-based interface (any terminal or command prompt)
+
+## Contributing
+
+Contributions to FinBro are welcome! Please refer to the [Developer Guide](docs/DeveloperGuide.md) for details on the project architecture and contribution guidelines.
+
+## License
+
+FinBro is released under the [MIT License](LICENSE)
