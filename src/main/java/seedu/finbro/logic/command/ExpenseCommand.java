@@ -50,7 +50,7 @@ public class ExpenseCommand implements Command {
         
         Expense expense = new Expense(amount, description, category, tags);
         //if the list of this transaction's duplicates is NOT empty, warn the user
-        if (!transactionManager.getTransactionDuplicates(description, amount).isEmpty()) {
+        if (!transactionManager.getTransactionDuplicates(amount, description).isEmpty()) {
             //if the user wishes to cancel the transaction, they will enter "no" which will return false
             if (!ui.warnDuplicate()) {
                 return "Transaction cancelled by user";
