@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -173,8 +172,7 @@ public class Parser {
             }
 
             logger.fine("Searching transactions with keyword=" + args);
-            List<String> keywords = Arrays.asList(args.trim().split("\\s+"));
-            return new SearchCommand(keywords);
+            return new SearchCommand(args);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing income command", e);
             return new InvalidCommand("Invalid income command: " + e.getMessage());

@@ -1,50 +1,43 @@
 package seedu.finbro.logic.command;
 
-import seedu.finbro.model.Transaction;
+
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.util.List;
+import java.util.stream.Collectors;
+
+
 
 /**
- * Represents a command to search for transactions.
+ * Represents a command to list all transactions that contain the keyword.
  */
 public class SearchCommand implements Command {
-    private final List<String> keywords;
 
-    /**
-     * Constructs a SearchCommand with the specified keywords.
-     *
-     * @param keywords The keywords to search for
-     */
-    public SearchCommand(List<String> keywords) {
-        this.keywords = keywords;
+    private final String keyword;
+
+    public SearchCommand(String keyword) {
+        this.keyword = keyword;
     }
 
     /**
-     * Executes the command to search for transactions.
+     * Executes the command to search for transaction(s) containing certain keywords.
      *
-     * @param transactionManager The transaction manager to search transactions in
+     * @param transactionManager The transaction manager to retrieve the transactions from
      * @param ui                 The UI to interact with the user
-     * @param storage            The storage to save data
-     * @return The response message from executing the command
+     * @param storage            The storage, if needed
+     * @return The response message containing the list of transactions
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        List<Transaction> matchingTransactions = transactionManager.searchTransactions(keywords);
-
-        if (matchingTransactions.isEmpty()) {
-            return "No matching transactions found.";
+        if (!transactionManager.listTransactions().isEmpty()) {
+            return transactionManager.getTransactionsContainingKeyword(keyword)
+                    .stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining("\n"));
+        } else {
+            return "No transactions found.";
         }
-
-        StringBuilder response = new StringBuilder("Found " + matchingTransactions.size() +
-                " matching transaction(s):\n");
-        for (int i = 0; i < matchingTransactions.size(); i++) {
-            response.append(i + 1).append(". ").append(matchingTransactions.get(i)).append("\n");
-        }
-
-        return response.toString().trim();
     }
 
     /**

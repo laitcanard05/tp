@@ -2,118 +2,118 @@ package seedu.finbro.logic.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import seedu.finbro.model.Expense;
-import seedu.finbro.model.Income;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
+import seedu.finbro.model.Expense;
+import seedu.finbro.model.Income;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests for the SearchCommand class.
+ * Tests for SearchCommand.
  */
 class SearchCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
     private Storage storage;
 
+    /**
+     * Sets up the test environment before each test.
+     */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         transactionManager = new TransactionManager();
         ui = new Ui();
         storage = new Storage();
-
-        // Add some test transactions with various descriptions
-        transactionManager.addTransaction(new Income(1000, "Monthly salary", Collections.emptyList()));
-        transactionManager.addTransaction(new Income(500, "Freelance work payment", Collections.emptyList()));
-        transactionManager.addTransaction(new Expense(50, "Grocery shopping",
-                Expense.Category.FOOD, Collections.emptyList()));
-        transactionManager.addTransaction(new Expense(20, "Bus fare to work",
-                Expense.Category.TRANSPORT, Collections.emptyList()));
     }
 
+    /**
+     * Tests that the execute method returns the transactions containing the keyword.
+     */
     @Test
-    void executeOneKeywordOneMatchSuccess() {
-        List<String> keywords = Collections.singletonList("salary");
-        SearchCommand command = new SearchCommand(keywords);
+    void execute_shouldDisplayTransactionsContainingKeyword() {
+        // Add test transactions
+        transactionManager.addTransaction(new Expense(100.0, "Grocery shopping",
+                Expense.Category.fromString("Food"), Collections.emptyList()));
+        transactionManager.addTransaction(new Expense(50.0, "Lunch with colleagues",
+                Expense.Category.fromString("Food"), Collections.emptyList()));
+        transactionManager.addTransaction(new Income(1000.0, "Monthly salary",
+                Collections.emptyList()));
+
+        // Search for "Lunch"
+        SearchCommand command = new SearchCommand("Lunch");
         String result = command.execute(transactionManager, ui, storage);
-        
-        assertTrue(result.contains("Found 1 matching transaction(s)"));
-        assertTrue(result.contains("Monthly salary"));
-        assertFalse(result.contains("Freelance"));
+
+        // Verify only the lunch transaction is returned
+        assertEquals("[Expense][Food] $50.00 - Lunch with colleagues", result);
     }
 
+    /**
+     * Tests that execute method handles empty transaction list.
+     */
     @Test
-    void executeOneKeywordMultipleMatchesSuccess() {
-        List<String> keywords = Collections.singletonList("work");
-        SearchCommand command = new SearchCommand(keywords);
+    void execute_emptyList_returnsNoTransactionsMessage() {
+        // Search in an empty transaction manager
+        SearchCommand command = new SearchCommand("keyword");
         String result = command.execute(transactionManager, ui, storage);
-        
-        assertTrue(result.contains("Found 2 matching transaction(s)"));
-        assertTrue(result.contains("Freelance work payment"));
-        assertTrue(result.contains("Bus fare to work"));
+
+        // Verify appropriate message is returned
+        assertEquals("No transactions found.", result);
     }
 
+    /**
+     * Tests that execute method returns multiple matching transactions on separate lines.
+     */
     @Test
-    void executeMultipleKeywordsMultipleMatchesSuccess() {
-        List<String> keywords = Arrays.asList("salary", "grocery");
-        SearchCommand command = new SearchCommand(keywords);
+    void execute_multipleMatches_returnsAllMatchingTransactions() {
+        // Add test transactions with common keyword
+        transactionManager.addTransaction(new Expense(100.0, "Grocery bill",
+                Expense.Category.fromString("Food"), Collections.emptyList()));
+        transactionManager.addTransaction(new Expense(200.0, "Utility bill",
+                Expense.Category.fromString("Bills"), Collections.emptyList()));
+
+        // Search for common keyword "bill"
+        SearchCommand command = new SearchCommand("bill");
         String result = command.execute(transactionManager, ui, storage);
-        
-        assertTrue(result.contains("Found 2 matching transaction(s)"));
-        assertTrue(result.contains("Monthly salary"));
-        assertTrue(result.contains("Grocery shopping"));
+
+        // Verify all matching transactions are returned with newline separator
+        String expected = "[Expense][Food] $100.00 - Grocery bill\n" +
+                "[Expense][Bills] $200.00 - Utility bill";
+        assertEquals(expected, result);
     }
 
+    /**
+     * Tests that execute method handles transactions with tags correctly.
+     */
     @Test
-    void executeCaseInsensitiveMatching() {
-        List<String> keywords = Arrays.asList("SALARY", "grocery");
-        SearchCommand command = new SearchCommand(keywords);
+    void execute_transactionsWithTags_formatsOutputCorrectly() {
+        // Add test transaction with tags
+        List<String> tags = new ArrayList<>();
+        tags.add("essential");
+
+        transactionManager.addTransaction(new Expense(120.0, "Grocery shopping",
+                Expense.Category.fromString("Food"), tags));
+
+        // Search for the transaction
+        SearchCommand command = new SearchCommand("Grocery");
         String result = command.execute(transactionManager, ui, storage);
-        
-        assertTrue(result.contains("Found 2 matching transaction(s)"));
-        assertTrue(result.contains("Monthly salary"));
-        assertTrue(result.contains("Grocery shopping"));
+
+        // Verify the transaction is formatted correctly with tags
+        assertEquals("[Expense][Food] $120.00 - Grocery shopping [essential]", result);
     }
 
+    /**
+     * Tests that isExit returns false.
+     */
     @Test
-    void executePartialWordMatching() {
-        List<String> keywords = Collections.singletonList("sal");
-        SearchCommand command = new SearchCommand(keywords);
-        String result = command.execute(transactionManager, ui, storage);
-        
-        assertTrue(result.contains("Found 1 matching transaction(s)"));
-        assertTrue(result.contains("Monthly salary"));
-    }
-
-    @Test
-    void executeNoMatchingTransactionsFound() {
-        List<String> keywords = Collections.singletonList("nonexistent");
-        SearchCommand command = new SearchCommand(keywords);
-        String result = command.execute(transactionManager, ui, storage);
-        
-        assertEquals("No matching transactions found.", result);
-    }
-
-    @Test
-    void executeEmptyKeywordsListReturnsNoMatches() {
-        List<String> keywords = Collections.emptyList();
-        SearchCommand command = new SearchCommand(keywords);
-        String result = command.execute(transactionManager, ui, storage);
-        
-        assertEquals("No matching transactions found.", result);
-    }
-
-    @Test
-    void isExitReturnsFalse() {
-        SearchCommand command = new SearchCommand(Collections.singletonList("keyword"));
+    void isExit_returnsFalse() {
+        SearchCommand command = new SearchCommand("keyword");
         assertFalse(command.isExit());
     }
 }

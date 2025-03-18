@@ -8,15 +8,16 @@ import seedu.finbro.ui.Ui;
  * Represents a command to delete a transaction.
  */
 public class DeleteCommand implements Command {
-    private final int index;
+    private final int transactionIndex;
 
     /**
      * Constructs a DeleteCommand with the specified index.
      *
-     * @param index The index of the transaction to delete (1-based)
+     * @param transactionIndex The index of the transaction to delete (1-based)
+     *
      */
-    public DeleteCommand(int index) {
-        this.index = index;
+    public DeleteCommand(int transactionIndex) {
+        this.transactionIndex = transactionIndex;
     }
 
     /**
@@ -30,16 +31,16 @@ public class DeleteCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         try {
-            if (index < 1 || index > transactionManager.getTransactionCount()) {
+            if (transactionIndex < 1 || transactionIndex > transactionManager.getTransactionCount()) {
                 return "Invalid transaction index. There are only " +
                         transactionManager.getTransactionCount() + " transactions.";
             }
 
             // Get the transaction to display in the confirmation message
-            String transactionToDelete = transactionManager.listTransactions().get(index - 1).toString();
+            String transactionToDelete = transactionManager.listTransactions().get(transactionIndex - 1).toString();
 
             // Delete the transaction
-            transactionManager.deleteTransaction(index);
+            transactionManager.deleteTransaction(transactionIndex);
             storage.saveTransactions(transactionManager);
 
             return "Transaction deleted: " + transactionToDelete;

@@ -4,36 +4,56 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+import java.text.DecimalFormat;
+import java.util.logging.Logger;
+
 /**
  * Represents a command to view the current balance.
+ * This command calculates and displays the current balance,
+ * which is the sum of all income transactions minus the sum of all expense transactions.
  */
 public class BalanceCommand implements Command {
+    private static final Logger logger = Logger.getLogger(BalanceCommand.class.getName());
+    private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("$#,##0.00");
+
     /**
      * Executes the command to view the current balance.
+     * Shows the total balance, total income, and total expenses.
      *
-     * @param transactionManager The transaction manager to get the balance from
-     * @param ui                 The UI to interact with the user
-     * @param storage            The storage to save data
-     * @return The response message from executing the command
+     * @param transactionManager the transaction manager containing the transactions
+     * @param ui the user interface
+     * @param storage the storage for persistent data
+     * @return a string representation of the current balance information
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        assert transactionManager != null : "TransactionManager cannot be null";
+        assert ui != null : "UI cannot be null";
+        assert storage != null : "Storage cannot be null";
+
+        logger.info("Executing balance command");
+
         double balance = transactionManager.getBalance();
         double totalIncome = transactionManager.getTotalIncome();
         double totalExpenses = transactionManager.getTotalExpenses();
 
-        StringBuilder response = new StringBuilder();
-        response.append("Current Balance: $").append(String.format("%.2f", balance)).append("\n");
-        response.append("Total Income: $").append(String.format("%.2f", totalIncome)).append("\n");
-        response.append("Total Expenses: $").append(String.format("%.2f", totalExpenses));
+        // Verify the relationship between balance, income, and expenses
+        assert Math.abs((totalIncome - totalExpenses) - balance) < 0.001 :
+                "Balance calculation error: " + balance + " != " + totalIncome + " - " + totalExpenses;
 
-        return response.toString();
+        String formattedBalance = CURRENCY_FORMAT.format(balance);
+        String formattedIncome = CURRENCY_FORMAT.format(totalIncome);
+        String formattedExpenses = CURRENCY_FORMAT.format(totalExpenses);
+
+        return "Current Balance: " + formattedBalance + "\n" +
+                "Total Income: " + formattedIncome + "\n" +
+                "Total Expenses: " + formattedExpenses;
     }
 
     /**
-     * Returns false since this is not an exit command.
+     * Returns whether the command exits the program.
      *
-     * @return false
+     * @return false as this command does not exit the program
      */
     @Override
     public boolean isExit() {

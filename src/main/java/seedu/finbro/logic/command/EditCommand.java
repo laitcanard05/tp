@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -51,8 +50,7 @@ public class EditCommand implements Command {
         logger.info("Executing edit command with keyword: " + keyword);
 
         // Use SearchCommand to find matching transactions
-        List<String> keywords = Arrays.asList(keyword);
-        SearchCommand searchCommand = new SearchCommand(keywords);
+        SearchCommand searchCommand = new SearchCommand(keyword);
         String searchResult = searchCommand.execute(transactionManager, ui, storage);
 
         if (searchResult.equals("No transactions found.")) {
@@ -66,7 +64,6 @@ public class EditCommand implements Command {
             return "Please provide a specific keyword that matches exactly one transaction.";
         }
 
-        // Update the transaction
         // Update the transaction
         Transaction originalTransaction = matchingTransactions.get(0);
         Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
@@ -94,25 +91,14 @@ public class EditCommand implements Command {
     private List<Transaction> parseSearchResults(String searchResult, TransactionManager manager) {
         List<Transaction> results = new ArrayList<>();
 
-        if (searchResult.isEmpty() || searchResult.equals("No matching transactions found.")) {
+        if (searchResult.isEmpty() || searchResult.equals("No transactions found.")) {
             return results;
         }
 
-        // The search result format is:
-        // "Found X matching transaction(s):
-        // 1. [Transaction 1]
-        // 2. [Transaction 2]
-        // ..."
         String[] lines = searchResult.split("\n");
-        
-        // Skip the first line which is the header
-        for (int i = 1; i < lines.length; i++) {
-            String line = lines[i];
-            // Extract transaction text by removing the index prefix (e.g., "1. ")
-            String transactionText = line.substring(line.indexOf(". ") + 2);
-            
+        for (String line : lines) {
             for (Transaction transaction : manager.listTransactions()) {
-                if (transaction.toString().equals(transactionText)) {
+                if (transaction.toString().equals(line)) {
                     results.add(transaction);
                     break;
                 }
