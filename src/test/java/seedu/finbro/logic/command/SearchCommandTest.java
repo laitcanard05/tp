@@ -2,6 +2,7 @@ package seedu.finbro.logic.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.Income;
 import seedu.finbro.model.TransactionManager;
@@ -11,9 +12,6 @@ import seedu.finbro.ui.Ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * Tests for ClearCommand.
- */
 class SearchCommandTest {
     private TransactionManager transactionManager;
     private Ui ui;
@@ -52,6 +50,9 @@ class SearchCommandTest {
         assertEquals(aExists +"\n"+ abExists +"\n"+ abcExists +"\n"+ abcdExists, result);
     }
 
+    /**
+     * Tests that the execute method returns the message displaying the filtered transactions
+     */
     @Test
     void searchSmallC_shouldDisplayCTransactions() {
         SearchCommand command = new SearchCommand("c");
