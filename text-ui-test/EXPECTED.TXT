@@ -45,93 +45,6 @@ ____________________________________________________________
 New expense added: [Expense][Food] $120.00 - Groceries [essential]
 ____________________________________________________________
 > ____________________________________________________________
-Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [work]
-2. [Income] $500.50 - Freelance design project [graphic-design]
-3. [Income] $1200.00 - Tax refund
-4. [Expense][Food] $25.50 - Lunch with colleagues [work]
-5. [Expense][Shopping] $75.00 - New shoes
-6. [Expense][Bills] $150.20 - Electricity bill [home]
-7. [Expense][Transport] $10.80 - Bus fare
-8. [Expense][Entertainment] $45.99 - Movie tickets [weekend]
-9. [Expense][Food] $120.00 - Groceries [essential]
-____________________________________________________________
-> ____________________________________________________________
-Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [work]
-2. [Income] $500.50 - Freelance design project [graphic-design]
-3. [Income] $1200.00 - Tax refund
-____________________________________________________________
-> ____________________________________________________________
-Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [work]
-2. [Income] $500.50 - Freelance design project [graphic-design]
-3. [Income] $1200.00 - Tax refund
-4. [Expense][Food] $25.50 - Lunch with colleagues [work]
-5. [Expense][Shopping] $75.00 - New shoes
-6. [Expense][Bills] $150.20 - Electricity bill [home]
-7. [Expense][Transport] $10.80 - Bus fare
-8. [Expense][Entertainment] $45.99 - Movie tickets [weekend]
-9. [Expense][Food] $120.00 - Groceries [essential]
-____________________________________________________________
-> ____________________________________________________________
-
-____________________________________________________________
-> ____________________________________________________________
-
-____________________________________________________________
-> ____________________________________________________________
-There are no transactions between Feb 1 2025 and Feb 28 2025.
-____________________________________________________________
-> ____________________________________________________________
-Current Balance: $4,273.01
-Total Income: $4,700.50
-Total Expenses: $427.49
-____________________________________________________________
-> ____________________________________________________________
-Financial Summary for March 2025:
-
-Total Income: $4700.50
-Total Expenses: $427.49
-
-Top Expense Categories:
-1. Bills: $150.20
-2. Food: $145.50
-3. Shopping: $75.00
-
-Tags Summary:
-1. work: $3025.50
-2. graphic-design: $500.50
-3. home: $150.20
-4. essential: $120.00
-5. weekend: $45.99
-
-____________________________________________________________
-> ____________________________________________________________
-Financial Summary for February 2025:
-
-Total Income: $0.00
-Total Expenses: $0.00
-
-____________________________________________________________
-> ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250318.csv
-____________________________________________________________
-> ____________________________________________________________
-Transaction deleted: [Income] $1200.00 - Tax refund
-____________________________________________________________
-> ____________________________________________________________
-Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [work]
-2. [Income] $500.50 - Freelance design project [graphic-design]
-3. [Expense][Food] $25.50 - Lunch with colleagues [work]
-4. [Expense][Shopping] $75.00 - New shoes
-5. [Expense][Bills] $150.20 - Electricity bill [home]
-6. [Expense][Transport] $10.80 - Bus fare
-7. [Expense][Entertainment] $45.99 - Movie tickets [weekend]
-8. [Expense][Food] $120.00 - Groceries [essential]
-____________________________________________________________
-> ____________________________________________________________
 Are you sure you want to clear all data? This action cannot be undone.
 Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
@@ -150,14 +63,6 @@ New income added: [Income] $2000.00 - New job payment [work]
 ____________________________________________________________
 > ____________________________________________________________
 New expense added: [Expense][Food] $30.00 - Dinner
-____________________________________________________________
-> ____________________________________________________________
-Current Balance: $1,970.00
-Total Income: $2,000.00
-Total Expenses: $30.00
-____________________________________________________________
-> ____________________________________________________________
-Data exported successfully to: exports/finbro_export_20250318.txt
 ____________________________________________________________
 > ____________________________________________________________
 Goodbye! Thank you for using FinBro.
