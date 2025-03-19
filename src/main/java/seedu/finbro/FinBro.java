@@ -105,7 +105,7 @@ public class FinBro {
      * @param args Command line arguments
      */
     public static void main(String[] args) {
-        // Initialize logging configuration
+
         LoggingConfig.init();
         logger.info("FinBro main method invoked");
         new FinBro().run();
