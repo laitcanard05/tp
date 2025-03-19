@@ -36,6 +36,7 @@ class HelpCommandTest {
         assertTrue(result.contains("expense"));
         assertTrue(result.contains("list"));
         assertTrue(result.contains("delete"));
+        assertTrue(result.contains("edit"));
         assertTrue(result.contains("search"));
         assertTrue(result.contains("filter"));
         assertTrue(result.contains("balance"));
