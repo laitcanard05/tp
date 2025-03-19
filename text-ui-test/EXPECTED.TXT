@@ -8,6 +8,7 @@ income AMOUNT d/DESCRIPTION [t/TAG...] - Add income
 expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG...] - Add expense
 list [n/NUMBER] [d/DATE] - List transactions
 delete INDEX - Delete a transaction
+edit KEYWORD [a/AMOUNT] [d/DESCRIPTION] [date/DATE] [c/CATEGORY] [t/TAG] - Edit a transaction
 search KEYWORD [MORE_KEYWORDS] - Search transactions
 filter d/DATE [to/DATE] - Filter transactions by date
 balance - View current balance
