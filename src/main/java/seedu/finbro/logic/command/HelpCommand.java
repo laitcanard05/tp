@@ -23,6 +23,7 @@ public class HelpCommand implements Command {
                 "expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG...] - Add expense\n" +
                 "list [n/NUMBER] [d/DATE] - List transactions\n" +
                 "delete INDEX - Delete a transaction\n" +
+                "edit KEYWORD [a/AMOUNT] [d/DESCRIPTION] [date/DATE] [c/CATEGORY] [t/TAG] - Edit a transaction\n" +
                 "search KEYWORD [MORE_KEYWORDS] - Search transactions\n" +
                 "filter d/DATE [to/DATE] - Filter transactions by date\n" +
                 "balance - View current balance\n" +
