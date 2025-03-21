@@ -47,23 +47,23 @@ New expense added: [Expense][Food] $120.00 - Groceries [essential]
 ____________________________________________________________
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [primary]
-2. [Income] $500.50 - Freelance project [design]
-3. [Income] $1200.00 - Tax refund [annual]
-4. [Expense][Food] $25.50 - Lunch with colleagues [work]
-5. [Expense][Shopping] $75.00 - New shoes [clothing]
-6. [Expense][Bills] $150.20 - Electricity bill [utilities]
-7. [Expense][Transport] $10.80 - Bus fare [commute]
-8. [Expense][Entertainment] $45.99 - Movie tickets [leisure]
-9. [Expense][Food] $120.00 - Groceries [essential]
+1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
+2. [Income] $500.50 - Freelance project [design] (Date created: <DATE>)
+3. [Income] $1200.00 - Tax refund [annual] (Date created: <DATE>)
+4. [Expense][Food] $25.50 - Lunch with colleagues [work] (Date created: <DATE>)
+5. [Expense][Shopping] $75.00 - New shoes [clothing] (Date created: <DATE>)
+6. [Expense][Bills] $150.20 - Electricity bill [utilities] (Date created: <DATE>)
+7. [Expense][Transport] $10.80 - Bus fare [commute] (Date created: <DATE>)
+8. [Expense][Entertainment] $45.99 - Movie tickets [leisure] (Date created: <DATE>)
+9. [Expense][Food] $120.00 - Groceries [essential] (Date created: <DATE>)
 ____________________________________________________________
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [primary]
-2. [Income] $500.50 - Freelance project [design]
-3. [Income] $1200.00 - Tax refund [annual]
-4. [Expense][Food] $25.50 - Lunch with colleagues [work]
-5. [Expense][Shopping] $75.00 - New shoes [clothing]
+1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
+2. [Income] $500.50 - Freelance project [design] (Date created: <DATE>)
+3. [Income] $1200.00 - Tax refund [annual] (Date created: <DATE>)
+4. [Expense][Food] $25.50 - Lunch with colleagues [work] (Date created: <DATE>)
+5. [Expense][Shopping] $75.00 - New shoes [clothing] (Date created: <DATE>)
 ____________________________________________________________
 > ____________________________________________________________
 
