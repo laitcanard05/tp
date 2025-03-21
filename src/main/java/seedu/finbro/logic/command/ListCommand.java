@@ -12,6 +12,7 @@ import java.util.List;
  * Represents a command to list transactions.
  */
 public class ListCommand implements Command {
+    private static final int INDEX_OFFSET = 1;
     private final Integer limit;
     private final LocalDate date;
 
@@ -64,7 +65,9 @@ public class ListCommand implements Command {
 
         StringBuilder response = new StringBuilder("Here are your transactions:\n");
         for (int i = 0; i < transactionsToList.size(); i++) {
-            response.append(i + 1).append(". ").append(transactionsToList.get(i)).append("\n");
+            response.append(i + INDEX_OFFSET).append(". ").append(transactionsToList.get(i));
+            response.append(" (Date created: ").append(transactionsToList.get(i).getDate()).append(")");
+            response.append("\n");
         }
 
         return response.toString().trim();
