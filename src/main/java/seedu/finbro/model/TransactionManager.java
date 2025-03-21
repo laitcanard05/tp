@@ -124,7 +124,7 @@ public class TransactionManager {
         if (keywords == null || keywords.isEmpty()) {
             return new ArrayList<>();
         }
-
+        assert keywords != null : "Keywords list should have been detected as null";
         return listTransactions().stream()
                 .filter(t -> keywords.stream()
                         .anyMatch(k -> t.getDescription().toLowerCase().contains(k.toLowerCase())))
