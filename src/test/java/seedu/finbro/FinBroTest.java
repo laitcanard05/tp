@@ -12,4 +12,14 @@ class FinBroTest {
     void sampleTest() {
         assertTrue(true);
     }
+
+    @Test
+    void sampleTest2() {
+        assertTrue(true);
+    }
+
+    @Test
+    void sampleTest3() {
+        assertTrue(true);
+    }
 }
