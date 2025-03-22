@@ -8,22 +8,19 @@ cd ..
 
 cd text-ui-test
 
+# Run the program
+java -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input.txt > ACTUAL.TXT
+
 # Get today's date in YYYY-MM-DD format
 TODAY=$(date +%Y-%m-%d)
 
-# Replace <DATE> with actual date and save to EXPECTED-UNIX.TXT
+# Replace <DATE> with today's date in EXPECTED.TXT
 sed -E "s/<DATE>/$TODAY/g" EXPECTED.TXT > EXPECTED-UNIX.TXT
 
-# Ensure both files have Unix line endings
+# Convert line endings
 dos2unix EXPECTED-UNIX.TXT ACTUAL.TXT
 
-# Find the latest jar file
-JAR_FILE=$(ls -t ../build/libs/*.jar | head -n 1)
-
-# Run the test
-java -jar "$JAR_FILE" < input.txt > ACTUAL.TXT
-
-# Compare output
+# Compare the output
 diff -wB EXPECTED-UNIX.TXT ACTUAL.TXT
 if [ $? -eq 0 ]
 then

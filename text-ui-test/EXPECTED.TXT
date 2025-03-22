@@ -130,14 +130,14 @@ Transaction deleted: [Income] $1200.00 - Tax refund [annual]
 ____________________________________________________________
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [primary]
-2. [Income] $500.50 - Freelance project [design]
-3. [Expense][Food] $25.50 - Lunch with colleagues [work]
-4. [Expense][Shopping] $75.00 - New shoes [clothing]
-5. [Expense][Bills] $150.20 - Electricity bill [utilities]
-6. [Expense][Transport] $10.80 - Bus fare [commute]
-7. [Expense][Entertainment] $45.99 - Movie tickets [leisure]
-8. [Expense][Food] $120.00 - Groceries [essential]
+1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
+2. [Income] $500.50 - Freelance project [design] (Date created: <DATE>)
+3. [Expense][Food] $25.50 - Lunch with colleagues [work] (Date created: <DATE>)
+4. [Expense][Shopping] $75.00 - New shoes [clothing]  (Date created: <DATE>)
+5. [Expense][Bills] $150.20 - Electricity bill [utilities] (Date created: <DATE>)
+6. [Expense][Transport] $10.80 - Bus fare [commute] (Date created: <DATE>)
+7. [Expense][Entertainment] $45.99 - Movie tickets [leisure] (Date created: <DATE>)
+8. [Expense][Food] $120.00 - Groceries [essential] (Date created: <DATE>)
 ____________________________________________________________
 > ____________________________________________________________
 
