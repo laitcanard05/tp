@@ -51,10 +51,10 @@ class ListCommandTest {
         String result = command.execute(transactionManager, ui, storage);
         
         assertTrue(result.contains("Here are your transactions"));
-        assertTrue(result.contains("1. [Income] $1000.00 - Salary"));
-        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries"));
-        assertTrue(result.contains("3. [Income] $500.00 - Bonus"));
-        assertTrue(result.contains("4. [Expense][Transport] $20.00 - Bus fare"));
+        assertTrue(result.contains("1. [Income] $1000.00 - Salary (Date created: " + today + ")"));
+        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries (Date created: " + today + ")"));
+        assertTrue(result.contains("3. [Income] $500.00 - Bonus (Date created: " + yesterday + ")"));
+        assertTrue(result.contains("4. [Expense][Transport] $20.00 - Bus fare (Date created: " + yesterday + ")"));
     }
 
     @Test
@@ -63,9 +63,9 @@ class ListCommandTest {
         String result = command.execute(transactionManager, ui, storage);
         
         assertTrue(result.contains("Here are your transactions"));
-        assertTrue(result.contains("1. [Income] $1000.00 - Salary"));
-        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries"));
-        assertFalse(result.contains("3. [Income] $500.00 - Bonus"));
+        assertTrue(result.contains("1. [Income] $1000.00 - Salary (Date created: " + today + ")"));
+        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries (Date created: " + today + ")"));
+        assertFalse(result.contains("3. [Income] $500.00 - Bonus  (Date created: " + yesterday + ")"));
     }
 
     @Test
@@ -74,8 +74,8 @@ class ListCommandTest {
         String result = command.execute(transactionManager, ui, storage);
         
         assertTrue(result.contains("Here are your transactions"));
-        assertTrue(result.contains("1. [Income] $1000.00 - Salary"));
-        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries"));
+        assertTrue(result.contains("1. [Income] $1000.00 - Salary (Date created: " + today + ")"));
+        assertTrue(result.contains("2. [Expense][Food] $50.00 - Groceries (Date created: " + today + ")"));
         assertFalse(result.contains("Bonus"));
         assertFalse(result.contains("Bus fare"));
     }
@@ -86,7 +86,7 @@ class ListCommandTest {
         String result = command.execute(transactionManager, ui, storage);
         
         assertTrue(result.contains("Here are your transactions"));
-        assertTrue(result.contains("1. [Income] $1000.00 - Salary"));
+        assertTrue(result.contains("1. [Income] $1000.00 - Salary (Date created: " + today + ")"));
         assertFalse(result.contains("Groceries"));
         assertFalse(result.contains("Bonus"));
         assertFalse(result.contains("Bus fare"));

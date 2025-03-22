@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# change to script directory
+# Change to script directory
 cd "${0%/*}"
 
 cd ..
@@ -8,11 +8,20 @@ cd ..
 
 cd text-ui-test
 
-java  -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input.txt > ACTUAL.TXT
+# Run the program
+java -jar $(find ../build/libs/ -mindepth 1 -print -quit) < input.txt > ACTUAL.TXT
 
-cp EXPECTED.TXT EXPECTED-UNIX.TXT
+# Get today's date in YYYY-MM-DD format
+TODAY=$(date +%Y-%m-%d)
+
+# Replace <DATE> with today's date in EXPECTED.TXT
+sed -E "s/<DATE>/$TODAY/g" EXPECTED.TXT > EXPECTED-UNIX.TXT
+
+# Convert line endings
 dos2unix EXPECTED-UNIX.TXT ACTUAL.TXT
-diff EXPECTED-UNIX.TXT ACTUAL.TXT
+
+# Compare the output
+diff -wB EXPECTED-UNIX.TXT ACTUAL.TXT
 if [ $? -eq 0 ]
 then
     echo "Test passed!"
