@@ -1,27 +1,35 @@
 @echo off
-setlocal enableextensions
+setlocal enabledelayedexpansion
 pushd %~dp0
 
 cd ..
 del /f /q data\finbro.txt
 call gradlew clean shadowJar
 
-cd build\libs
-for /f "tokens=*" %%a in (
-    'dir /b *.jar'
-) do (
-    set jarloc=%%a
+REM Find the JAR file
+for /f %%a in ('dir /b /o-d build\libs\*.jar') do (
+    set jarloc=build\libs\%%a
+    goto foundjar
 )
+:foundjar
 
-java -jar %jarloc% < ..\..\text-ui-test\input.txt > ..\..\text-ui-test\ACTUAL.TXT
+cd text-ui-test
 
-cd ..\..\text-ui-test
+REM Get today's date in YYYY-MM-DD format
+for /f %%i in ('powershell -command "Get-Date -Format yyyy-MM-dd"') do set TODAY=%%i
 
-:: Get today's date in YYYY-MM-DD format
-for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd"') do set TODAY=%%i
+REM Replace <DATE> with today's date
+powershell -Command "(Get-Content EXPECTED.TXT) -replace '<DATE>', '%TODAY%' | Set-Content EXPECTED-WINDOWS.TXT"
 
-:: Replace <DATE> with today's date in EXPECTED.TXT
-powershell -Command "(Get-Content EXPECTED.TXT) -replace '<DATE>', '%TODAY%' | Set-Content EXPECTED-UNIX.TXT"
+REM Run the test
+java -jar ..\%jarloc% < input.txt > ACTUAL.TXT
 
-:: Compare output
-FC ACTUAL.TXT EXPECTED-UNIX.TXT >NUL && echo Test passed! || echo Test failed!
+REM Compare the output
+FC /W ACTUAL.TXT EXPECTED-WINDOWS.TXT >NUL
+if %errorlevel% equ 0 (
+    echo Test passed!
+    exit /b 0
+) else (
+    echo Test failed!
+    exit /b 1
+)
