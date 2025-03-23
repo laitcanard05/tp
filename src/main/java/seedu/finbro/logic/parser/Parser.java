@@ -149,6 +149,79 @@ public class Parser {
         return parsedCommand;
     }
 
+    /*
+    New method to parse command word only to implement friendly CLI
+    Edit switch cases after editing each parse method
+     */
+    public Command parseCommandWord(String commandWord, Ui ui) {
+        assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
+        logger.fine("Command word: " + commandWord);
+
+        commandWord = commandWord.trim();
+        if (commandWord.isEmpty()) {
+            logger.fine("Empty input, returning HelpCommand");
+            clearCommandPending = false;
+            return new HelpCommand();
+        }
+
+        // Handle y/n responses if a clear confirmation is pending
+        if (clearCommandPending) {
+            if (commandWord.equals("y") || commandWord.equals("yes")) {
+                clearCommandPending = false;
+                logger.fine("Clear command confirmed with 'y'");
+                return new ClearCommand(true);
+            } else if (commandWord.equals("n") || commandWord.equals("no")) {
+                clearCommandPending = false;
+                logger.fine("Clear command cancelled with 'n'");
+                return new Command() {
+                    @Override
+                    public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+                        return "Clear operation cancelled.";
+                    }
+
+                    @Override
+                    public boolean isExit() {
+                        return false;
+                    }
+                };
+            }
+            // If not y/n, reset the pending flag
+            clearCommandPending = false;
+        }
+
+        Command parsedCommand;
+        switch (commandWord) {
+        case "search":
+        case "income":
+        case "expense":
+        case "list":
+        case "delete":
+        case "filter":
+            parsedCommand = parseFilterCommand(ui);
+            break;
+        case "balance":
+        case "view": // Support for "view" as an alias for "balance"
+            parsedCommand = new BalanceCommand();
+            break;
+        case "summary":
+            parsedCommand = parseSummaryCommand(ui);
+            break;
+        case "export":
+        case "clear":
+        case "exit":
+        case "help":
+        case "edit":
+        default:
+            logger.warning("Unknown command: " + commandWord);
+            parsedCommand = new UnknownCommand(commandWord);
+            break;
+        }
+
+        assert parsedCommand != null : "Parsed command cannot be null";
+        logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
+        return parsedCommand;
+    }
+
 
     /**
      * Parses arguments into a SearchCommand.
@@ -398,6 +471,58 @@ public class Parser {
     }
 
     /**
+     * Parses dates read from the UI into a FilterCommand.
+     *
+     * @param ui The UI to interact with the user
+     * @return The FilterCommand
+     */
+    //method for parsing filter command for friendly CLI
+    private Command parseFilterCommand(Ui ui) {
+        logger.fine("Parsing filter command");
+        try {
+            String[] filterDates = ui.readDates();
+            logger.fine("Filter dates: " + filterDates[0] + " to " + filterDates[1]);
+
+            if (filterDates[0] == null || filterDates[0].isEmpty()) {
+                logger.warning("Missing start date parameter for filter command");
+                return new InvalidCommand("Start date must be specified for filter command.");
+            }
+
+            LocalDate startDate = LocalDate.parse(
+                filterDates[0].trim(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            );
+
+            LocalDate endDate;
+            if (filterDates[1] == null || filterDates[1].isEmpty()) {
+                logger.fine("No end date specified, using current date");
+                endDate = LocalDate.now();
+            } else {
+                endDate = LocalDate.parse(
+                    filterDates[1].trim(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                );
+            }
+
+            if (startDate.isAfter(endDate)) {
+                logger.warning("Start date is after end date: " + startDate + " > " + endDate);
+                return new InvalidCommand("Start date cannot be after end date.");
+            }
+
+            logger.fine("Creating FilterCommand with startDate=" + startDate +
+                ", endDate=" + endDate);
+            return new FilterCommand(startDate, endDate);
+        } catch (DateTimeParseException e) {
+            logger.log(Level.WARNING, "Date format error in filter command", e);
+            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing filter command", e);
+            return new InvalidCommand("Invalid filter command: " + e.getMessage());
+        }
+    }
+
+
+    /**
      * Parses arguments into a SummaryCommand with specified month and year
      * @param args Command arguments
      * @return The SummaryCommand
@@ -423,6 +548,40 @@ public class Parser {
                 if (year % 1000 == 0 || year > LocalDate.now().getYear()) {
                     return new InvalidCommand("Year input must be 4-digit.");
                 }
+            }
+            return new SummaryCommand(month, year);
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid summary command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses month and year read from ui into a SummaryCommand.
+     *
+     * @param ui The UI to interact with the user
+     * @return The SummaryCommand
+     */
+    //method for parsing summary command for friendly CLI
+    private Command parseSummaryCommand(Ui ui) {
+        logger.fine("Parsing summary command");
+        try {
+            Integer[] monthYear = ui.readMonthYear();
+            Integer month = monthYear[0];
+            Integer year = monthYear[1];
+
+            if (month == null) {
+                logger.info("No month input, using current month");
+                month = LocalDate.now().getMonthValue();
+            } else if (month < 1 || month > 12) {
+                logger.warning("Invalid month input: " + month);
+                return new InvalidCommand("Month input must be between 1 and 12.");
+            }
+            if (year == null) {
+                logger.info("No year input, using current year");
+                year = LocalDate.now().getYear();
+            } else if (year % 1000 == 0 || year > LocalDate.now().getYear()) {
+                logger.warning("Invalid year input: " + year);
+                return new InvalidCommand("Year input must be 4-digit and cannot be after current year.");
             }
             return new SummaryCommand(month, year);
         } catch (Exception e) {

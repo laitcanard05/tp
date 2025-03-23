@@ -72,6 +72,8 @@ public class FinBro {
                 String userInput = ui.readCommand();
                 logger.fine("User input: " + userInput);
 
+                //replace with this line for friendly CLI
+                //Command command = parser.parseCommandWord(userInput, ui);
                 Command command = parser.parseCommand(userInput);
                 logger.fine("Command parsed: " + command.getClass().getSimpleName());
 

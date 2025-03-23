@@ -115,6 +115,59 @@ public class Ui {
         return readConfirmation("input duplicate transaction?");
     }
 
+    /**
+     * Reads user input for start and end dates for filtering transactions.
+     *
+     * @return The dates entered by the user
+     */
+    public String[] readDates() {
+        String[] dates = new String[2];
+        logger.fine("Requesting user input for dates");
+        System.out.println(LINE);
+        System.out.println("Please enter the start date in the format yyyy-mm-dd.");
+        System.out.print("> ");
+        String startDate = scanner.nextLine();
+        dates[0] = startDate;
+        System.out.println(LINE);
+        System.out.println("Please enter the end date in the format yyyy-mm-dd.");
+        System.out.print("> ");
+        String endDate = scanner.nextLine();
+        dates[1] = endDate;
+        System.out.println(LINE);
+        logger.fine("User input for dates received: " + startDate + " to " + endDate);
+        return dates;
+    }
+
+    public Integer[] readMonthYear() {
+        Integer[] monthYear = new Integer[2];
+        logger.fine("Requesting user input for month and year");
+        System.out.println(LINE);
+        System.out.println("Please enter the month (1-12) for the summary.");
+        System.out.print("> ");
+        String input = scanner.nextLine();
+        Integer month;
+        if (input.isEmpty()) {
+            month = null;
+        } else {
+            month = Integer.parseInt(input);
+        }
+        monthYear[0] = month;
+        System.out.println(LINE);
+        System.out.println("Please enter the year for the summary.");
+        System.out.print("> ");
+        input = scanner.nextLine();
+        Integer year;
+        if (input.isEmpty()) {
+            year = null;
+        } else {
+            year = Integer.parseInt(input);
+        }
+        monthYear[1] = year;
+        System.out.println(LINE);
+        logger.fine("User input for month and year received: " + month + " " + year);
+        return monthYear;
+    }
+
     @Override
     public String toString() {
         return "Ui{" +
