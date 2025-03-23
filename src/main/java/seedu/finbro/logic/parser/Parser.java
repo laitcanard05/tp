@@ -151,7 +151,7 @@ public class Parser {
 
     /*
     New method to parse command word only to implement friendly CLI
-    Edit switch cases after implementing each parse method
+    Edit switch cases after editing each parse method
      */
     public Command parseCommandWord(String commandWord, Ui ui) {
         assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
@@ -620,7 +620,7 @@ public class Parser {
     }
 
     /**
-     * Parses month and year read from the UI into a SummaryCommand.
+     * Parses month and year read from ui into a SummaryCommand.
      *
      * @param ui The UI to interact with the user
      * @return The SummaryCommand
