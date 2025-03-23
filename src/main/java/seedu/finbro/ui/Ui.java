@@ -1,7 +1,5 @@
 package seedu.finbro.ui;
 
-import java.lang.reflect.Array;
-import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
