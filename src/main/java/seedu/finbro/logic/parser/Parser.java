@@ -477,18 +477,28 @@ public class Parser {
      * @return The DeleteCommand
      */
     private Command parseDeleteCommand(Ui ui) {
+        logger.fine("Parsing delete command");
         try {
             int index = ui.readIndex();
+            logger.fine("User input index: " + index);
+
             if (index <= 0) {
+                logger.warning("Invalid index: " + index + " (must be positive)");
                 return new InvalidCommand("Index must be a positive integer.");
             }
+
+            logger.fine("Creating DeleteCommand with index=" + index);
             return new DeleteCommand(index);
+
         } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid number format for delete index", e);
             return new InvalidCommand("Invalid index. Please provide a valid number.");
         } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing delete command", e);
             return new InvalidCommand("Invalid delete command: " + e.getMessage());
         }
     }
+
 
     /**
      * Parses arguments into a FilterCommand.
