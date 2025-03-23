@@ -138,6 +138,25 @@ public class Ui {
         return dates;
     }
 
+    /**
+     * Reads user input for start date only. Used in ListCommand.
+     *
+     * @return The date entered by the user
+     */
+    public String readStartDate() {
+        logger.fine("Requesting user input for start date");
+        System.out.println(LINE);
+        System.out.println("Please enter the start date in the format yyyy-mm-dd. " +
+                           "(Leave blank to show all transactions. " +
+                           "You can choose the number of transactions to show after this prompt.)");
+        System.out.print("> ");
+        String date = scanner.nextLine();
+        System.out.println(LINE);
+        logger.fine("User input for date received: " + date);
+        return date;
+    }
+
+
     public Integer[] readMonthYear() {
         Integer[] monthYear = new Integer[2];
         logger.fine("Requesting user input for month and year");
@@ -173,5 +192,20 @@ public class Ui {
         return "Ui{" +
                 "scanner=" + scanner +
                 '}';
+    }
+
+    /**
+     * Reads the number of transactions to list from the user. Used in ListCommand.
+     *
+     * @return Integer limit or null if not specified
+     * @throws NumberFormatException if input is not a valid number
+     */
+    public Integer readLimit() {
+        System.out.print("Enter number of transactions to list. (Leave blank to show all transactions.): ");
+        String input = scanner.nextLine().trim();
+        if (input.isEmpty()) {
+            return null;
+        }
+        return Integer.parseInt(input);
     }
 }

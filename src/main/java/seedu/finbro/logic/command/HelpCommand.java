@@ -4,6 +4,8 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+//TODO: update HelpCommand to use the new friendly CLI
+
 /**
  * Represents a help command.
  */

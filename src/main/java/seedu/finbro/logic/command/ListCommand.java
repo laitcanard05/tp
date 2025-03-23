@@ -7,11 +7,13 @@ import seedu.finbro.ui.Ui;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents a command to list transactions.
  */
 public class ListCommand implements Command {
+    private static final Logger logger = Logger.getLogger(ListCommand.class.getName());
     private static final int INDEX_OFFSET = 1;
     private final Integer limit;
     private final LocalDate date;
@@ -25,6 +27,7 @@ public class ListCommand implements Command {
     public ListCommand(Integer limit, LocalDate date) {
         this.limit = limit;
         this.date = date;
+        logger.fine("Constructed ListCommand with limit=" + limit + ", date=" + date);
     }
 
     /**
@@ -34,6 +37,7 @@ public class ListCommand implements Command {
     public ListCommand() {
         this.limit = null;
         this.date = null;
+        logger.fine("Constructed ListCommand with default constructor");
     }
 
     /**
@@ -46,30 +50,39 @@ public class ListCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        logger.info("Executing ListCommand");
+
         List<Transaction> transactionsToList;
 
         if (date != null) {
+            logger.fine("Filtering transactions from date: " + date);
             transactionsToList = transactionManager.listTransactionsFromDate(date);
             if (limit != null) {
+                logger.fine("Limiting to " + limit + " transactions after filtering by date");
                 transactionsToList = transactionsToList.subList(0, Math.min(limit, transactionsToList.size()));
             }
         } else if (limit != null) {
+            logger.fine("Limiting to " + limit + " most recent transactions");
             transactionsToList = transactionManager.listTransactions(limit);
         } else {
+            logger.fine("Listing all transactions");
             transactionsToList = transactionManager.listTransactions();
         }
 
         if (transactionsToList.isEmpty()) {
+            logger.info("No transactions found");
             return "No transactions found.";
         }
 
         StringBuilder response = new StringBuilder("Here are your transactions:\n");
         for (int i = 0; i < transactionsToList.size(); i++) {
-            response.append(i + INDEX_OFFSET).append(". ").append(transactionsToList.get(i));
-            response.append(" (Date created: ").append(transactionsToList.get(i).getDate()).append(")");
-            response.append("\n");
+            Transaction t = transactionsToList.get(i);
+            logger.finer("Listing transaction: " + t);
+            response.append(i + INDEX_OFFSET).append(". ").append(t);
+            response.append(" (Date created: ").append(t.getDate()).append(")\n");
         }
 
+        logger.info("Successfully listed " + transactionsToList.size() + " transactions");
         return response.toString().trim();
     }
 
