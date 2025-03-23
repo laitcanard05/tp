@@ -156,7 +156,11 @@ public class Ui {
         return date;
     }
 
-
+    /**
+     * Reads user input for month and year for SummaryCommand.
+     *
+     * @return The month and year entered by the user
+     */
     public Integer[] readMonthYear() {
         Integer[] monthYear = new Integer[2];
         logger.fine("Requesting user input for month and year");
