@@ -198,6 +198,8 @@ public class Parser {
             parsedCommand = parseListCommand(ui);
             break;
         case "delete":
+            parsedCommand = parseDeleteCommand(ui);
+            break;
         case "filter":
             parsedCommand = parseFilterCommand(ui);
             break;
@@ -211,6 +213,8 @@ public class Parser {
         case "export":
         case "clear":
         case "exit":
+            parsedCommand = new ExitCommand();
+            break;
         case "help":
         case "edit":
         default:
@@ -446,8 +450,6 @@ public class Parser {
         }
     }
 
-
-
     /**
      * Parses arguments into a DeleteCommand.
      *
@@ -457,6 +459,26 @@ public class Parser {
     private Command parseDeleteCommand(String args) {
         try {
             int index = Integer.parseInt(args.trim());
+            if (index <= 0) {
+                return new InvalidCommand("Index must be a positive integer.");
+            }
+            return new DeleteCommand(index);
+        } catch (NumberFormatException e) {
+            return new InvalidCommand("Invalid index. Please provide a valid number.");
+        } catch (Exception e) {
+            return new InvalidCommand("Invalid delete command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses index read from the UI into a DeleteCommand.
+     *
+     * @param ui The UI to interact with the user
+     * @return The DeleteCommand
+     */
+    private Command parseDeleteCommand(Ui ui) {
+        try {
+            int index = ui.readIndex();
             if (index <= 0) {
                 return new InvalidCommand("Index must be a positive integer.");
             }

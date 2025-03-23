@@ -201,11 +201,30 @@ public class Ui {
      * @throws NumberFormatException if input is not a valid number
      */
     public Integer readLimit() {
-        System.out.print("Enter number of transactions to list. (Leave blank to show all transactions.): ");
+        System.out.println("Enter number of transactions to list. (Leave blank to show all transactions.)");
+        System.out.print("> ");
         String input = scanner.nextLine().trim();
         if (input.isEmpty()) {
             return null;
         }
         return Integer.parseInt(input);
+    }
+
+    /**
+     * Reads the index of the transaction to delete from the user. Used in DeleteCommand.
+     *
+     * @return The index entered by the user
+     */
+    public int readIndex() {
+        System.out.println(LINE);
+        System.out.println("Enter the index of the transaction to delete.");
+        System.out.print("> ");
+        String input = scanner.nextLine().trim();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid index. Please enter a valid number.");
+            return readIndex();
+        }
     }
 }
