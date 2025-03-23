@@ -195,6 +195,8 @@ public class Parser {
         case "income":
         case "expense":
         case "list":
+            parsedCommand = parseListCommand(ui);
+            break;
         case "delete":
         case "filter":
             parsedCommand = parseFilterCommand(ui);
@@ -405,6 +407,46 @@ public class Parser {
             return new InvalidCommand("Invalid list command: " + e.getMessage());
         }
     }
+
+    /**
+     * Parses dates read from the UI into ListCommand.
+     *
+     * @param ui The UI to interact with the user
+     * @return The ListCommand
+     */
+    private Command parseListCommand(Ui ui) {
+        logger.fine("Parsing list command");
+        try {
+            String startDateInput = ui.readStartDate(); //only uses start date
+            logger.fine("List start date: " + startDateInput);
+
+            LocalDate date = null;
+            if (startDateInput != null && !startDateInput.isEmpty()) {
+                date = LocalDate.parse(startDateInput.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+
+            Integer limit = ui.readLimit();
+            if (limit != null && limit <= 0) {
+                logger.warning("Invalid limit: " + limit);
+                return new InvalidCommand("Number of transactions must be a positive integer.");
+            }
+
+            logger.fine("Creating ListCommand with limit=" + limit + ", date=" + date);
+            return new ListCommand(limit, date);
+
+        } catch (DateTimeParseException e) {
+            logger.log(Level.WARNING, "Date format error in list command", e);
+            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid number format for list limit", e);
+            return new InvalidCommand("Limit must be a valid number.");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing list command", e);
+            return new InvalidCommand("Invalid list command: " + e.getMessage());
+        }
+    }
+
+
 
     /**
      * Parses arguments into a DeleteCommand.
