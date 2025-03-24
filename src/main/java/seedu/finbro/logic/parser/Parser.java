@@ -192,7 +192,11 @@ public class Parser {
         Command parsedCommand;
         switch (commandWord) {
         case "search":
+            parsedCommand = parseSearchCommand(ui);
+            break;
         case "income":
+            parsedCommand = parseIncomeCommand(ui);
+            break;
         case "expense":
             parsedCommand = parseExpenseCommand(ui);
             break;
@@ -231,36 +235,6 @@ public class Parser {
         assert parsedCommand != null : "Parsed command cannot be null";
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
-    }
-
-
-    /**
-     * Parses arguments into a SearchCommand.
-     *
-     * @param args Command arguments
-     * @return The SearchCommand
-     */
-    private Command parseSearchCommand(String args) {
-        logger.fine("Parsing search command with arguments: " + args);
-        try {
-            if (args.trim().isEmpty()) {
-                return new InvalidCommand("Search command requires at least one keyword.");
-            }
-
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing keyword for search command");
-                return new InvalidCommand("keyword is required for search command.");
-            }
-
-            logger.fine("Searching transactions with keyword=" + args);
-            return new SearchCommand(args);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing income command", e);
-            return new InvalidCommand("Invalid income command: " + e.getMessage());
-        }
     }
 
     /**
@@ -774,7 +748,7 @@ public class Parser {
     }
 
     /**
-     * OVERRIDE ONE COMMAND ONE ACTION
+     * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an ExpenseCommand.
      *
      * @return The ExpenseCommand
@@ -846,6 +820,7 @@ public class Parser {
     }
 
     /**
+     * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an IncomeCommand.
      *
      * @return The IncomeCommand
@@ -870,6 +845,56 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing expense command", e);
             return new InvalidCommand("Invalid expense command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * LEGACY CODE
+     * Parses arguments into a SearchCommand.
+     *
+     * @param args Command arguments
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(String args) {
+        logger.fine("Parsing search command with arguments: " + args);
+        try {
+            if (args.trim().isEmpty()) {
+                return new InvalidCommand("Search command requires at least one keyword.");
+            }
+
+            Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
+
+            if (!parameters.containsKey("")) {
+                logger.warning("Missing keyword for search command");
+                return new InvalidCommand("keyword is required for search command.");
+            }
+
+            logger.fine("Searching transactions with keyword=" + args);
+            return new SearchCommand(args);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing search command", e);
+            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * ONE COMMAND ONE ACTION OVERRIDE
+     *  Parses arguments into a SearchCommand.
+     *
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(Ui ui) {
+        logger.fine("Parsing search command with friendly CLI: ");
+        try {
+            String keyword = ui.readString("Enter keyword or string to search:\n>");
+
+            logger.fine("Searching transactions with keyword=" + keyword);
+
+            return new SearchCommand(keyword);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing search command", e);
+            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
         }
     }
 
