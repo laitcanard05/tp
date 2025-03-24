@@ -2,49 +2,61 @@ ____________________________________________________________
 Welcome to FinBro - Your Personal Finance Manager!
 Type 'help' to see available commands.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
-Available commands:
-income AMOUNT d/DESCRIPTION [t/TAG...] - Add income
-expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG...] - Add expense
-list [n/NUMBER] [d/DATE] - List transactions
-delete INDEX - Delete a transaction
-edit KEYWORD [a/AMOUNT] [d/DESCRIPTION] [date/DATE] [c/CATEGORY] [t/TAG] - Edit a transaction
-search KEYWORD [MORE_KEYWORDS] - Search transactions
-filter d/DATE [to/DATE] - Filter transactions by date
-balance - View current balance
-summary [m/MONTH] [y/YEAR] - View financial summary
-export [f/FORMAT] - Export data (csv or txt)
-clear - Clear all data
-exit - Exit the program
-help - Show this help message
+Available command words:
+
+expense  | AMOUNT , d/DESCRIPTION , [c/CATEGORY] , [t/TAG...] => Add an expense transaction
+income   | AMOUNT , d/DESCRIPTION , [t/TAG...] => Add an income transaction
+list     | [d/DATE] , [n/NUMBER] => List transactions
+delete   | INDEX => Delete a transaction
+edit     | KEYWORD , [a/AMOUNT] , [d/DESCRIPTION] , [date/DATE] , [c/CATEGORY] , [t/TAG] => Edit a transaction
+filter   | d/DATE , [to/DATE] =>  Filter transactions by date
+summary  | [m/MONTH] [y/YEAR] - View financial summary
+export   | [f/FORMAT] - Export data (csv or txt)
+search   | KEYWORD => Search transactions
+balance  | View current balance
+exit     | Exit the program
+clear    | Clear all data
+help     | Show this help message
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New income added: [Income] $3000.00 - Monthly salary [primary]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New income added: [Income] $500.50 - Freelance project [design]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New income added: [Income] $1200.00 - Tax refund [annual]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Food] $25.50 - Lunch with colleagues [work]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Shopping] $75.00 - New shoes [clothing]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Bills] $150.20 - Electricity bill [utilities]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Transport] $10.80 - Bus fare [commute]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Entertainment] $45.99 - Movie tickets [leisure]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Food] $120.00 - Groceries [essential]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
@@ -57,6 +69,7 @@ Here are your transactions:
 8. [Expense][Entertainment] $45.99 - Movie tickets [leisure] (Date created: <DATE>)
 9. [Expense][Food] $120.00 - Groceries [essential] (Date created: <DATE>)
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
@@ -65,20 +78,25 @@ Here are your transactions:
 4. [Expense][Food] $25.50 - Lunch with colleagues [work] (Date created: <DATE>)
 5. [Expense][Shopping] $75.00 - New shoes [clothing] (Date created: <DATE>)
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 [Expense][Bills] $150.20 - Electricity bill [utilities]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 There are no transactions between Mar 1 2025 and Mar 15 2025.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Current Balance: $4,273.01
 Total Income: $4,700.50
 Total Expenses: $427.49
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Financial Summary for March 2025:
 
@@ -102,6 +120,7 @@ Tags Summary:
 9. commute: $10.80
 
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Financial Summary for March 2025:
 
@@ -125,9 +144,11 @@ Tags Summary:
 9. commute: $10.80
 
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Transaction deleted: [Income] $1200.00 - Tax refund [annual]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3000.00 - Monthly salary [primary] (Date created: <DATE>)
@@ -139,35 +160,45 @@ Here are your transactions:
 7. [Expense][Entertainment] $45.99 - Movie tickets [leisure] (Date created: <DATE>)
 8. [Expense][Food] $120.00 - Groceries [essential] (Date created: <DATE>)
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Food] $32.50 - Coffee and snacks [work]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New income added: [Income] $450.00 - Part-time gig [side-hustle]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Are you sure you want to clear all data? This action cannot be undone.
 Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Clear operation cancelled.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Are you sure you want to clear all data? This action cannot be undone.
 Type 'y' to confirm, 'n' to cancel.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 All data has been cleared.
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New income added: [Income] $2000.00 - New job payment [work]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 New expense added: [Expense][Food] $30.00 - Dinner [dining-out]
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Financial Summary for March 2025:
 
@@ -182,11 +213,13 @@ Tags Summary:
 2. dining-out: $30.00
 
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Current Balance: $1,970.00
 Total Income: $2,000.00
 Total Expenses: $30.00
 ____________________________________________________________
+Enter command word:
 > ____________________________________________________________
 Goodbye! Thank you for using FinBro.
 ____________________________________________________________
