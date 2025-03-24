@@ -215,16 +215,52 @@ public class Ui {
      *
      * @return The index entered by the user
      */
-    public int readIndex() {
-        System.out.println(LINE);
-        System.out.println("Enter the index of the transaction to delete.");
-        System.out.print("> ");
-        String input = scanner.nextLine().trim();
-        try {
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid index. Please enter a valid number.");
-            return readIndex();
+    public int readInteger(String message) {
+        while (true) {
+            System.out.println(LINE);
+            System.out.print(message);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter an integer.");
+            }
         }
     }
+
+    /**
+     * Reads the double input by user. Used to parse amount.
+     *
+     * @return The amount entered by the user
+     */
+    public double readDouble(String message) {
+        while (true) {
+            System.out.println(LINE);
+            System.out.print(message);
+            String input = scanner.nextLine().trim();
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number (e.g., 12.34).");
+            }
+        }
+    }
+
+    /**
+     * Reads string input by user. Used to parse description for Income / Expense.
+     *
+     * @return The string entered by the user
+     */
+    public String readString(String message) {
+        while (true) {
+            System.out.println(LINE);
+            System.out.print(message);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            }
+            System.out.println("Input cannot be empty. Please enter a valid description.");
+        }
+    }
+
 }
