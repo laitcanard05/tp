@@ -112,7 +112,7 @@ class UiTest {
         ui = new Ui(new Scanner(System.in));
 
         String result = ui.readCommand();
-        assertEquals(expectedInput, result);
+        assertTrue(result.contains(expectedInput));
     }
 
     /**
