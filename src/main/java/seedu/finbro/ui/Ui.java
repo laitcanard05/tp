@@ -83,7 +83,7 @@ public class Ui {
      */
     public String readCommand() {
         logger.fine("Waiting for user input");
-        System.out.print("> ");
+        System.out.print("Enter command word:\n> ");
         String command = scanner.nextLine();
         logger.fine("User input received: " + command);
         return command;
