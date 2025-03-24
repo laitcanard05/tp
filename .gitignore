@@ -21,3 +21,7 @@ data/
 
 # Ignore everything in the logs directory
 logs/
+
+export/
+
+.gitignore
