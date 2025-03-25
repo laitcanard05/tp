@@ -27,6 +27,8 @@ import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.exceptions.IndexExceedLimitException;
+import seedu.finbro.logic.exceptions.NegativeNumberException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
@@ -874,7 +876,7 @@ public class Parser {
             return new SearchCommand(args);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing search command", e);
-            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
+            return new InvalidCommand("Invalid search command: " + e.getMessage());
         }
     }
 
@@ -894,7 +896,7 @@ public class Parser {
             return new SearchCommand(keyword);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing search command", e);
-            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
+            return new InvalidCommand("Invalid search command: " + e.getMessage());
         }
     }
 
@@ -903,33 +905,51 @@ public class Parser {
      *
      * @return category as per enum
      */
-    private Expense.Category parseCategory(Ui ui) {
-        //what if they give a stupid number?
+    private Expense.Category parseCategory(Ui ui) throws NegativeNumberException, IndexExceedLimitException {
+        try{
 
-        String message = "Please select a category by entering its corresponding index\n" +
-                "0 - OTHERS\n" +
-                "1 - FOOD\n" +
-                "2 - TRANSPORT\n" +
-                "3 - SHOPPING\n" +
-                "4 - BILLS\n" +
-                "5 - ENTERTAINMENT\n" +
-                "> ";
+            String message = "Please select a category by entering its corresponding index\n" +
+                    "0 - OTHERS\n" +
+                    "1 - FOOD\n" +
+                    "2 - TRANSPORT\n" +
+                    "3 - SHOPPING\n" +
+                    "4 - BILLS\n" +
+                    "5 - ENTERTAINMENT\n" +
+                    "> ";
 
-        int catIndex = ui.readInteger(message);
-
-        switch (catIndex) {
-        case 0: return Expense.Category.OTHERS;
-        case 1: return Expense.Category.FOOD;
-        case 2: return Expense.Category.TRANSPORT;
-        case 3: return Expense.Category.SHOPPING;
-        case 4: return Expense.Category.BILLS;
-        case 5: return Expense.Category.ENTERTAINMENT;
-        default: {
-            System.out.println("INVALID INDEX. PICK AN INDEX FROM 0-5");
-            return parseCategory(ui);
+            int catIndex = ui.readInteger(message);
+            if (catIndex < 0) {
+                throw new NegativeNumberException();
+            }
+            if (catIndex >= 5) {
+                throw new IndexExceedLimitException();
+            }
+            assert catIndex >= 0;
+            switch (catIndex) {
+            case 0: return Expense.Category.OTHERS;
+            case 1: return Expense.Category.FOOD;
+            case 2: return Expense.Category.TRANSPORT;
+            case 3: return Expense.Category.SHOPPING;
+            case 4: return Expense.Category.BILLS;
+            case 5: return Expense.Category.ENTERTAINMENT;
+            default: {
+                assert catIndex >5 || catIndex < 0;
+                System.out.println("INVALID INDEX. PICK AN INDEX FROM 0-5");
+                return parseCategory(ui);
+            }
+            }
+        } catch (NegativeNumberException e) {
+            logger.log(Level.WARNING, "Category input is negative. Invalid selection", e);
+            NegativeNumberException.handle();
+        } catch (IndexExceedLimitException e) {
+            logger.log(Level.WARNING, "Category input exceeds 5. Invalid selection.", e);
+            IndexExceedLimitException.handle();
         }
-        }
+        return parseCategory(ui);
+
+
 
 
     }
 }
+
