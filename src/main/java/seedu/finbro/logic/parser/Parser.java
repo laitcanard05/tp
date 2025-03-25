@@ -726,7 +726,9 @@ public class Parser {
             if (!trimmed.isEmpty()) {
                 tags.add(trimmed);
             }
-            if (tags.size() == 3) break;
+            if (tags.size() == 3) {
+                break;
+            }
         }
 
         return tags;
