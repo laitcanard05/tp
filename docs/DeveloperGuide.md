@@ -155,6 +155,7 @@ classDiagram
     ListCommand --> TransactionManager : uses
     DeleteCommand --> TransactionManager : uses
 ```
+### Sequence Diagram
 
 ### Component Overview
 
@@ -336,7 +337,48 @@ flowchart TB
     class UI,Logic,Model,Storage component;
     class Parser,CommandClasses,TransactionClasses,TransactionMgr subcomponent;
 ```
+### Searching for a transaction
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant SearchCommand as SearchCommand
+    participant TransactionMgr as TransactionManager
 
+    User->>UI: input command
+    activate UI
+    UI->>FinBro: readCommand()
+    activate FinBro
+    FinBro->>Parser: parseCommand(userInput)
+    activate Parser
+
+    Note right of Parser: Parse "search lunch"
+    Parser->>SearchCommand: new SearchCommand(keyword)
+    activate SearchCommand
+    SearchCommand-->>Parser: command
+    deactivate SearchCommand
+    Parser-->>FinBro: command
+    deactivate Parser
+
+    FinBro->>SearchCommand: execute(transactionManager, ui, storage)
+    activate SearchCommand
+
+    SearchCommand->>TransactionMgr: getTransactionsContainingKeyword(keyword)
+    activate TransactionMgr
+    TransactionMgr-->>SearchCommand: matchingTransactions
+    deactivate TransactionMgr
+
+    SearchCommand-->>FinBro: result message (list of matches)
+    deactivate SearchCommand
+
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+    deactivate UI
+    deactivate FinBro
+
+```
 ## Design Patterns
 
 FinBro implements several design patterns to enhance maintainability and extensibility:
