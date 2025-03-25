@@ -102,9 +102,21 @@ public class Ui {
         System.out.println(message + " (y/n)");
         System.out.print("> ");
         String input = scanner.nextLine().trim().toLowerCase();
-        boolean confirmed = input.equals("y") || input.equals("yes");
-        logger.fine("User confirmation result: " + confirmed);
-        return confirmed;
+        boolean confirmed;
+        if(input.equals("y") || input.equals("yes")) {
+            logger.fine("User confirmation result: TRUE");
+            return true;
+        }
+        if(input.equals("n") || input.equals("no")) {
+            logger.fine("User confirmation result: FALSE");
+            return false;
+        }
+        else {
+            System.out.println(LINE);
+            System.out.println("INVALID INPUT, PLEASE TRY AGAIN");
+            logger.warning("invalid user input: " + input + ".\n trying again.");
+            return readConfirmation(message);
+        }
     }
 
     public Boolean warnDuplicate() {
