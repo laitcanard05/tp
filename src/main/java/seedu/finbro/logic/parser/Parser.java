@@ -192,8 +192,14 @@ public class Parser {
         Command parsedCommand;
         switch (commandWord) {
         case "search":
+            parsedCommand = parseSearchCommand(ui);
+            break;
         case "income":
+            parsedCommand = parseIncomeCommand(ui);
+            break;
         case "expense":
+            parsedCommand = parseExpenseCommand(ui);
+            break;
         case "list":
             parsedCommand = parseListCommand(ui);
             break;
@@ -216,6 +222,9 @@ public class Parser {
             parsedCommand = new ExitCommand();
             break;
         case "help":
+            parsedCommand = new HelpCommand();
+            break;
+
         case "edit":
         default:
             logger.warning("Unknown command: " + commandWord);
@@ -226,36 +235,6 @@ public class Parser {
         assert parsedCommand != null : "Parsed command cannot be null";
         logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
         return parsedCommand;
-    }
-
-
-    /**
-     * Parses arguments into a SearchCommand.
-     *
-     * @param args Command arguments
-     * @return The SearchCommand
-     */
-    private Command parseSearchCommand(String args) {
-        logger.fine("Parsing search command with arguments: " + args);
-        try {
-            if (args.trim().isEmpty()) {
-                return new InvalidCommand("Search command requires at least one keyword.");
-            }
-
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing keyword for search command");
-                return new InvalidCommand("keyword is required for search command.");
-            }
-
-            logger.fine("Searching transactions with keyword=" + args);
-            return new SearchCommand(args);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing income command", e);
-            return new InvalidCommand("Invalid income command: " + e.getMessage());
-        }
     }
 
     /**
@@ -287,93 +266,6 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing edit command", e);
             return new InvalidCommand("Invalid edit command: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Parses arguments into an IncomeCommand.
-     *
-     * @param args Command arguments
-     * @return The IncomeCommand
-     */
-    private Command parseIncomeCommand(String args) {
-        logger.fine("Parsing income command with arguments: " + args);
-        try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing amount parameter for income command");
-                return new InvalidCommand("Amount is required for income command.");
-            }
-
-            if (!parameters.containsKey("d")) {
-                logger.warning("Missing description parameter for income command");
-                return new InvalidCommand("Description is required for income command.");
-            }
-
-            double amount = parseAmount(parameters.get(""));
-            String description = parameters.get("d");
-            List<String> tags = parseTags(parameters);
-
-            logger.fine("Creating IncomeCommand with amount=" + amount +
-                    ", description=" + description + ", tags=" + tags);
-            return new IncomeCommand(amount, description, tags);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in income command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing income command", e);
-            return new InvalidCommand("Invalid income command: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Parses arguments into an ExpenseCommand.
-     *
-     * @param args Command arguments
-     * @return The ExpenseCommand
-     */
-    private Command parseExpenseCommand(String args) {
-        logger.fine("Parsing expense command with arguments: " + args);
-        try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing amount parameter for expense command");
-                return new InvalidCommand("Amount is required for expense command.");
-            }
-
-            if (!parameters.containsKey("d")) {
-                logger.warning("Missing description parameter for expense command");
-                return new InvalidCommand("Description is required for expense command.");
-            }
-
-            double amount = parseAmount(parameters.get(""));
-            String description = parameters.get("d");
-
-            Expense.Category category = Expense.Category.OTHERS;
-            if (parameters.containsKey("c")) {
-                category = Expense.Category.fromString(parameters.get("c"));
-            }
-
-            List<String> tags = parseTags(parameters);
-
-            logger.fine("Creating ExpenseCommand with amount=" + amount +
-                    ", description=" + description + ", category=" + category +
-                    ", tags=" + tags);
-            return new ExpenseCommand(amount, description, category, tags);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
         }
     }
 
@@ -479,8 +371,13 @@ public class Parser {
     private Command parseDeleteCommand(Ui ui) {
         logger.fine("Parsing delete command");
         try {
-            int index = ui.readIndex();
+            int index = ui.readInteger("Enter the index of the transaction to delete. \n> ");
             logger.fine("User input index: " + index);
+
+            if (index == -696969) {
+                logger.warning("non-integer was entered, error should be caught");
+                return new InvalidCommand("Non-integer was passed as index.");
+            }
 
             if (index <= 0) {
                 logger.warning("Invalid index: " + index + " (must be positive)");
@@ -800,5 +697,239 @@ public class Parser {
         }
 
         return tags;
+    }
+
+    /**
+     * LEGACY CODE
+     * Parses arguments into an ExpenseCommand.
+     *
+     * @param args Command arguments
+     * @return The ExpenseCommand
+     */
+    private Command parseExpenseCommand(String args) {
+        logger.fine("Parsing expense command with arguments: " + args);
+        try {
+            Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
+
+            if (!parameters.containsKey("")) {
+                logger.warning("Missing amount parameter for expense command");
+                return new InvalidCommand("Amount is required for expense command.");
+            }
+
+            if (!parameters.containsKey("d")) {
+                logger.warning("Missing description parameter for expense command");
+                return new InvalidCommand("Description is required for expense command.");
+            }
+
+            double amount = parseAmount(parameters.get(""));
+            String description = parameters.get("d");
+
+            Expense.Category category = Expense.Category.OTHERS;
+            if (parameters.containsKey("c")) {
+                category = Expense.Category.fromString(parameters.get("c"));
+            }
+
+            List<String> tags = parseTags(parameters);
+
+            logger.fine("Creating ExpenseCommand with amount=" + amount +
+                    ", description=" + description + ", category=" + category +
+                    ", tags=" + tags);
+            return new ExpenseCommand(amount, description, category, tags);
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing expense command", e);
+            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * ONE COMMAND ONE ACTION OVERRIDE
+     * Parses arguments into an ExpenseCommand.
+     *
+     * @return The ExpenseCommand
+     */
+    private Command parseExpenseCommand(Ui ui) {
+        logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
+        try {
+            double amount = ui.readDouble("Enter amount:\n> ");
+
+            String description = ui.readString("Enter description:\n> ");
+
+            Expense.Category category = parseCategory(ui);
+
+            //TODO: when new parseTags is ready, shove it here
+            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+
+            return new ExpenseCommand(amount, description, category, tags);
+
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing expense command", e);
+            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * LEGACY CODE
+     * Parses arguments into an IncomeCommand.
+     *
+     * @param args Command arguments
+     * @return The IncomeCommand
+     */
+    private Command parseIncomeCommand(String args) {
+        logger.fine("Parsing income command with arguments: " + args);
+        try {
+            Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
+
+            if (!parameters.containsKey("")) {
+                logger.warning("Missing amount parameter for income command");
+                return new InvalidCommand("Amount is required for income command.");
+            }
+
+            if (!parameters.containsKey("d")) {
+                logger.warning("Missing description parameter for income command");
+                return new InvalidCommand("Description is required for income command.");
+            }
+
+            double amount = parseAmount(parameters.get(""));
+            String description = parameters.get("d");
+            List<String> tags = parseTags(parameters);
+
+            logger.fine("Creating IncomeCommand with amount=" + amount +
+                    ", description=" + description + ", tags=" + tags);
+            return new IncomeCommand(amount, description, tags);
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in income command", e);
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing income command", e);
+            return new InvalidCommand("Invalid income command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * ONE COMMAND ONE ACTION OVERRIDE
+     * Parses arguments into an IncomeCommand.
+     *
+     * @return The IncomeCommand
+     */
+    private Command parseIncomeCommand(Ui ui) {
+        logger.fine("Parsing income command with friendly CLI ");
+        try {
+            double amount = ui.readDouble("Enter amount:\n");
+
+            String description = ui.readString("Enter description:\n");
+
+            //TODO: when new parseTags is ready, shove it here
+            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+
+            return new IncomeCommand(amount, description, tags);
+
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
+            return new InvalidCommand(
+                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
+            );
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing expense command", e);
+            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * LEGACY CODE
+     * Parses arguments into a SearchCommand.
+     *
+     * @param args Command arguments
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(String args) {
+        logger.fine("Parsing search command with arguments: " + args);
+        try {
+            if (args.trim().isEmpty()) {
+                return new InvalidCommand("Search command requires at least one keyword.");
+            }
+
+            Map<String, String> parameters = parseParameters(args);
+            logger.fine("Parsed parameters: " + parameters);
+
+            if (!parameters.containsKey("")) {
+                logger.warning("Missing keyword for search command");
+                return new InvalidCommand("keyword is required for search command.");
+            }
+
+            logger.fine("Searching transactions with keyword=" + args);
+            return new SearchCommand(args);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing search command", e);
+            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * ONE COMMAND ONE ACTION OVERRIDE
+     *  Parses arguments into a SearchCommand.
+     *
+     * @return The SearchCommand
+     */
+    private Command parseSearchCommand(Ui ui) {
+        logger.fine("Parsing search command with friendly CLI: ");
+        try {
+            String keyword = ui.readString("Enter keyword or string to search:\n>");
+
+            logger.fine("Searching transactions with keyword=" + keyword);
+
+            return new SearchCommand(keyword);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing search command", e);
+            return new InvalidCommand("Invalid searcg command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Extracts tags from parameters.
+     *
+     * @return category as per enum
+     */
+    private Expense.Category parseCategory(Ui ui) {
+        //what if they give a stupid number?
+
+        String message = "Please select a category by entering its corresponding index\n" +
+                "0 - OTHERS\n" +
+                "1 - FOOD\n" +
+                "2 - TRANSPORT\n" +
+                "3 - SHOPPING\n" +
+                "4 - BILLS\n" +
+                "5 - ENTERTAINMENT\n" +
+                "> ";
+
+        int catIndex = ui.readInteger(message);
+
+        switch (catIndex) {
+        case 0: return Expense.Category.OTHERS;
+        case 1: return Expense.Category.FOOD;
+        case 2: return Expense.Category.TRANSPORT;
+        case 3: return Expense.Category.SHOPPING;
+        case 4: return Expense.Category.BILLS;
+        case 5: return Expense.Category.ENTERTAINMENT;
+        default: {
+            System.out.println("INVALID INDEX. PICK AN INDEX FROM 0-5");
+            return parseCategory(ui);
+        }
+        }
+
+
     }
 }

@@ -10,22 +10,31 @@ import java.util.logging.Logger;
 public class Expense extends Transaction {
     private static final Logger logger = Logger.getLogger(Expense.class.getName());
     public enum Category {
-        FOOD("Food"),
-        TRANSPORT("Transport"),
-        SHOPPING("Shopping"),
-        BILLS("Bills"),
-        ENTERTAINMENT("Entertainment"),
-        OTHERS("Others");
+        FOOD(1, "Food"),
+        TRANSPORT(2, "Transport"),
+        SHOPPING(3, "Shopping"),
+        BILLS(4, "Bills"),
+        ENTERTAINMENT(5, "Entertainment"),
+        OTHERS(6, "Others");
 
+        private final int index;
         private final String displayName;
 
-        Category(String displayName) {
+        Category(int index, String displayName) {
+            this.index = index;
             this.displayName = displayName;
         }
 
         @Override
         public String toString() {
             return displayName;
+        }
+
+        /**
+         * Gets the numerical index of the category.
+         */
+        public int getIndex() {
+            return index;
         }
 
         /**
@@ -48,6 +57,18 @@ public class Expense extends Transaction {
             }
 
             logger.fine("No matching category found for '" + str + "', defaulting to OTHERS");
+            return OTHERS;
+        }
+
+        /**
+         * Parses an index (e.g., 1) into a Category.
+         */
+        public static Category fromIndex(int index) {
+            for (Category category : Category.values()) {
+                if (category.index == index) {
+                    return category;
+                }
+            }
             return OTHERS;
         }
     }

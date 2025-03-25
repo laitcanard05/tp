@@ -20,20 +20,21 @@ public class HelpCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        return "Available commands:\n" +
-                "income AMOUNT d/DESCRIPTION [t/TAG...] - Add income\n" +
-                "expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG...] - Add expense\n" +
-                "list [n/NUMBER] [d/DATE] - List transactions\n" +
-                "delete INDEX - Delete a transaction\n" +
-                "edit KEYWORD [a/AMOUNT] [d/DESCRIPTION] [date/DATE] [c/CATEGORY] [t/TAG] - Edit a transaction\n" +
-                "search KEYWORD [MORE_KEYWORDS] - Search transactions\n" +
-                "filter d/DATE [to/DATE] - Filter transactions by date\n" +
-                "balance - View current balance\n" +
-                "summary [m/MONTH] [y/YEAR] - View financial summary\n" +
-                "export [f/FORMAT] - Export data (csv or txt)\n" +
-                "clear - Clear all data\n" +
-                "exit - Exit the program\n" +
-                "help - Show this help message";
+        return "Available command words:\n\n" +
+                "expense  | AMOUNT , d/DESCRIPTION , [c/CATEGORY] , [t/TAG...] => Add an expense transaction\n" +
+                "income   | AMOUNT , d/DESCRIPTION , [t/TAG...] => Add an income transaction\n" +
+                "list     | [d/DATE] , [n/NUMBER] => List transactions\n" +
+                "delete   | INDEX => Delete a transaction\n" +
+                "edit     | KEYWORD , [a/AMOUNT] , [d/DESCRIPTION] , [date/DATE] , [c/CATEGORY] , [t/TAG] " +
+                "=> Edit a transaction\n" +
+                "filter   | d/DATE , [to/DATE] =>  Filter transactions by date\n" +
+                "summary  | [m/MONTH] [y/YEAR] - View financial summary\n" +
+                "export   | [f/FORMAT] - Export data (csv or txt)\n" +
+                "search   | KEYWORD => Search transactions\n" +
+                "balance  | View current balance\n" +
+                "exit     | Exit the program\n" +
+                "clear    | Clear all data\n" +
+                "help     | Show this help message";
     }
 
     /**

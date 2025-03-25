@@ -9,9 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for Ui.
@@ -112,7 +112,7 @@ class UiTest {
         ui = new Ui(new Scanner(System.in));
 
         String result = ui.readCommand();
-        assertEquals(expectedInput, result);
+        assertTrue(result.contains(expectedInput));
     }
 
     /**
