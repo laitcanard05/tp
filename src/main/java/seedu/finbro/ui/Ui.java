@@ -273,4 +273,17 @@ public class Ui {
         }
     }
 
+    /**
+     * Prompts the user for tag input and returns the trimmed input string.
+     *
+     * @param message The prompt message to display to the user
+     * @return The user's tag input as a trimmed string
+     */
+    public String readTags(String message) {
+        System.out.println(LINE);
+        System.out.print(message);
+        return scanner.nextLine().trim();
+    }
+
+
 }

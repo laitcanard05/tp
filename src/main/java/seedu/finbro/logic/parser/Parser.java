@@ -365,7 +365,7 @@ public class Parser {
     }
 
     /**
-     * Parses index read from the UI into a DeleteCommand.
+     * Parses index read from parseInteger into a DeleteCommand.
      *
      * @param ui The UI to interact with the user
      * @return The DeleteCommand
@@ -373,7 +373,8 @@ public class Parser {
     private Command parseDeleteCommand(Ui ui) {
         logger.fine("Parsing delete command");
         try {
-            int index = ui.readInteger("Enter the index of the transaction to delete. \n> ");
+            String message = "Enter the index of the transaction to delete. \n> ";
+            int index = parseInteger(ui, message);
             logger.fine("User input index: " + index);
 
             if (index == -696969) {
@@ -384,9 +385,10 @@ public class Parser {
             if (index <= 0) {
                 logger.warning("Invalid index: " + index + " (must be positive)");
                 return new InvalidCommand("Index must be a positive integer.");
+                //TODO make recursively ask for new index
             }
 
-            logger.fine("Creating DeleteCommand with index=" + index);
+            logger.fine("Creating DeleteCommand with index =" + index);
             return new DeleteCommand(index);
 
         } catch (NumberFormatException e) {
@@ -683,6 +685,7 @@ public class Parser {
     }
 
     /**
+     * LEGACY CODE
      * Extracts tags from parameters.
      *
      * @param parameters The parameters map
@@ -696,6 +699,34 @@ public class Parser {
             if (entry.getKey().equals("t")) {
                 tags.add(entry.getValue());
             }
+        }
+
+        return tags;
+    }
+
+    /**
+     * Prompts the user to input up to 3 tags and returns them as a list.
+     * Tags are split by commas or spaces and trimmed. Empty input returns an empty list.
+     *
+     * @param ui The UI to interact with the user.
+     * @return A list of up to 3 trimmed tags.
+     */
+    private List<String> parseTags(Ui ui) {
+        List<String> tags = new ArrayList<>();
+        String input = ui.readTags("Enter up to 3 tags (separated by space or comma), or press Enter to skip:\n> ");
+
+        if (input.isEmpty()) {
+            return tags;
+        }
+
+        String[] rawTags = input.split("[,\\s]+");
+
+        for (String tag : rawTags) {
+            String trimmed = tag.trim();
+            if (!trimmed.isEmpty()) {
+                tags.add(trimmed);
+            }
+            if (tags.size() == 3) break;
         }
 
         return tags;
@@ -764,8 +795,7 @@ public class Parser {
 
             Expense.Category category = parseCategory(ui);
 
-            //TODO: when new parseTags is ready, shove it here
-            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+            List<String> tags = parseTags(ui);
 
             return new ExpenseCommand(amount, description, category, tags);
 
@@ -834,8 +864,7 @@ public class Parser {
 
             String description = ui.readString("Enter description:\n");
 
-            //TODO: when new parseTags is ready, shove it here
-            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+            List<String> tags = parseTags(ui);
 
             return new IncomeCommand(amount, description, tags);
 
@@ -901,9 +930,12 @@ public class Parser {
     }
 
     /**
-     * Extracts tags from parameters.
+     * Prompts the user to select a category by index (0–5) and returns the corresponding category.
      *
-     * @return category as per enum
+     * @param ui The UI to read user input.
+     * @return The selected category.
+     * @throws NegativeNumberException If a negative number is entered.
+     * @throws IndexExceedLimitException If the index exceeds the valid range (0–5).
      */
     private Expense.Category parseCategory(Ui ui) throws NegativeNumberException, IndexExceedLimitException {
         try{
@@ -917,11 +949,11 @@ public class Parser {
                     "5 - ENTERTAINMENT\n" +
                     "> ";
 
-            int catIndex = ui.readInteger(message);
+            int catIndex = parseInteger(ui, message);
             if (catIndex < 0) {
                 throw new NegativeNumberException();
             }
-            if (catIndex >= 5) {
+            if (catIndex > 5) {
                 throw new IndexExceedLimitException();
             }
             assert catIndex >= 0;
@@ -946,10 +978,31 @@ public class Parser {
             IndexExceedLimitException.handle();
         }
         return parseCategory(ui);
+    }
 
-
-
-
+    /**
+     * Parses an integer from the user using the UI.
+     * Returns the parsed integer or calls the function again if input is invalid.
+     *
+     * @param ui The UI to read input from.
+     * @param message The message to print to the terminal.
+     * @return The parsed index as an integer.
+     */
+    private int parseInteger(Ui ui, String message) {
+        try {
+            int index = ui.readInteger(message);
+            if (index < 0) {
+                logger.warning("Invalid index input: " + index);
+                return parseInteger(ui, message);
+            }
+            return index;
+        } catch (NumberFormatException e) {
+            logger.warning("Non-integer input received for index.");
+            return parseInteger(ui, message);
+        } catch (Exception e) {
+            logger.warning("Unexpected error while parsing index: " + e.getMessage());
+            return parseInteger(ui, message);
+        }
     }
 }
 
