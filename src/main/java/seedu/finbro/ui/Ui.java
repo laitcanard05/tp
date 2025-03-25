@@ -109,8 +109,7 @@ public class Ui {
         if(input.equals("n") || input.equals("no")) {
             logger.fine("User confirmation result: FALSE");
             return false;
-        }
-        else {
+        } else {
             System.out.println(LINE);
             System.out.println("INVALID INPUT, PLEASE TRY AGAIN");
             logger.warning("invalid user input: " + input + ".\n trying again.");
