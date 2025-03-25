@@ -95,7 +95,6 @@ public class Ui {
      * @param message The confirmation message to show
      * @return true if the user confirms, false otherwise
      */
-    //TODO: bulletproof readConfirmation inputs to just y/n and its allowed variants, repeat if invalid
     public boolean readConfirmation(String message) {
         logger.fine("Requesting user confirmation: " + message);
         System.out.println(LINE);
