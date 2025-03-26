@@ -528,7 +528,103 @@ sequenceDiagram
    UI-->>User: display result
    deactivate UI
    deactivate FinBro
-   ```
+```
+### Obtaining the current list of transactions
+
+The follow sequence diagram illustrates the process of obtaining the current list of transactions:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant ListCommand as ListCommand
+    participant TransactionMgr as TransactionManager
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>ListCommand: new ListCommand(limit, date)
+    Parser-->>FinBro: command
+    FinBro->>ListCommand: execute(transactionManager, ui, storage)
+    alt date provided
+        ListCommand->>TransactionMgr: listTransactionsFromDate(date)
+        TransactionMgr-->>ListCommand: filteredTransactions
+        alt limit provided
+            Note right of ListCommand: Apply limit to filtered list
+        end
+    else no date
+        alt limit provided
+            ListCommand->>TransactionMgr: listTransactions(limit)
+            TransactionMgr-->>ListCommand: limitedTransactions
+        else no limit
+            ListCommand->>TransactionMgr: listTransactions()
+            TransactionMgr-->>ListCommand: allTransactions
+        end
+    end
+    ListCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for obtaining the current list of transactions:
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant ListCommand as ListCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "list n/5 d/2025-03-01"
+   Parser->>ListCommand: new ListCommand(limit, date)
+   activate ListCommand
+   ListCommand-->>Parser: command
+   deactivate ListCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>ListCommand: execute(transactionManager, ui, storage)
+   activate ListCommand
+
+   alt date provided
+      ListCommand->>TransactionMgr: listTransactionsFromDate(date)
+      activate TransactionMgr
+      TransactionMgr-->>ListCommand: filteredTransactions
+      deactivate TransactionMgr
+      alt limit provided
+         Note right of ListCommand: Apply limit to filtered list
+      end
+   else no date
+      alt limit provided
+         ListCommand->>TransactionMgr: listTransactions(limit)
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: limitedTransactions
+         deactivate TransactionMgr
+      else no limit
+         ListCommand->>TransactionMgr: listTransactions()
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: allTransactions
+         deactivate TransactionMgr
+      end
+   end
+
+   ListCommand-->>FinBro: result message
+   deactivate ListCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+
+
 ## Design Patterns
 
 FinBro implements several design patterns to enhance maintainability and extensibility:
