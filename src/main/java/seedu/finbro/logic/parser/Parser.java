@@ -665,6 +665,32 @@ public class Parser {
     }
 
     /**
+     * Parses a double from the user using the UI.
+     * Returns the parsed amount or calls the function again if input is invalid.
+     *
+     * @param ui The UI to read input from.
+     * @param message The message to print to the terminal.
+     * @return The parsed amount as a double.
+     */
+    private double parseAmount(Ui ui, String message) {
+        try {
+            double amount = ui.readDouble(message);
+            if (amount <= 0) {
+                logger.warning("Invalid amount input: " + amount);
+                return parseAmount(ui, message);
+            }
+            return amount;
+        } catch (NumberFormatException e) {
+            logger.warning("Non-numeric input received for amount.");
+            return parseAmount(ui, message);
+        } catch (Exception e) {
+            logger.warning("Unexpected error while parsing amount: " + e.getMessage());
+            return parseAmount(ui, message);
+        }
+    }
+
+    /**
+     * LEGACY CODE
      * Parses a string into a valid amount.
      *
      * @param amountStr The string to parse
@@ -782,6 +808,8 @@ public class Parser {
         }
     }
 
+    //TODO consider whether catching exception is needed in parse<command>Command since parse methods already handle
+
     /**
      * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an ExpenseCommand.
@@ -791,7 +819,7 @@ public class Parser {
     private Command parseExpenseCommand(Ui ui) {
         logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
         try {
-            double amount = ui.readDouble("Enter amount:\n> ");
+            double amount = parseAmount(ui, "Enter amount:\n> ");
 
             String description = ui.readString("Enter description:\n> ");
 
@@ -862,7 +890,7 @@ public class Parser {
     private Command parseIncomeCommand(Ui ui) {
         logger.fine("Parsing income command with friendly CLI ");
         try {
-            double amount = ui.readDouble("Enter amount:\n");
+            double amount = parseAmount(ui,"Enter amount:\n");
 
             String description = ui.readString("Enter description:\n");
 
@@ -1007,4 +1035,3 @@ public class Parser {
         }
     }
 }
-
