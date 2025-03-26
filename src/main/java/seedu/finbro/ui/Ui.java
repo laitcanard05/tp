@@ -2,7 +2,6 @@ package seedu.finbro.ui;
 
 import seedu.finbro.logic.exceptions.DecimalPointException;
 import seedu.finbro.logic.exceptions.EmptyInputException;
-import seedu.finbro.logic.exceptions.IndexExceedLimitException;
 import seedu.finbro.logic.exceptions.NegativeNumberException;
 
 import java.util.Scanner;
@@ -13,9 +12,8 @@ import java.util.logging.Logger;
  * Text-based UI for the FinBro application.
  */
 public class Ui {
-    private static final Logger logger = Logger.getLogger(Ui.class.getName());
     public static final String LINE = "____________________________________________________________";
-
+    private static final Logger logger = Logger.getLogger(Ui.class.getName());
     private final Scanner scanner;
 
     /**

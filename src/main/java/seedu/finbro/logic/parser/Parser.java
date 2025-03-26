@@ -27,9 +27,7 @@ import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.UnknownCommand;
-import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
-import seedu.finbro.logic.exceptions.NegativeNumberException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
@@ -770,7 +768,7 @@ public class Parser {
 
             return new ExpenseCommand(amount, description, category, tags);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
+            logger.log(Level.WARNING, "Unknown error parsing expense command", e);
             return new InvalidCommand("Something went wrong, please try again.");
         }
 
@@ -836,7 +834,7 @@ public class Parser {
             return new IncomeCommand(amount, description, tags);
 
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
+            logger.log(Level.WARNING, "Unknown error parsing income command", e);
             return new InvalidCommand("Something went wrong, please try again.");
         }
     }
