@@ -542,6 +542,105 @@ public void deleteTransaction(int index) {
 
 The implementation maintains proper indexing by updating the index numbers of all transactions following the deleted one.
 
+###### Editing a Transaction
+
+Editing a transaction also follows a similar component interaction pattern:
+
+1. **UI** captures the edit command with a keyword and parameters to update
+2. **Parser** creates an EditCommand with the specified keyword and parameters
+3. **EditCommand** searches for the transaction using SearchCommand
+4. **EditCommand** creates an updated transaction based on the original and parameters
+5. **TransactionManager** replaces the original transaction with the updated one
+6. **Storage** persists the updated transaction list
+
+Implementation details:
+
+```java
+public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+    // Use SearchCommand to find matching transactions
+    SearchCommand searchCommand = new SearchCommand(keyword);
+    String searchResult = searchCommand.execute(transactionManager, ui, storage);
+
+    if (searchResult.equals("No transactions found.")) {
+        return "No matching transaction found for '" + keyword + "'.";
+    }
+
+    // Parse the search results to get the transactions
+    List<Transaction> matchingTransactions = parseSearchResults(searchResult, transactionManager);
+
+    if (matchingTransactions.isEmpty() || matchingTransactions.size() > 1) {
+        return "Please provide a specific keyword that matches exactly one transaction.";
+    }
+
+    // Update the transaction
+    Transaction originalTransaction = matchingTransactions.get(0);
+    Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
+
+    if (updatedTransaction != null) {
+        boolean success = transactionManager.updateTransaction(originalTransaction, updatedTransaction);
+        if (success) {
+            storage.saveTransactions(transactionManager);
+            return "Transaction updated successfully:\n" + updatedTransaction;
+        }
+    }
+    return "Failed to update transaction.";
+}
+```
+
+The edit implementation is designed to maintain data integrity through several measures:
+
+1. **Unique transaction identification**: The edit command requires a keyword that matches exactly one transaction to avoid ambiguity.
+
+2. **Type preservation**: When creating the updated transaction, the original transaction type (Income or Expense) is preserved:
+
+```java
+// Create new transaction based on the type of the original
+if (original instanceof Income) {
+    return new Income(amount, description, date, tags);
+} else if (original instanceof Expense) {
+    Expense originalExpense = (Expense) original;
+    Expense.Category category = originalExpense.getCategory();
+
+    if (parameters.containsKey("c")) {
+        category = Expense.Category.fromString(parameters.get("c"));
+    }
+
+    return new Expense(amount, description, date, category, tags);
+}
+```
+
+3. **Selective updates**: The system only modifies fields that are explicitly included in the edit command, preserving original values for unspecified fields:
+
+```java
+// Default values from original transaction
+double amount = original.getAmount();
+String description = original.getDescription();
+LocalDate date = original.getDate();
+List<String> tags = new ArrayList<>(original.getTags());
+
+// Update values based on parameters
+if (parameters.containsKey("a")) {
+    amount = Double.parseDouble(parameters.get("a"));
+}
+```
+
+4. **Validation and error handling**: The implementation includes robust error handling for invalid input formats:
+
+```java
+try {
+    // Transaction creation logic
+} catch (NumberFormatException e) {
+    logger.log(Level.WARNING, "Invalid amount format in edit command", e);
+    return null;
+} catch (DateTimeParseException e) {
+    logger.log(Level.WARNING, "Invalid date format in edit command", e);
+    return null;
+}
+```
+
+This design ensures that the edit operation is both flexible and preserves data integrity.
+
+
 ###### Class Diagram of Transaction Component
 
 ```
