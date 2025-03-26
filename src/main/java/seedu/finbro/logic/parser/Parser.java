@@ -27,6 +27,7 @@ import seedu.finbro.logic.command.ListCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
 import seedu.finbro.logic.exceptions.NegativeNumberException;
 import seedu.finbro.model.Expense;
@@ -756,8 +757,8 @@ public class Parser {
      * @return The ExpenseCommand
      */
     private Command parseExpenseCommand(Ui ui) {
-        logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
         try {
+            logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
             double amount = ui.readDouble("Enter amount:\n> ");
 
             String description = ui.readString("Enter description:\n> ");
@@ -768,16 +769,11 @@ public class Parser {
             List<String> tags = new ArrayList<>(); //PLACEHOLDER
 
             return new ExpenseCommand(amount, description, category, tags);
-
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+            return new InvalidCommand("Something went wrong, please try again.");
         }
+
     }
 
     /**
@@ -839,20 +835,15 @@ public class Parser {
 
             return new IncomeCommand(amount, description, tags);
 
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+            return new InvalidCommand("Something went wrong, please try again.");
         }
     }
 
     /**
      * LEGACY CODE
-     * Parses arguments into a SearchCommand.
+     * Parses arguments into a Command.
      *
      * @param args Command arguments
      * @return The SearchCommand
@@ -905,9 +896,8 @@ public class Parser {
      *
      * @return category as per enum
      */
-    private Expense.Category parseCategory(Ui ui) throws NegativeNumberException, IndexExceedLimitException {
+    private Expense.Category parseCategory(Ui ui) {
         try{
-
             String message = "Please select a category by entering its corresponding index\n" +
                     "0 - OTHERS\n" +
                     "1 - FOOD\n" +
@@ -918,10 +908,8 @@ public class Parser {
                     "> ";
 
             int catIndex = ui.readInteger(message);
-            if (catIndex < 0) {
-                throw new NegativeNumberException();
-            }
-            if (catIndex >= 5) {
+
+            if (catIndex > 5) {
                 throw new IndexExceedLimitException();
             }
             assert catIndex >= 0;
@@ -938,18 +926,11 @@ public class Parser {
                 return parseCategory(ui);
             }
             }
-        } catch (NegativeNumberException e) {
-            logger.log(Level.WARNING, "Category input is negative. Invalid selection", e);
-            NegativeNumberException.handle();
         } catch (IndexExceedLimitException e) {
             logger.log(Level.WARNING, "Category input exceeds 5. Invalid selection.", e);
             IndexExceedLimitException.handle();
         }
         return parseCategory(ui);
-
-
-
-
     }
 }
 

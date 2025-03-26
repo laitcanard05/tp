@@ -1,6 +1,12 @@
 package seedu.finbro.ui;
 
+import seedu.finbro.logic.exceptions.DecimalPointException;
+import seedu.finbro.logic.exceptions.EmptyInputException;
+import seedu.finbro.logic.exceptions.IndexExceedLimitException;
+import seedu.finbro.logic.exceptions.NegativeNumberException;
+
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -8,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Ui {
     private static final Logger logger = Logger.getLogger(Ui.class.getName());
-    private static final String LINE = "____________________________________________________________";
+    public static final String LINE = "____________________________________________________________";
 
     private final Scanner scanner;
 
@@ -226,16 +232,27 @@ public class Ui {
      * @return The index entered by the user
      */
     public int readInteger(String message) {
-        while (true) {
-            System.out.println(LINE);
-            System.out.print(message);
+        System.out.println(LINE);
+        System.out.print(message);
+        try {
             String input = scanner.nextLine().trim();
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter an integer.");
+            if (input.isEmpty()){
+                throw new EmptyInputException();
             }
+            int output = Integer.parseInt(input);
+            if (output < 0) {
+                throw new NegativeNumberException();
+            }
+            return output;
+        } catch (NumberFormatException e) {
+            System.out.println("INVALID INPUT: Non-number Input.\nPlease enter an integer.");
+        } catch (EmptyInputException e) {
+            EmptyInputException.handle();
+        } catch (NegativeNumberException e) {
+            logger.log(Level.WARNING, "Integer input invalid - negative input", e);
+            NegativeNumberException.handle();
         }
+        return readInteger(message);
     }
 
     /**
@@ -244,16 +261,35 @@ public class Ui {
      * @return The amount entered by the user
      */
     public double readDouble(String message) {
-        while (true) {
-            System.out.println(LINE);
-            System.out.print(message);
+        System.out.println(LINE);
+        System.out.print(message);
+
+        try {
             String input = scanner.nextLine().trim();
-            try {
-                return Double.parseDouble(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid number (e.g., 12.34).");
+            if (input.isEmpty()) {
+                throw new EmptyInputException();
             }
+            double output = Double.parseDouble(input);
+            if (output < 0) {
+                throw new NegativeNumberException();
+            }
+            if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
+                throw new DecimalPointException();
+            }
+            return output;
+        } catch (NumberFormatException e) {
+            System.out.println("INVALID INPUT: Non-number Input.\nPlease enter a number up to 2 decimal places.");
+        } catch (NegativeNumberException e) {
+            logger.log(Level.WARNING, "Double input invalid - negative input", e);
+            NegativeNumberException.handle();
+        } catch (EmptyInputException e) {
+            logger.log(Level.WARNING, "Double input invalid - user input empty.", e);
+            EmptyInputException.handle();
+        } catch (DecimalPointException e) {
+            logger.log(Level.WARNING, "Double input invalid - exceeds 2dp.", e);
+            DecimalPointException.handle();
         }
+        return readDouble(message);
     }
 
     /**
@@ -269,7 +305,7 @@ public class Ui {
             if (!input.isEmpty()) {
                 return input;
             }
-            System.out.println("Input cannot be empty. Please enter a valid description.");
+            System.out.println("INVALID INPUT: empty input.\nPlease enter a string.");
         }
     }
 
