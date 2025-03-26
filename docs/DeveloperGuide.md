@@ -379,6 +379,156 @@ sequenceDiagram
     deactivate FinBro
 
 ```
+### Filtering transactions 
+
+The follow sequence diagram illustrates the process of filtering transactions based on a date range:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant FilterCommand as FilterCommand
+    participant TransactionMgr as TransactionManager
+    participant Storage as Storage
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>FilterCommand: new FilterCommand(startDate, endDate)
+    Parser-->>FinBro: command
+    FinBro->>FilterCommand: execute(transactionManager, ui, storage)
+    FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
+    TransactionMgr-->>FilterCommand: filteredTransactions
+    FilterCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for filtering transactions based on a date range:
+```mermaid 
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant FilterCommand as FilterCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
+   Parser->>FilterCommand: new FilterCommand(startDate, endDate)
+   activate FilterCommand
+   FilterCommand-->>Parser: command
+   deactivate FilterCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>FilterCommand: execute(transactionManager, ui, storage)
+   activate FilterCommand
+
+   FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
+   activate TransactionMgr
+   TransactionMgr-->>FilterCommand: filteredTransactions
+   deactivate TransactionMgr
+
+   FilterCommand-->>FinBro: result message (list of filtered transactions)
+   deactivate FilterCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+   ```
+### Obtaining a monthly financial summary
+
+The follow sequence diagram illustrates the process of obtaining a monthly financial summary based on a given month and year:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant SummaryCommand as SummaryCommand
+    participant TransactionMgr as TransactionManager
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>SummaryCommand: new SummaryCommand(month, year)
+    Parser-->>FinBro: command
+    FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
+    SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
+    TransactionMgr-->>SummaryCommand: totalIncome
+    SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
+    TransactionMgr-->>SummaryCommand: totalExpenses
+    SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+    TransactionMgr-->>SummaryCommand: categorisedExpenses
+    SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
+    TransactionMgr-->>SummaryCommand: taggedTransactions
+    SummaryCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for obtaining a monthly financial summary based on a given month and year:
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant SummaryCommand as SummaryCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "summary m/2 y/2025"
+   Parser->>SummaryCommand: new SummaryCommand(month, year)
+   activate SummaryCommand
+   SummaryCommand-->>Parser: command
+   deactivate SummaryCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
+   activate SummaryCommand
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalIncome
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: categorisedExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: taggedTransactions
+   deactivate TransactionMgr
+
+   SummaryCommand-->>FinBro: result message
+   deactivate SummaryCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+   ```
 ## Design Patterns
 
 FinBro implements several design patterns to enhance maintainability and extensibility:
