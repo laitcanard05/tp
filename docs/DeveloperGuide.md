@@ -379,6 +379,252 @@ sequenceDiagram
     deactivate FinBro
 
 ```
+### Filtering transactions 
+
+The follow sequence diagram illustrates the process of filtering transactions based on a date range:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant FilterCommand as FilterCommand
+    participant TransactionMgr as TransactionManager
+    participant Storage as Storage
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>FilterCommand: new FilterCommand(startDate, endDate)
+    Parser-->>FinBro: command
+    FinBro->>FilterCommand: execute(transactionManager, ui, storage)
+    FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
+    TransactionMgr-->>FilterCommand: filteredTransactions
+    FilterCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for filtering transactions based on a date range:
+```mermaid 
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant FilterCommand as FilterCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
+   Parser->>FilterCommand: new FilterCommand(startDate, endDate)
+   activate FilterCommand
+   FilterCommand-->>Parser: command
+   deactivate FilterCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>FilterCommand: execute(transactionManager, ui, storage)
+   activate FilterCommand
+
+   FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
+   activate TransactionMgr
+   TransactionMgr-->>FilterCommand: filteredTransactions
+   deactivate TransactionMgr
+
+   FilterCommand-->>FinBro: result message (list of filtered transactions)
+   deactivate FilterCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+   ```
+### Obtaining a monthly financial summary
+
+The follow sequence diagram illustrates the process of obtaining a monthly financial summary based on a given month and year:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant SummaryCommand as SummaryCommand
+    participant TransactionMgr as TransactionManager
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>SummaryCommand: new SummaryCommand(month, year)
+    Parser-->>FinBro: command
+    FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
+    SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
+    TransactionMgr-->>SummaryCommand: totalIncome
+    SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
+    TransactionMgr-->>SummaryCommand: totalExpenses
+    SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+    TransactionMgr-->>SummaryCommand: categorisedExpenses
+    SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
+    TransactionMgr-->>SummaryCommand: taggedTransactions
+    SummaryCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for obtaining a monthly financial summary based on a given month and year:
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant SummaryCommand as SummaryCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "summary m/2 y/2025"
+   Parser->>SummaryCommand: new SummaryCommand(month, year)
+   activate SummaryCommand
+   SummaryCommand-->>Parser: command
+   deactivate SummaryCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
+   activate SummaryCommand
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalIncome
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: categorisedExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: taggedTransactions
+   deactivate TransactionMgr
+
+   SummaryCommand-->>FinBro: result message
+   deactivate SummaryCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+### Obtaining the current list of transactions
+
+The follow sequence diagram illustrates the process of obtaining the current list of transactions:
+```
+sequenceDiagram
+    participant User
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant ListCommand as ListCommand
+    participant TransactionMgr as TransactionManager
+    participant UI as Ui
+
+    User->>FinBro: input command
+    FinBro->>Parser: parseCommand(userInput)
+    Parser->>ListCommand: new ListCommand(limit, date)
+    Parser-->>FinBro: command
+    FinBro->>ListCommand: execute(transactionManager, ui, storage)
+    alt date provided
+        ListCommand->>TransactionMgr: listTransactionsFromDate(date)
+        TransactionMgr-->>ListCommand: filteredTransactions
+        alt limit provided
+            Note right of ListCommand: Apply limit to filtered list
+        end
+    else no date
+        alt limit provided
+            ListCommand->>TransactionMgr: listTransactions(limit)
+            TransactionMgr-->>ListCommand: limitedTransactions
+        else no limit
+            ListCommand->>TransactionMgr: listTransactions()
+            TransactionMgr-->>ListCommand: allTransactions
+        end
+    end
+    ListCommand-->>FinBro: result message
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+```
+Here's a more detailed sequence diagram showing the flow for obtaining the current list of transactions:
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant ListCommand as ListCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "list n/5 d/2025-03-01"
+   Parser->>ListCommand: new ListCommand(limit, date)
+   activate ListCommand
+   ListCommand-->>Parser: command
+   deactivate ListCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>ListCommand: execute(transactionManager, ui, storage)
+   activate ListCommand
+
+   alt date provided
+      ListCommand->>TransactionMgr: listTransactionsFromDate(date)
+      activate TransactionMgr
+      TransactionMgr-->>ListCommand: filteredTransactions
+      deactivate TransactionMgr
+      alt limit provided
+         Note right of ListCommand: Apply limit to filtered list
+      end
+   else no date
+      alt limit provided
+         ListCommand->>TransactionMgr: listTransactions(limit)
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: limitedTransactions
+         deactivate TransactionMgr
+      else no limit
+         ListCommand->>TransactionMgr: listTransactions()
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: allTransactions
+         deactivate TransactionMgr
+      end
+   end
+
+   ListCommand-->>FinBro: result message
+   deactivate ListCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+
+
 ## Design Patterns
 
 FinBro implements several design patterns to enhance maintainability and extensibility:
@@ -541,6 +787,105 @@ public void deleteTransaction(int index) {
 ```
 
 The implementation maintains proper indexing by updating the index numbers of all transactions following the deleted one.
+
+###### Editing a Transaction
+
+Editing a transaction also follows a similar component interaction pattern:
+
+1. **UI** captures the edit command with a keyword and parameters to update
+2. **Parser** creates an EditCommand with the specified keyword and parameters
+3. **EditCommand** searches for the transaction using SearchCommand
+4. **EditCommand** creates an updated transaction based on the original and parameters
+5. **TransactionManager** replaces the original transaction with the updated one
+6. **Storage** persists the updated transaction list
+
+Implementation details:
+
+```java
+public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+    // Use SearchCommand to find matching transactions
+    SearchCommand searchCommand = new SearchCommand(keyword);
+    String searchResult = searchCommand.execute(transactionManager, ui, storage);
+
+    if (searchResult.equals("No transactions found.")) {
+        return "No matching transaction found for '" + keyword + "'.";
+    }
+
+    // Parse the search results to get the transactions
+    List<Transaction> matchingTransactions = parseSearchResults(searchResult, transactionManager);
+
+    if (matchingTransactions.isEmpty() || matchingTransactions.size() > 1) {
+        return "Please provide a specific keyword that matches exactly one transaction.";
+    }
+
+    // Update the transaction
+    Transaction originalTransaction = matchingTransactions.get(0);
+    Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
+
+    if (updatedTransaction != null) {
+        boolean success = transactionManager.updateTransaction(originalTransaction, updatedTransaction);
+        if (success) {
+            storage.saveTransactions(transactionManager);
+            return "Transaction updated successfully:\n" + updatedTransaction;
+        }
+    }
+    return "Failed to update transaction.";
+}
+```
+
+The edit implementation is designed to maintain data integrity through several measures:
+
+1. **Unique transaction identification**: The edit command requires a keyword that matches exactly one transaction to avoid ambiguity.
+
+2. **Type preservation**: When creating the updated transaction, the original transaction type (Income or Expense) is preserved:
+
+```java
+// Create new transaction based on the type of the original
+if (original instanceof Income) {
+    return new Income(amount, description, date, tags);
+} else if (original instanceof Expense) {
+    Expense originalExpense = (Expense) original;
+    Expense.Category category = originalExpense.getCategory();
+
+    if (parameters.containsKey("c")) {
+        category = Expense.Category.fromString(parameters.get("c"));
+    }
+
+    return new Expense(amount, description, date, category, tags);
+}
+```
+
+3. **Selective updates**: The system only modifies fields that are explicitly included in the edit command, preserving original values for unspecified fields:
+
+```java
+// Default values from original transaction
+double amount = original.getAmount();
+String description = original.getDescription();
+LocalDate date = original.getDate();
+List<String> tags = new ArrayList<>(original.getTags());
+
+// Update values based on parameters
+if (parameters.containsKey("a")) {
+    amount = Double.parseDouble(parameters.get("a"));
+}
+```
+
+4. **Validation and error handling**: The implementation includes robust error handling for invalid input formats:
+
+```java
+try {
+    // Transaction creation logic
+} catch (NumberFormatException e) {
+    logger.log(Level.WARNING, "Invalid amount format in edit command", e);
+    return null;
+} catch (DateTimeParseException e) {
+    logger.log(Level.WARNING, "Invalid date format in edit command", e);
+    return null;
+}
+```
+
+This design ensures that the edit operation is both flexible and preserves data integrity.
+
 
 ###### Class Diagram of Transaction Component
 

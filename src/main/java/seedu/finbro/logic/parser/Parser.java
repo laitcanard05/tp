@@ -385,7 +385,7 @@ public class Parser {
                 return new InvalidCommand("Index must be a positive integer.");
             }
 
-            logger.fine("Creating DeleteCommand with index=" + index);
+            logger.fine("Creating DeleteCommand with index =" + index);
             return new DeleteCommand(index);
 
         } catch (NumberFormatException e) {
@@ -682,6 +682,7 @@ public class Parser {
     }
 
     /**
+     * LEGACY CODE
      * Extracts tags from parameters.
      *
      * @param parameters The parameters map
@@ -697,6 +698,35 @@ public class Parser {
             }
         }
 
+        return tags;
+    }
+
+    /**
+     * Prompts the user to input up to 3 tags and returns them as a list.
+     * Tags are split by commas or spaces and trimmed. Empty input returns an empty list.
+     *
+     * @param ui The UI to interact with the user.
+     * @return A list of up to 3 trimmed tags.
+     */
+    private List<String> parseTags(Ui ui) {
+        List<String> tags = new ArrayList<>();
+        String input = ui.readTags("Enter up to 3 tags (separated by space or comma), or press Enter to skip:\n> ");
+
+        if (input.isEmpty()) {
+            return tags;
+        }
+
+        String[] rawTags = input.split("[,\\s]+");
+
+        for (String tag : rawTags) {
+            String trimmed = tag.trim();
+            if (!trimmed.isEmpty()) {
+                tags.add(trimmed);
+            }
+            if (tags.size() == 3) {
+                break;
+            }
+        }
         return tags;
     }
 
@@ -763,15 +793,13 @@ public class Parser {
 
             Expense.Category category = parseCategory(ui);
 
-            //TODO: when new parseTags is ready, shove it here
-            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+            List<String> tags = parseTags(ui);
 
             return new ExpenseCommand(amount, description, category, tags);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Unknown error parsing expense command", e);
             return new InvalidCommand("Something went wrong, please try again.");
         }
-
     }
 
     /**
@@ -828,8 +856,7 @@ public class Parser {
 
             String description = ui.readString("Enter description:\n");
 
-            //TODO: when new parseTags is ready, shove it here
-            List<String> tags = new ArrayList<>(); //PLACEHOLDER
+            List<String> tags = parseTags(ui);
 
             return new IncomeCommand(amount, description, tags);
 
@@ -841,7 +868,7 @@ public class Parser {
 
     /**
      * LEGACY CODE
-     * Parses arguments into a Command.
+     * Parses arguments into a SearchCommand.
      *
      * @param args Command arguments
      * @return The SearchCommand
@@ -890,9 +917,11 @@ public class Parser {
     }
 
     /**
-     * Extracts tags from parameters.
+     * Prompts the user to select a category by index (0–5) and returns the corresponding category.
      *
-     * @return category as per enum
+     * @param ui The UI to read user input.
+     * @return The selected category.
+     * @throws IndexExceedLimitException If the index exceeds the valid range (0–5).
      */
     private Expense.Category parseCategory(Ui ui) {
         try{

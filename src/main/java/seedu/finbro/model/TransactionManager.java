@@ -48,7 +48,7 @@ public class TransactionManager {
      */
     public void deleteTransaction(int index) {
         assert index >= 0 : "Index must be non-negative";
-        assert index < transactions.size() : "Index must be within the bounds of the transaction list";
+        assert index <= transactions.size() : "Index must be within the bounds of the transaction list";
 
         if (index < 1 || index > transactions.size()) {
             logger.warning("Attempt to delete transaction at invalid index: " + index);
