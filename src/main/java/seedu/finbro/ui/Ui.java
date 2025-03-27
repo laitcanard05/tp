@@ -227,9 +227,9 @@ public class Ui {
     /**
      * Reads the index of the transaction to delete from the user. Used in DeleteCommand.
      *
-     * @return The index entered by the user
+     * @return The index entered by the user, index >= 0, no empty input
      */
-    public int readInteger(String message) {
+    public int readIndex(String message) {
         System.out.println(LINE);
         System.out.print(message);
         try {
@@ -244,19 +244,20 @@ public class Ui {
             return output;
         } catch (NumberFormatException e) {
             System.out.println("INVALID INPUT: Non-number Input.\nPlease enter an integer.");
+            logger.log(Level.WARNING, "Integer input invalid - non-number input", e);
         } catch (EmptyInputException e) {
             EmptyInputException.handle();
         } catch (NegativeNumberException e) {
             logger.log(Level.WARNING, "Integer input invalid - negative input", e);
             NegativeNumberException.handle();
         }
-        return readInteger(message);
+        return readIndex(message);
     }
 
     /**
      * Reads the double input by user. Used to parse amount.
      *
-     * @return The amount entered by the user
+     * @return The double entered by the user, double >= 0, <=2dp, no empty input
      */
     public double readDouble(String message) {
         System.out.println(LINE);
@@ -277,6 +278,7 @@ public class Ui {
             return output;
         } catch (NumberFormatException e) {
             System.out.println("INVALID INPUT: Non-number Input.\nPlease enter a number up to 2 decimal places.");
+            logger.log(Level.WARNING, "Double input invalid - non-number input", e);
         } catch (NegativeNumberException e) {
             logger.log(Level.WARNING, "Double input invalid - negative input", e);
             NegativeNumberException.handle();
@@ -293,7 +295,7 @@ public class Ui {
     /**
      * Reads string input by user. Used to parse description for Income / Expense.
      *
-     * @return The string entered by the user
+     * @return The string entered by the user, no empty input
      */
     public String readString(String message) {
         while (true) {
@@ -311,7 +313,7 @@ public class Ui {
      * Prompts the user for tag input and returns the trimmed input string.
      *
      * @param message The prompt message to display to the user
-     * @return The user's tag input as a trimmed string
+     * @return The user's tag input as a trimmed string, accepts empty input
      */
     public String readTags(String message) {
         System.out.println(LINE);

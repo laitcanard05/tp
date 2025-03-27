@@ -372,13 +372,9 @@ public class Parser {
     private Command parseDeleteCommand(Ui ui) {
         logger.fine("Parsing delete command");
         try {
-            int index = ui.readInteger("Enter the index of the transaction to delete. \n> ");
+            int index = ui.readIndex("Enter the index of the transaction to delete. \n> ");
+            assert index >= 0;
             logger.fine("User input index: " + index);
-
-            if (index == -696969) {
-                logger.warning("non-integer was entered, error should be caught");
-                return new InvalidCommand("Non-integer was passed as index.");
-            }
 
             if (index <= 0) {
                 logger.warning("Invalid index: " + index + " (must be positive)");
@@ -934,7 +930,7 @@ public class Parser {
                     "5 - ENTERTAINMENT\n" +
                     "> ";
 
-            int catIndex = ui.readInteger(message);
+            int catIndex = ui.readIndex(message);
 
             if (catIndex > 5) {
                 throw new IndexExceedLimitException();
