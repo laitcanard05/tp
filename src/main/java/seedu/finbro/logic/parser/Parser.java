@@ -960,4 +960,3 @@ public class Parser {
         return parseCategory(ui);
     }
 }
-
