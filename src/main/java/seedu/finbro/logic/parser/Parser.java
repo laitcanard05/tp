@@ -28,7 +28,6 @@ import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SummaryCommand;
 import seedu.finbro.logic.command.UnknownCommand;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
-import seedu.finbro.logic.exceptions.NegativeNumberException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
@@ -365,7 +364,7 @@ public class Parser {
     }
 
     /**
-     * Parses index read from parseInteger into a DeleteCommand.
+     * Parses index read from the UI into a DeleteCommand.
      *
      * @param ui The UI to interact with the user
      * @return The DeleteCommand
@@ -373,19 +372,13 @@ public class Parser {
     private Command parseDeleteCommand(Ui ui) {
         logger.fine("Parsing delete command");
         try {
-            String message = "Enter the index of the transaction to delete. \n> ";
-            int index = parseInteger(ui, message);
+            int index = ui.readIndex("Enter the index of the transaction to delete. \n> ");
+            assert index >= 0;
             logger.fine("User input index: " + index);
-
-            if (index == -696969) {
-                logger.warning("non-integer was entered, error should be caught");
-                return new InvalidCommand("Non-integer was passed as index.");
-            }
 
             if (index <= 0) {
                 logger.warning("Invalid index: " + index + " (must be positive)");
                 return new InvalidCommand("Index must be a positive integer.");
-                //TODO make recursively ask for new index
             }
 
             logger.fine("Creating DeleteCommand with index =" + index);
@@ -665,32 +658,6 @@ public class Parser {
     }
 
     /**
-     * Parses a double from the user using the UI.
-     * Returns the parsed amount or calls the function again if input is invalid.
-     *
-     * @param ui The UI to read input from.
-     * @param message The message to print to the terminal.
-     * @return The parsed amount as a double.
-     */
-    private double parseAmount(Ui ui, String message) {
-        try {
-            double amount = ui.readDouble(message);
-            if (amount <= 0) {
-                logger.warning("Invalid amount input: " + amount);
-                return parseAmount(ui, message);
-            }
-            return amount;
-        } catch (NumberFormatException e) {
-            logger.warning("Non-numeric input received for amount.");
-            return parseAmount(ui, message);
-        } catch (Exception e) {
-            logger.warning("Unexpected error while parsing amount: " + e.getMessage());
-            return parseAmount(ui, message);
-        }
-    }
-
-    /**
-     * LEGACY CODE
      * Parses a string into a valid amount.
      *
      * @param amountStr The string to parse
@@ -756,7 +723,6 @@ public class Parser {
                 break;
             }
         }
-
         return tags;
     }
 
@@ -808,8 +774,6 @@ public class Parser {
         }
     }
 
-    //TODO consider whether catching exception is needed in parse<command>Command since parse methods already handle
-
     /**
      * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an ExpenseCommand.
@@ -817,9 +781,9 @@ public class Parser {
      * @return The ExpenseCommand
      */
     private Command parseExpenseCommand(Ui ui) {
-        logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
         try {
-            double amount = parseAmount(ui, "Enter amount:\n> ");
+            logger.fine("Parsing expense command with ONE COMMAND ONE ACTION ");
+            double amount = ui.readDouble("Enter amount:\n> ");
 
             String description = ui.readString("Enter description:\n> ");
 
@@ -828,15 +792,9 @@ public class Parser {
             List<String> tags = parseTags(ui);
 
             return new ExpenseCommand(amount, description, category, tags);
-
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+            logger.log(Level.WARNING, "Unknown error parsing expense command", e);
+            return new InvalidCommand("Something went wrong, please try again.");
         }
     }
 
@@ -890,7 +848,7 @@ public class Parser {
     private Command parseIncomeCommand(Ui ui) {
         logger.fine("Parsing income command with friendly CLI ");
         try {
-            double amount = parseAmount(ui,"Enter amount:\n");
+            double amount = ui.readDouble("Enter amount:\n");
 
             String description = ui.readString("Enter description:\n");
 
@@ -898,14 +856,9 @@ public class Parser {
 
             return new IncomeCommand(amount, description, tags);
 
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
+            logger.log(Level.WARNING, "Unknown error parsing income command", e);
+            return new InvalidCommand("Something went wrong, please try again.");
         }
     }
 
@@ -964,12 +917,10 @@ public class Parser {
      *
      * @param ui The UI to read user input.
      * @return The selected category.
-     * @throws NegativeNumberException If a negative number is entered.
      * @throws IndexExceedLimitException If the index exceeds the valid range (0–5).
      */
-    private Expense.Category parseCategory(Ui ui) throws NegativeNumberException, IndexExceedLimitException {
+    private Expense.Category parseCategory(Ui ui) {
         try{
-
             String message = "Please select a category by entering its corresponding index\n" +
                     "0 - OTHERS\n" +
                     "1 - FOOD\n" +
@@ -979,10 +930,8 @@ public class Parser {
                     "5 - ENTERTAINMENT\n" +
                     "> ";
 
-            int catIndex = parseInteger(ui, message);
-            if (catIndex < 0) {
-                throw new NegativeNumberException();
-            }
+            int catIndex = ui.readIndex(message);
+
             if (catIndex > 5) {
                 throw new IndexExceedLimitException();
             }
@@ -1000,38 +949,10 @@ public class Parser {
                 return parseCategory(ui);
             }
             }
-        } catch (NegativeNumberException e) {
-            logger.log(Level.WARNING, "Category input is negative. Invalid selection", e);
-            NegativeNumberException.handle();
         } catch (IndexExceedLimitException e) {
             logger.log(Level.WARNING, "Category input exceeds 5. Invalid selection.", e);
             IndexExceedLimitException.handle();
         }
         return parseCategory(ui);
-    }
-
-    /**
-     * Parses an integer from the user using the UI.
-     * Returns the parsed integer or calls the function again if input is invalid.
-     *
-     * @param ui The UI to read input from.
-     * @param message The message to print to the terminal.
-     * @return The parsed index as an integer.
-     */
-    private int parseInteger(Ui ui, String message) {
-        try {
-            int index = ui.readInteger(message);
-            if (index < 0) {
-                logger.warning("Invalid index input: " + index);
-                return parseInteger(ui, message);
-            }
-            return index;
-        } catch (NumberFormatException e) {
-            logger.warning("Non-integer input received for index.");
-            return parseInteger(ui, message);
-        } catch (Exception e) {
-            logger.warning("Unexpected error while parsing index: " + e.getMessage());
-            return parseInteger(ui, message);
-        }
     }
 }

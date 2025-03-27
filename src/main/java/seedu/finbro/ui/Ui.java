@@ -1,15 +1,19 @@
 package seedu.finbro.ui;
 
+import seedu.finbro.logic.exceptions.DecimalPointException;
+import seedu.finbro.logic.exceptions.EmptyInputException;
+import seedu.finbro.logic.exceptions.NegativeNumberException;
+
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Text-based UI for the FinBro application.
  */
 public class Ui {
+    public static final String LINE = "____________________________________________________________";
     private static final Logger logger = Logger.getLogger(Ui.class.getName());
-    private static final String LINE = "____________________________________________________________";
-
     private final Scanner scanner;
 
     /**
@@ -223,43 +227,75 @@ public class Ui {
     /**
      * Reads the index of the transaction to delete from the user. Used in DeleteCommand.
      *
-     * @return The index entered by the user
+     * @return The index entered by the user, index >= 0, no empty input
      */
-    public int readInteger(String message) {
-        while (true) {
-            System.out.println(LINE);
-            System.out.print(message);
+    public int readIndex(String message) {
+        System.out.println(LINE);
+        System.out.print(message);
+        try {
             String input = scanner.nextLine().trim();
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter an integer.");
+            if (input.isEmpty()){
+                throw new EmptyInputException();
             }
+            int output = Integer.parseInt(input);
+            if (output < 0) {
+                throw new NegativeNumberException();
+            }
+            return output;
+        } catch (NumberFormatException e) {
+            System.out.println("INVALID INPUT: Non-number Input.\nPlease enter an integer.");
+            logger.log(Level.WARNING, "Integer input invalid - non-number input", e);
+        } catch (EmptyInputException e) {
+            EmptyInputException.handle();
+        } catch (NegativeNumberException e) {
+            logger.log(Level.WARNING, "Integer input invalid - negative input", e);
+            NegativeNumberException.handle();
         }
+        return readIndex(message);
     }
 
     /**
      * Reads the double input by user. Used to parse amount.
      *
-     * @return The amount entered by the user
+     * @return The double entered by the user, double >= 0, <=2dp, no empty input
      */
     public double readDouble(String message) {
-        while (true) {
-            System.out.println(LINE);
-            System.out.print(message);
+        System.out.println(LINE);
+        System.out.print(message);
+
+        try {
             String input = scanner.nextLine().trim();
-            try {
-                return Double.parseDouble(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid number (e.g., 12.34).");
+            if (input.isEmpty()) {
+                throw new EmptyInputException();
             }
+            double output = Double.parseDouble(input);
+            if (output < 0) {
+                throw new NegativeNumberException();
+            }
+            if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
+                throw new DecimalPointException();
+            }
+            return output;
+        } catch (NumberFormatException e) {
+            System.out.println("INVALID INPUT: Non-number Input.\nPlease enter a number up to 2 decimal places.");
+            logger.log(Level.WARNING, "Double input invalid - non-number input", e);
+        } catch (NegativeNumberException e) {
+            logger.log(Level.WARNING, "Double input invalid - negative input", e);
+            NegativeNumberException.handle();
+        } catch (EmptyInputException e) {
+            logger.log(Level.WARNING, "Double input invalid - user input empty.", e);
+            EmptyInputException.handle();
+        } catch (DecimalPointException e) {
+            logger.log(Level.WARNING, "Double input invalid - exceeds 2dp.", e);
+            DecimalPointException.handle();
         }
+        return readDouble(message);
     }
 
     /**
      * Reads string input by user. Used to parse description for Income / Expense.
      *
-     * @return The string entered by the user
+     * @return The string entered by the user, no empty input
      */
     public String readString(String message) {
         while (true) {
@@ -269,7 +305,7 @@ public class Ui {
             if (!input.isEmpty()) {
                 return input;
             }
-            System.out.println("Input cannot be empty. Please enter a valid description.");
+            System.out.println("INVALID INPUT: empty input.\nPlease enter a string.");
         }
     }
 
@@ -277,13 +313,11 @@ public class Ui {
      * Prompts the user for tag input and returns the trimmed input string.
      *
      * @param message The prompt message to display to the user
-     * @return The user's tag input as a trimmed string
+     * @return The user's tag input as a trimmed string, accepts empty input
      */
     public String readTags(String message) {
         System.out.println(LINE);
         System.out.print(message);
         return scanner.nextLine().trim();
     }
-
-
 }
