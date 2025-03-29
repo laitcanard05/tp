@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
 
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.Income;
 import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
+
+//TODO: UPDATE CSV EXPORT TO INCLUDE BUDGETS
 
 /**
  * Handles saving and loading of data.
@@ -29,6 +32,7 @@ public class Storage {
 
     private static final String DATA_DIRECTORY = "data";
     private static final String DATA_FILE = "finbro.txt";
+    private static final String BUDGET_FILE = "budgets.txt";
     private static final String DEFAULT_EXPORT_DIRECTORY = "exports";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -381,5 +385,60 @@ public class Storage {
         }
 
         return filePath;
+    }
+
+    /**
+     * Saves budgets to the budget file.
+     *
+     * @param transactionManager The TransactionManager containing budgets to save
+     */
+    public void saveBudgets(TransactionManager transactionManager) {
+        String budgetFilePath = DATA_DIRECTORY + File.separator + BUDGET_FILE;
+
+        try (FileWriter writer = new FileWriter(budgetFilePath)) {
+            for (Map.Entry<String, Double> entry : transactionManager.getAllBudgets().entrySet()) {
+                writer.write(entry.getKey() + "|" + entry.getValue() + "\n"); // Format: yyyy-MM|amount
+            }
+            logger.info("Saved budgets to " + budgetFilePath);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to save budgets", e);
+        }
+    }
+
+    /**
+     * Loads budgets from the budget file.
+     *
+     * @param transactionManager The TransactionManager to load budgets into
+     */
+    public void loadBudgets(TransactionManager transactionManager) {
+        String budgetFilePath = DATA_DIRECTORY + File.separator + BUDGET_FILE;
+        File file = new File(budgetFilePath);
+        if (!file.exists()) {
+            logger.info("No budget file found, skipping budget load.");
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split("\\|");
+                if (parts.length != 2) {
+                    continue;
+                }
+
+                String[] dateParts = parts[0].split("-");
+                if (dateParts.length != 2) {
+                    continue;
+                }
+
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                double amount = Double.parseDouble(parts[1]);
+
+                transactionManager.setBudget(month, year, amount);
+            }
+            logger.info("Loaded budgets from " + budgetFilePath);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to load budgets", e);
+        }
     }
 }
