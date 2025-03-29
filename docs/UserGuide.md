@@ -1,5 +1,7 @@
 # FinBro User Guide
 
+![FinBro Logo](img/FinBro.png)
+
 ## Introduction
 
 Welcome to FinBro, your personal finance management companion. FinBro is a desktop application optimized for use via a Command Line Interface (CLI). If you prefer typing over clicking, FinBro will help you manage your finances more efficiently than traditional GUI applications.
@@ -208,3 +210,21 @@ Displays the list of available commands.
 | Clear Data | `clear` | `clear` |
 | Exit | `exit` | `exit` |
 | Help | `help` | `help` |
+
+## FAQ
+
+**Q: How do I transfer my data to another computer?**
+
+A: You can copy the data folder that contains the FinBro.txt file to the same directory as the FinBro.jar on the new computer.
+
+**Q: Can I use decimal points in the amount?**
+
+A: Yes, you can use up to 2 decimal places for transaction amounts.
+
+**Q: What is the difference between tags and categories?**
+
+A: Categories are predefined classifications for expenses (Food, Transport, etc.), while tags are custom labels that you can apply to both income and expenses for more personalized tracking.
+
+**Q: How do I back up my financial data?**
+
+A: Use the `export` command to create a CSV or TXT file containing all your transactions. Store this exported file in a safe location.
