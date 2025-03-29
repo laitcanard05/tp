@@ -170,12 +170,12 @@ public class Ui {
         return date;
     }
 
-
+    //TODO: consider splitting this up so we can recursively ask for month and year each time a wrong input is given
     public Integer[] readMonthYear() {
         Integer[] monthYear = new Integer[2];
         logger.fine("Requesting user input for month and year");
         System.out.println(LINE);
-        System.out.println("Please enter the month (1-12) for the summary.");
+        System.out.println("Please enter the month (1-12). (Leave blank for current month)");
         System.out.print("> ");
         String input = scanner.nextLine();
         Integer month;
@@ -186,7 +186,7 @@ public class Ui {
         }
         monthYear[0] = month;
         System.out.println(LINE);
-        System.out.println("Please enter the year for the summary.");
+        System.out.println("Please enter the year. (Leave blank for current year)");
         System.out.print("> ");
         input = scanner.nextLine();
         Integer year;
