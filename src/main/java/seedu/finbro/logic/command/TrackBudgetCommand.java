@@ -3,16 +3,16 @@ package seedu.finbro.logic.command;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
-import java.lang.Math;
 
 import java.util.logging.Logger;
+import static java.lang.Math.abs;
 
 //TODO: WRITE JUNIT TESTS FOR THIS COMMAND WHEN IT IS IMPLEMENTED
 
 public class TrackBudgetCommand implements Command {
+    private static final Logger logger = Logger.getLogger(TrackBudgetCommand.class.getName());
     private final int month;
     private final int year;
-    private static final Logger logger = Logger.getLogger(TrackBudgetCommand.class.getName());
 
     /**
      * Constructs a TrackBudgetCommand with the specified month and year.
@@ -53,7 +53,7 @@ public class TrackBudgetCommand implements Command {
         result += String.format("Total Expenses: $%.2f\n", totalExpense);
         if (remainingBudget < 0) {
             logger.info("Exceeded budget");
-            result += String.format("You have exceeded your budget by $%.2f!", Math.abs(remainingBudget));
+            result += String.format("You have exceeded your budget by $%.2f!", abs(remainingBudget));
         } else {
             logger.info("Within budget");
             result += "You are within your budget.\n";
