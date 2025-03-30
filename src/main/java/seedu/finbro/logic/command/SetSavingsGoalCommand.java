@@ -1,6 +1,5 @@
 package seedu.finbro.logic.command;
 
-import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
