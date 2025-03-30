@@ -143,7 +143,8 @@ public class Ui {
         String startDate = scanner.nextLine();
         dates[0] = startDate;
         System.out.println(LINE);
-        System.out.println("Please enter the end date in the format yyyy-mm-dd.");
+        System.out.println("Please enter the end date in the format yyyy-mm-dd." +
+                            " (Leave blank to show transactions up to current date.)");
         System.out.print("> ");
         String endDate = scanner.nextLine();
         dates[1] = endDate;
