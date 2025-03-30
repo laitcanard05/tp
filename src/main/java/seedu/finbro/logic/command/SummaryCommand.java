@@ -50,28 +50,60 @@ public class SummaryCommand implements Command {
         logger.info("Executing summary command");
 
         String monthString = new DateFormatSymbols().getMonths()[month-1];
+        double totalIncome = transactionManager.getMonthlyTotalIncome(month, year);
+        double totalExpense = transactionManager.getMonthlyTotalExpense(month, year);
         logger.info(String.format("Calculating total income and total expenses for %s %d",
             monthString, year));
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
-        summaryDisplay += String.format("Total Income: $%.2f\n",
-            transactionManager.getMonthlyTotalIncome(month, year));
-        summaryDisplay += String.format("Total Expenses: $%.2f\n",
-            transactionManager.getMonthlyTotalExpense(month, year));
+        summaryDisplay += String.format("Total Income: $%.2f\n", totalIncome);
+        summaryDisplay += String.format("Total Expenses: $%.2f\n", totalExpense);
 
-        //uncomment this to test set budget
+        //uncomment this to test set budget and set savings goal\
         /*
-        summaryDisplay += "\n";
         if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
             logger.info(("No budget found in hashmap"));
-            summaryDisplay += String.format("No budget set for %s %d\n", monthString, year);
+            summaryDisplay += String.format("\nNo budget set for %s %d\n", monthString, year);
         } else {
-            logger.info(String.format("Budget found in hashmap: $%.2f",
-                transactionManager.getBudget(month, year)));
-            summaryDisplay += String.format("Budget for %s %d: $%.2f\n",
-                    monthString, year,
-                    transactionManager.getBudget(month, year));
+            double budget = transactionManager.getBudget(month, year);
+            logger.info(String.format("Budget found in hashmap: $%.2f", budget));
+            summaryDisplay += String.format("\nBudget for %s %d: $%.2f\n",
+                monthString,
+                year,
+                budget);
+            double remainingBudget = budget - totalExpense;
+            if (remainingBudget < 0) {
+                summaryDisplay += String.format("You have exceeded your budget by $%.2f\n",
+                   Math.abs(remainingBudget));
+            } else {
+                summaryDisplay += String.format("You have $%.2f remaining in your budget\n",
+                    remainingBudget);
+            }
         }
-        */
+        if (transactionManager.getSavingsGoal(month, year) == DEFAULT_BUDGET) {
+            logger.info(("No savings goal found in hashmap"));
+            summaryDisplay += String.format("\nNo savings goal set for %s %d\n", monthString, year);
+        } else {
+            double savingsGoal = transactionManager.getSavingsGoal(month, year);
+            logger.info(String.format("Savings goal found in hashmap: $%.2f", savingsGoal));
+            summaryDisplay += String.format("\nSavings Goal for %s %d: $%.2f\n",
+                monthString,
+                year,
+                savingsGoal);
+            double savings = totalIncome - totalExpense;
+            if (savings > 0) {
+                summaryDisplay += String.format("You have saved $%.2f\n", savings);
+                if (savings >= savingsGoal) {
+                    summaryDisplay += String.format("You have reached your savings goal!\n");
+                } else {
+                    double remainingSavings = savingsGoal - savings;
+                    summaryDisplay += String.format("You need to save $%.2f more to reach your savings goal\n",
+                        remainingSavings);
+                }
+            } else {
+                summaryDisplay += String.format("You have a net spending of $%.2f this month\n", Math.abs(savings));
+            }
+        }
+         */
 
         logger.info(String.format("Calculating total expenses for top categories for %s %d",
                 monthString, year));
