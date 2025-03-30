@@ -59,7 +59,7 @@ public class SummaryCommand implements Command {
             transactionManager.getMonthlyTotalExpense(month, year));
 
         //uncomment this to test set budget
-
+        /*
         summaryDisplay += "\n";
         if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
             logger.info(("No budget found in hashmap"));
@@ -71,7 +71,7 @@ public class SummaryCommand implements Command {
                     monthString, year,
                     transactionManager.getBudget(month, year));
         }
-
+        */
 
         logger.info(String.format("Calculating total expenses for top categories for %s %d",
                 monthString, year));
