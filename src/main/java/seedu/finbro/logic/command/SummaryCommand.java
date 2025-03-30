@@ -58,7 +58,7 @@ public class SummaryCommand implements Command {
         summaryDisplay += String.format("Total Income: $%.2f\n", totalIncome);
         summaryDisplay += String.format("Total Expenses: $%.2f\n", totalExpense);
 
-        //uncomment this to test set budget and set savings goal\
+        //uncomment this to test set budget and set savings goal
         /*
         if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
             logger.info(("No budget found in hashmap"));
@@ -72,10 +72,10 @@ public class SummaryCommand implements Command {
                 budget);
             double remainingBudget = budget - totalExpense;
             if (remainingBudget < 0) {
-                summaryDisplay += String.format("You have exceeded your budget by $%.2f\n",
+                summaryDisplay += String.format("Budget exceeded by: $%.2f\n",
                    Math.abs(remainingBudget));
             } else {
-                summaryDisplay += String.format("You have $%.2f remaining in your budget\n",
+                summaryDisplay += String.format("Remaining budget: $.2f\n",
                     remainingBudget);
             }
         }
@@ -91,19 +91,15 @@ public class SummaryCommand implements Command {
                 savingsGoal);
             double savings = totalIncome - totalExpense;
             if (savings > 0) {
-                summaryDisplay += String.format("You have saved $%.2f\n", savings);
+                summaryDisplay += String.format("Total Savings: $%.2f\n", savings);
                 if (savings >= savingsGoal) {
-                    summaryDisplay += String.format("You have reached your savings goal!\n");
-                } else {
-                    double remainingSavings = savingsGoal - savings;
-                    summaryDisplay += String.format("You need to save $%.2f more to reach your savings goal\n",
-                        remainingSavings);
+                    summaryDisplay += String.format("Savings goal reached\n");
                 }
             } else {
-                summaryDisplay += String.format("You have a net spending of $%.2f this month\n", Math.abs(savings));
+                summaryDisplay += String.format("Net spending: $%.2f\n", Math.abs(savings));
             }
         }
-         */
+        */
 
         logger.info(String.format("Calculating total expenses for top categories for %s %d",
                 monthString, year));
@@ -139,6 +135,7 @@ public class SummaryCommand implements Command {
                 }
             }
         }
+
 
         logger.info(String.format("Calculating total expenses for each tag for %s %d",
                 monthString, year));
