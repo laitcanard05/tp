@@ -11,23 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import seedu.finbro.logic.command.BalanceCommand;
-import seedu.finbro.logic.command.ClearCommand;
-import seedu.finbro.logic.command.Command;
-import seedu.finbro.logic.command.DeleteCommand;
-import seedu.finbro.logic.command.EditCommand;
-import seedu.finbro.logic.command.ExitCommand;
-import seedu.finbro.logic.command.ExpenseCommand;
-import seedu.finbro.logic.command.ExportCommand;
-import seedu.finbro.logic.command.FilterCommand;
-import seedu.finbro.logic.command.HelpCommand;
-import seedu.finbro.logic.command.IncomeCommand;
-import seedu.finbro.logic.command.InvalidCommand;
-import seedu.finbro.logic.command.ListCommand;
-import seedu.finbro.logic.command.SearchCommand;
-import seedu.finbro.logic.command.SetBudgetCommand;
-import seedu.finbro.logic.command.SummaryCommand;
-import seedu.finbro.logic.command.UnknownCommand;
+import seedu.finbro.logic.command.*;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
@@ -231,6 +215,9 @@ public class Parser {
             break;
         case "setbudget":
             parsedCommand = parseSetBudgetCommand(ui);
+            break;
+        case "trackbudget":
+            parsedCommand = parseTrackBudgetCommand(ui);
             break;
         case "edit":
         default:
@@ -1000,6 +987,39 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing set budget command", e);
             return new InvalidCommand("Invalid set budget command: " + e.getMessage());
+        }
+    }
+    /**
+     * Parses arguments into a TrackBudgetCommand.
+     *
+     * @param ui The inputs read from the UI.
+     * @return The trackBudgetCommand
+     */
+    private Command parseTrackBudgetCommand(Ui ui) {
+        logger.fine("Parsing track budget command");
+        try {
+            Integer[] monthYear = ui.readMonthYear();
+            Integer month = monthYear[0];
+            Integer year = monthYear[1];
+
+            if (month == null) {
+                logger.info("No month input, using current month");
+                month = LocalDate.now().getMonthValue();
+            } else if (month < 1 || month > 12) {
+                logger.warning("Invalid month input: " + month);
+                return new InvalidCommand("Month input must be between 1 and 12.");
+            }
+            if (year == null) {
+                logger.info("No year input, using current year");
+                year = LocalDate.now().getYear();
+            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
+                logger.warning("Invalid year input: " + year);
+                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
+            }
+            return new TrackBudgetCommand(month, year);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing track budget command", e);
+            return new InvalidCommand("Invalid track budget command: " + e.getMessage());
         }
     }
 }

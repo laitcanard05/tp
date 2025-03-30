@@ -58,6 +58,21 @@ public class SummaryCommand implements Command {
         summaryDisplay += String.format("Total Expenses: $%.2f\n",
             transactionManager.getMonthlyTotalExpense(month, year));
 
+        //uncomment this to test set budget
+
+        summaryDisplay += "\n";
+        if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
+            logger.info(("No budget found in hashmap"));
+            summaryDisplay += String.format("No budget set for %s %d\n", monthString, year);
+        } else {
+            logger.info(String.format("Budget found in hashmap: $%.2f",
+                transactionManager.getBudget(month, year)));
+            summaryDisplay += String.format("Budget for %s %d: $%.2f\n",
+                    monthString, year,
+                    transactionManager.getBudget(month, year));
+        }
+
+
         logger.info(String.format("Calculating total expenses for top categories for %s %d",
                 monthString, year));
         Map<Expense.Category, Double> sortedCategorisedExpenses =
@@ -104,21 +119,6 @@ public class SummaryCommand implements Command {
                  Map.Entry::getKey,
                  Map.Entry::getValue,
                  (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
-        //uncomment this to test set budget
-        /*
-        summaryDisplay += "\n";
-        if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
-            logger.info(("No budget found in hashmap"));
-            summaryDisplay += String.format("No budget set for %s %d\n", monthString, year);
-        } else {
-            logger.info(String.format("Budget found in hashmap: $%.2f",
-                transactionManager.getBudget(month, year)));
-            summaryDisplay += String.format("Budget for %s %d: $%.2f\n",
-                    monthString, year,
-                    transactionManager.getBudget(month, year));
-        }
-         */
 
         if (sortedTaggedTransactions.isEmpty()) {
             return summaryDisplay;
