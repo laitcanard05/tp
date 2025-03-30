@@ -58,7 +58,17 @@ public class ExpenseCommand implements Command {
         }
         transactionManager.addTransaction(expense);
         storage.saveTransactions(transactionManager);
-        return "New expense added: " + expense;
+        String result = "New expense added: " + expense + "\n";
+
+        double budget = transactionManager.getBudget(expense.getDate().getMonthValue(), expense.getDate().getYear());
+        if (budget != -1.0) {
+            double totalExpense = transactionManager.getMonthlyTotalExpense(expense.getDate().getMonthValue(),
+                    expense.getDate().getYear());
+            if (totalExpense > budget) {
+                result +=  String.format("Warning: You have exceeded your budget of $%.2f for this month", budget);
+            }
+        }
+        return result;
     }
 
     /**
