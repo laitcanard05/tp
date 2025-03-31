@@ -16,8 +16,10 @@ public class TransactionManager {
     private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
     private static final int INDEX_OFFSET = 1;
     private static final double DEFAULT_BUDGET = -1.0;
+    private static final double DEFAULT_SAVINGS_GOAL = -1.0;
     private final List<Transaction> transactions;
     private final Map<String, Double> budgets = new HashMap<>();
+    private final Map<String, Double> savingsGoals = new HashMap<>();
 
     /**
      * Constructs a TransactionManager with an empty list of transactions.
@@ -384,4 +386,42 @@ public class TransactionManager {
         return new HashMap<>(budgets); // returns a copy for safety
     }
 
+    /**
+     * Sets the savings goal for a specific month and year.
+     *
+     * @param month The month for which to set the savings goal (1-12)
+     * @param year The year for which to set the savings goal
+     * @param savingsGoal The savings goal amount to set
+     */
+    public void setSavingsGoal(int month, int year, double savingsGoal) {
+        assert month >= 1 && month <= 12 : "Month must be between 1 and 12";
+        assert year > 0 : "Year must be positive";
+        assert savingsGoal >= 0 : "Savings goal must be non-negative";
+
+        String savingsKey = year + "-" + month;
+        savingsGoals.put(savingsKey, savingsGoal);
+        logger.info("Set savings goal of $" + savingsGoal + " for " + month + "/" + year);
+    }
+
+    /**
+     * Retrieves the savings goal for a specific month and year.
+     *
+     * @param month The month for which to retrieve the savings goal (1-12)
+     * @param year The year for which to retrieve the savings goal
+     * @return The savings goal amount for the specified month and year,
+     *     or -1.0 if no savings goal is set
+     */
+    public double getSavingsGoal(int month, int year) {
+        String savingsKey = year + "-" + month;
+        return savingsGoals.getOrDefault(savingsKey, DEFAULT_SAVINGS_GOAL);
+    }
+
+    /**
+     * Retrieves all the savings goals that user has inputted. Used in Storage
+     *
+     * @return The hashmap of savings goals.
+     */
+    public Map<String, Double> getAllSavingsGoals() {
+        return new HashMap<>(savingsGoals); // returns a copy for safety
+    }
 }

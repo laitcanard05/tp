@@ -29,6 +29,8 @@ import seedu.finbro.logic.command.IncomeCommand;
 import seedu.finbro.logic.command.SetBudgetCommand;
 import seedu.finbro.logic.command.TrackBudgetCommand;
 import seedu.finbro.logic.command.SearchCommand;
+import seedu.finbro.logic.command.SetSavingsGoalCommand;
+import seedu.finbro.logic.command.TrackSavingsGoalCommand;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
@@ -235,6 +237,12 @@ public class Parser {
             break;
         case "trackbudget":
             parsedCommand = parseTrackBudgetCommand(ui);
+            break;
+        case "setsavings":
+            parsedCommand = parseSetSavingsGoalCommand(ui);
+            break;
+        case "tracksavings":
+            parsedCommand = parseTrackSavingsGoalCommand(ui);
             break;
         case "edit":
         default:
@@ -1028,6 +1036,81 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing track budget command", e);
             return new InvalidCommand("Invalid track budget command: " + e.getMessage());
+        }
+    }
+    /**
+     * Parses arguments into a SetSavingsCommand.
+     *
+     * @param ui The inputs read from the UI.
+     * @return The setSavingsCommand
+     */
+    private Command parseSetSavingsGoalCommand(Ui ui) {
+        logger.fine("Parsing set savings command");
+        try {
+            Integer[] monthYear = ui.readMonthYear();
+            Integer month = monthYear[0];
+            Integer year = monthYear[1];
+
+            if (month == null) {
+                logger.info("No month input, using current month");
+                month = LocalDate.now().getMonthValue();
+            } else if (month < 1 || month > 12) {
+                logger.warning("Invalid month input: " + month);
+                return new InvalidCommand("Month input must be between 1 and 12.");
+            }
+            if (year == null) {
+                logger.info("No year input, using current year");
+                year = LocalDate.now().getYear();
+            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
+                logger.warning("Invalid year input: " + year);
+                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
+            }
+
+            double savingsGoal = ui.readDouble("Enter your savings goal:\n> ");
+            if (savingsGoal <= 0) {
+                return new InvalidCommand("Savings goal must be a positive value.");
+            }
+            return new SetSavingsGoalCommand(savingsGoal, month, year);
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid number format for savings goal", e);
+            return new InvalidCommand("Invalid savings goal format. Please provide a valid number.");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing set savings goal command", e);
+            return new InvalidCommand("Invalid set savings goal command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses arguments into a TrackSavingsGoalCommand.
+     *
+     * @param ui The inputs read from the UI.
+     * @return The trackSavingsGoalCommand
+     */
+    private Command parseTrackSavingsGoalCommand(Ui ui) {
+        logger.fine("Parsing track savings goal command");
+        try {
+            Integer[] monthYear = ui.readMonthYear();
+            Integer month = monthYear[0];
+            Integer year = monthYear[1];
+
+            if (month == null) {
+                logger.info("No month input, using current month");
+                month = LocalDate.now().getMonthValue();
+            } else if (month < 1 || month > 12) {
+                logger.warning("Invalid month input: " + month);
+                return new InvalidCommand("Month input must be between 1 and 12.");
+            }
+            if (year == null) {
+                logger.info("No year input, using current year");
+                year = LocalDate.now().getYear();
+            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
+                logger.warning("Invalid year input: " + year);
+                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
+            }
+            return new TrackSavingsGoalCommand(month, year);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error parsing track savings goal command", e);
+            return new InvalidCommand("Invalid track savings goal command: " + e.getMessage());
         }
     }
 }
