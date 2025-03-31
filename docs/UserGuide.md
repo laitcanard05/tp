@@ -2,19 +2,51 @@
 
 ![FinBro Logo](img/FinBro.png)
 
+## Table of Contents
+* [Introduction](#introduction)
+
+* [Quick Start](#quick-start)
+
+* [Command Format Conventions](#command-format-conventions)
+
+* [Features](#features)
+    * [Transaction Management](#features---transaction-management)
+        * [Recording Income](#1-recording-income-income-transaction-management)
+        * [Recording Expenses](#2-recording-expenses-expense-transaction-management)
+        * [Viewing Transactions](#3-viewing-transactions-list-transaction-management)
+        * [Removing Transactions](#4-removing-transactions-delete-transaction-management)
+      
+    * [Finding and Filtering](#features---finding-and-filtering)
+        * [Searching Transactions](#5-searching-transactions-search-finding-and-filtering)
+        * [Filtering by Date](#6-filtering-by-date-filter-finding-and-filtering)
+      
+    * [Financial Insights](#features---financial-insights)
+        * [Checking Balance](#7-checking-balance-balance-financial-insights)
+        * [Generating Summary](#8-generating-summary-summary-financial-insights)
+      
+    * [Data Management](#features---data-management)
+        * [Exporting Data](#9-exporting-data-export-data-management)
+        * [Clearing All Data](#10-clearing-all-data-clear-data-management)
+      
+* [Command Summary](#command-summary)
+
+* [FAQ](#faq)
+
 ## Introduction
 
-Welcome to FinBro, your personal finance management companion. FinBro is a desktop application optimized for use via a Command Line Interface (CLI). If you prefer typing over clicking, FinBro will help you manage your finances more efficiently than traditional GUI applications.
+Welcome to FinBro, your personal finance management companion. 
+FinBro is a desktop application optimized for use via a Command Line Interface (CLI). 
+If you prefer typing to clicking, FinBro will help you manage your finances more efficiently than traditional GUI applications.
 
-## Getting Started
+## Quick Start
 
-### Prerequisites
-* Java 17 installed on your computer
-
-### Installation
-1. Download the latest FinBro.jar file from the [releases page](https://github.com/yourusername/finbro/releases)
-2. Run the jar file using: `java -jar FinBro.jar`
-3. Ensure you are in the correct directory when running the command
+1. Ensure you have Java 17 or above installed on your computer.
+2. Download the latest `FinBro.jar` from [here](https://github.com/AY2425S2-CS2113-W13-3/tp/releases).
+3. Copy the file to the folder you want to use as the home folder for FinBro.
+4. Open a command prompt/terminal and navigate to the folder where you placed the jar file.
+5. Run the application using: `java -jar FinBro.jar`
+6. Type a command in the command box and press Enter to execute it. 
+For example, typing `help` and pressing Enter will display a summary of available commands.
 
 ## Command Format Conventions
 
@@ -25,47 +57,87 @@ The following conventions are used in this guide:
 * Items with `...` after them can be used multiple times including zero times
 * Parameters can be provided in any order
 
-## Core Commands
+# Features
 
-### Transaction Management
-
-#### Recording Income: `income`
+---
+## Features - Transaction Management
+### 1. Recording Income: `income` [Transaction Management]
 
 Records money received into your account.
 
-**Format:** `income AMOUNT d/DESCRIPTION [t/TAG]...`
+**Format:** `income`, `AMOUNT`, `DESCRIPTION`. `[TAGS]`
 
 **Parameters:**
 * `AMOUNT`: A positive number with up to 2 decimal places
-* `d/DESCRIPTION`: A brief description of the income source
-* `t/TAG`: Optional tags to categorize your income (can have multiple)
+* `DESCRIPTION`: A brief description of the income source
+* `TAGS`: Optional tags to categorize your income (can have 0-3)
 
 **Examples:**
 ```
-income 3000 d/Monthly salary t/work
-income 500.50 d/Freelance project t/work t/design
+Enter Command Word:
+> income
+ 
+Enter Amount:
+> 0.01
+
+Enter Description:
+> Monthly salary
+
+Enter up to 3 tags (separated by space or comma), or press Enter to skip:
+> Internship
+
 ```
 
-#### Recording Expenses: `expense`
+**Enhanced Duplicate Detection**
+
+FinBro automatically checks for **duplicate transactions** based on the same amount and description.
+
+If duplicates are detected:
+1. You will receive a **warning**
+2. You’ll be asked to confirm whether you still want to proceed
+
+This helps prevent accidental repeated entries.
+
+---
+
+### 2. Recording Expenses: `expense` [Transaction Management]
 
 Records money spent from your account.
 
-**Format:** `expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG]...`
+**Format:** `expense`, `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`
 
 **Parameters:**
 * `AMOUNT`: A positive number with up to 2 decimal places
-* `d/DESCRIPTION`: A brief description of the expense
-* `c/CATEGORY`: One of: Food, Transport, Shopping, Bills, Entertainment, Others (defaults to Others if not specified)
-* `t/TAG`: Optional tags for further categorization (can have multiple)
+* `DESCRIPTION`: A brief description of the expense
+* `CATEGORY`: One of: Food, Transport, Shopping, Bills, Entertainment, Others (defaults to Others if not specified)
+* `TAG`: Optional tags for further categorization (can have 0-3 Tags)
 
-**Examples:**
+**Example:**
 ```
-expense 25.50 d/Lunch c/Food t/work
-expense 75 d/New shoes c/Shopping
-expense 10.80 d/Bus fare c/Transport
-```
+Enter Command Word:
+> expense
+ 
+Enter Amount:
+> 26.80
 
-#### Viewing Transactions: `list`
+Enter Description:
+> Chat subscription
+
+Please select a category by entering its corresponding index
+0 - OTHERS
+1 - FOOD
+2 - TRANSPORT
+3 - SHOPPING
+4 - BILLS
+5 - ENTERTAINMENT
+> 4
+
+Enter up to 3 tags (separated by space or comma), or press Enter to skip:
+>
+
+```
+---
+### 3. Viewing Transactions: `list` [Transaction Management]
 
 Displays your transaction history.
 
@@ -82,7 +154,19 @@ list n/10
 list d/2025-02-18
 ```
 
-#### Removing Transactions: `delete`
+**Enhanced Duplicate Detection**
+
+FinBro automatically checks for **duplicate transactions** based on the same amount and description.
+
+If duplicates are detected:
+1. You will receive a **warning**
+2. You’ll be asked to confirm whether you still want to proceed
+
+This helps prevent accidental repeated entries.
+
+---
+
+### 4. Removing Transactions: `delete` [Transaction Management]
 
 Removes a transaction from your records.
 
@@ -96,26 +180,29 @@ Removes a transaction from your records.
 delete 1
 ```
 
-### Finding and Filtering
-
-#### Searching Transactions: `search`
+---
+## Features - Finding and Filtering
+### 5. Searching Transactions: `search` [Finding and Filtering]
 
 Finds transactions containing specific keywords.
 
-**Format:** `search KEYWORD [MORE_KEYWORDS]...`
+**Format:** `search` `KEYWORD`
 
 **Notes:**
 * Search is case-insensitive
 * Only the description field is searched
-* Matches any transaction that contains at least one keyword
+* Only transactions containing entire keyword will be shown
 
-**Examples:**
+**Example:**
 ```
-search grocery
-search lunch dinner
+> search
+Enter keyword or string to search:
+> grocery lunch
 ```
 
-#### Filtering by Date: `filter`
+---
+
+### 6. Filtering by Date: `filter` [Finding and Filtering]
 
 Shows transactions within a specific time period.
 
@@ -131,15 +218,18 @@ filter d/2025-02-01 to/2025-02-28
 filter d/2025-02-01
 ```
 
-### Financial Insights
-
-#### Checking Balance: `balance`
+---
+## Features - Financial Insights
+### 7. Checking Balance: `balance` [Financial Insights]
 
 Shows your current account balance.
 
 **Format:** `balance`
 
-#### Generating Summary: `summary`
+
+---
+
+### 8. Generating Summary: `summary`  [Financial Insights]
 
 Provides an overview of your financial activity for a specific period.
 
@@ -155,9 +245,9 @@ summary
 summary m/2 y/2025
 ```
 
-### Data Management
-
-#### Exporting Data: `export`
+---
+## Features - Data Management
+### 9. Exporting Data: `export` [Data Management]
 
 Exports your financial records to a file.
 
@@ -172,7 +262,9 @@ export
 export f/txt
 ```
 
-#### Clearing All Data: `clear`
+---
+
+### 10. Clearing All Data: `clear`  [Data Management]
 
 Deletes all your financial records.
 
@@ -182,34 +274,42 @@ Deletes all your financial records.
 * This action cannot be undone
 * You will be asked to confirm before proceeding
 
-#### Exiting the Program: `exit`
+
+---
+
+### 11. Exiting the Program: `exit`
 
 Closes the application.
 
 **Format:** `exit`
 
-#### Getting Help: `help`
+
+---
+
+### 12. Getting Help: `help`
 
 Displays the list of available commands.
 
 **Format:** `help`
 
+---
+
 ## Command Summary
 
-| Action | Format | Example |
-|--------|--------|---------|
-| Add Income | `income AMOUNT d/DESCRIPTION [t/TAG]...` | `income 3000 d/Monthly salary t/work` |
-| Add Expense | `expense AMOUNT d/DESCRIPTION [c/CATEGORY] [t/TAG]...` | `expense 25.50 d/Lunch c/Food t/work` |
-| List Transactions | `list [n/NUMBER] [d/DATE]` | `list n/10` |
-| Delete Transaction | `delete INDEX` | `delete 1` |
-| Search | `search KEYWORD [MORE_KEYWORDS]...` | `search grocery food` |
-| Filter | `filter d/DATE [to/DATE]` | `filter d/2025-02-01 to/2025-02-28` |
-| View Balance | `balance` | `balance` |
-| View Summary | `summary [m/MONTH] [y/YEAR]` | `summary m/2 y/2025` |
-| Export Data | `export [f/FORMAT]` | `export f/csv` |
-| Clear Data | `clear` | `clear` |
-| Exit | `exit` | `exit` |
-| Help | `help` | `help` |
+| Action             | Command Word                   | Following Fields                                | Example                                    |
+|--------------------|--------------------------------|-------------------------------------------------|--------------------------------------------|
+| Add Income         | `income`                       | `AMOUNT`, `DESCRIPTION`, `[TAGS]`               | `income`, `3000`, `Monthly salary`, `work` |
+| Add Expense        | `expense`                      | `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`   | `expense`, `25.50`, `Lunch`, `1`, `work`   |
+| List Transactions  | `list`                         | `[NUMBER]`, `[DATE]`                            | `list`, `10`                               |
+| Delete Transaction | `delete`                       | `INDEX`                                         | `delete`, `1`                              |
+| Search             | `search`                       | `KEYWORD`                                       | `search`, `grocery food`                   |
+| Filter             | `filter`                       | `STARTDATE`, `[ENDDATE]`                        | `filter`, `2025-02-01`, `2025-02-28`       |
+| View Balance       | `balance`                      | -                                               | `balance`                                  |
+| View Summary       | `summary`                      | `[MONTH] [YEAR]`                                | `summary`, `2`, `2025`                     |
+| Export Data        | `export`                       | `[FORMAT]`                                      | `export`, `csv`                            |
+| Clear Data         | `clear`                        | -                                               | `clear`                                    |
+| Exit               | `exit`                         | -                                               | `exit`                                     |
+| Help               | `help`                         | -                                               | `help`                                     |
 
 ## FAQ
 
