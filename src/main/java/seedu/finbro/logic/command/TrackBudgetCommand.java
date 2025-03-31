@@ -11,6 +11,7 @@ import static java.lang.Math.abs;
 
 public class TrackBudgetCommand implements Command {
     private static final Logger logger = Logger.getLogger(TrackBudgetCommand.class.getName());
+    private static final double DEFAULT_BUDGET = -1.0;
     private final int month;
     private final int year;
 
@@ -42,7 +43,7 @@ public class TrackBudgetCommand implements Command {
 
         double budget = transactionManager.getBudget(month, year);
         logger.info("Executing track budget command");
-        if (budget == -1.0) {
+        if (budget == DEFAULT_BUDGET) {
             logger.info(String.format("No budget set for %d/%d", month, year));
             return String.format("No budget set for %d/%d. Please set a budget first.", month, year);
         }

@@ -365,7 +365,7 @@ public class Parser {
             if (index <= 0) {
                 return new InvalidCommand("Index must be a positive integer.");
             }
-            return new DeleteCommand(index);
+            return new DeleteCommand(index,index);
         } catch (NumberFormatException e) {
             return new InvalidCommand("Invalid index. Please provide a valid number.");
         } catch (Exception e) {
@@ -382,21 +382,12 @@ public class Parser {
     private Command parseDeleteCommand(Ui ui) {
         logger.fine("Parsing delete command");
         try {
-            int index = ui.readIndex("Enter the index of the transaction to delete. \n> ");
-            assert index >= 0;
-            logger.fine("User input index: " + index);
+            int[] index = ui.readIndexRange("Enter a number or range to delete. (e.g., '1' or '2-5')\n> ");
+            int start = index[0];
+            int end = index[1];
+            logger.fine("Creating DeleteCommand with start=" + start + ", end=" + end);
+            return new DeleteCommand(start, end);
 
-            if (index <= 0) {
-                logger.warning("Invalid index: " + index + " (must be positive)");
-                return new InvalidCommand("Index must be a positive integer.");
-            }
-
-            logger.fine("Creating DeleteCommand with index =" + index);
-            return new DeleteCommand(index);
-
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid number format for delete index", e);
-            return new InvalidCommand("Invalid index. Please provide a valid number.");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing delete command", e);
             return new InvalidCommand("Invalid delete command: " + e.getMessage());

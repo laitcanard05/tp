@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class SummaryCommand implements Command {
     private static final int MAXIMUM_CATEGORIES_TO_DISPLAY = 3;
     private static final double DEFAULT_BUDGET = -1.0;
+    private static final int MONTH_OFFSET = 1;
     private static final Logger logger = Logger.getLogger(SummaryCommand.class.getName());
     private final int month;
     private final int year;
@@ -49,7 +50,7 @@ public class SummaryCommand implements Command {
 
         logger.info("Executing summary command");
 
-        String monthString = new DateFormatSymbols().getMonths()[month-1];
+        String monthString = new DateFormatSymbols().getMonths()[month-MONTH_OFFSET];
         logger.info(String.format("Calculating total income and total expenses for %s %d",
             monthString, year));
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
