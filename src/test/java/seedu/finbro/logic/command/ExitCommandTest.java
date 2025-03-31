@@ -29,7 +29,8 @@ class ExitCommandTest {
     @Test
     void execute_shouldReturnGoodbyeMessage() {
         String result = exitCommand.execute(transactionManager, ui, storage);
-        assertEquals("Goodbye! Thank you for using FinBro.", result);
+        assertEquals("Thank you for using FinBro. Your finances are now in better shape!\n"
+                + "Goodbye!", result);
     }
 
     @Test

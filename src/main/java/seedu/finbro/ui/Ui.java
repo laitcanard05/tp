@@ -264,37 +264,38 @@ public class Ui {
         System.out.println(LINE);
         System.out.print(message);
 
-        try {
-            String input = scanner.nextLine().trim();
-            if (input.isEmpty()) {
-                throw new EmptyInputException();
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                if (input.isEmpty()) {
+                    throw new EmptyInputException();
+                }
+
+                if (input.contains("-")) {
+                    String[] parts = input.split("-");
+                    if (parts.length != 2) {
+                        throw new NumberFormatException("Invalid range format.");
+                    }
+
+                    int start = Integer.parseInt(parts[0].trim());
+                    int end = Integer.parseInt(parts[1].trim());
+
+                    if (start < 1 || end < 1 || start > end) {
+                        throw new IllegalArgumentException("Start and end must be positive, and start <= end.");
+                    }
+
+                    return new int[]{start, end};
+                } else {
+                    int index = Integer.parseInt(input);
+                    if (index < 1) {
+                        throw new IllegalArgumentException("Index must be a positive integer.");
+                    }
+                    return new int[]{index, index};
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Enter a number or range (e.g., '1' or '2-5')");
+                logger.log(Level.WARNING, "Invalid delete index input", e);
             }
-
-            if (input.contains("-")) {
-                String[] parts = input.split("-");
-                if (parts.length != 2) {
-                    throw new NumberFormatException("Invalid range format.");
-                }
-
-                int start = Integer.parseInt(parts[0].trim());
-                int end = Integer.parseInt(parts[1].trim());
-
-                if (start < 1 || end < 1 || start > end) {
-                    throw new IllegalArgumentException("Start and end must be positive, and start <= end.");
-                }
-
-                return new int[]{start, end};
-            } else {
-                int index = Integer.parseInt(input);
-                if (index < 1) {
-                    throw new IllegalArgumentException("Index must be a positive integer.");
-                }
-                return new int[]{index, index};
-            }
-        } catch (Exception e) {
-            System.out.println("Invalid input. Enter a number or range (e.g., '1' or '2-5')");
-            logger.log(Level.WARNING, "Invalid delete index input", e);
-            return readIndexRange(message); // retry
         }
     }
 
