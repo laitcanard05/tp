@@ -200,9 +200,7 @@ Enter keyword or string to search:
 > grocery lunch
 ```
 
-
 ---
-
 
 ### 6. Filtering by Date: `filter` [Finding and Filtering]
 
