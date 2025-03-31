@@ -117,6 +117,7 @@ public class TransactionManager {
     }
 
     /**
+     * LEGACY CODE
      * Searches for transactions whose descriptions contain any of the given keywords.
      *
      * @param keywords The keywords to search for
@@ -154,12 +155,15 @@ public class TransactionManager {
     /**
      * @return stream of all transactions that contain keyword
      */
-    public ArrayList<Transaction> getTransactionsContainingKeyword(String keyword) {
+    public List<Transaction> getTransactionsContainingKeyword(String keyword) {
         assert keyword != null : "Search keyword cannot be null";
         assert !keyword.trim().isEmpty() : "Search keyword cannot be empty";
-        return transactions.stream()
-            .filter(t -> (t.getDescription().contains(keyword)))
-            .collect(Collectors.toCollection(ArrayList::new));
+
+        List<Transaction> matchingTransactionsList = new ArrayList<>(transactions);
+        matchingTransactionsList.removeIf(t ->
+                !t.getDescription().toLowerCase().contains(keyword.toLowerCase())
+        );
+        return matchingTransactionsList;
     }
 
     /**
