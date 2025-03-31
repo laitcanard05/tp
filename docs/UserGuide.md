@@ -166,7 +166,24 @@ This helps prevent accidental repeated entries.
 
 ---
 
-### 4. Removing Transactions: `delete` [Transaction Management]
+### 4. Editing Transactions: `edit` [Transaction Management]
+
+Modifies an existing transaction's details.
+
+**Format:** `edit INDEX`
+
+**Parameters:**
+* `INDEX`: The position number of the transaction to edit as shown in the list
+
+**Notes:**
+* You can leave any field blank to keep its original value
+* For each field, you'll be prompted to enter a new value or press Enter to skip
+
+**Example:**
+
+---
+
+### 5. Removing Transactions: `delete` [Transaction Management]
 
 Removes a transaction from your records.
 
@@ -182,7 +199,7 @@ delete 1
 
 ---
 ## Features - Finding and Filtering
-### 5. Searching Transactions: `search` [Finding and Filtering]
+### 6. Searching Transactions: `search` [Finding and Filtering]
 
 Finds transactions containing specific keywords.
 
@@ -202,7 +219,7 @@ Enter keyword or string to search:
 
 ---
 
-### 6. Filtering by Date: `filter` [Finding and Filtering]
+### 7. Filtering by Date: `filter` [Finding and Filtering]
 
 Shows transactions within a specific time period.
 
@@ -220,7 +237,7 @@ filter d/2025-02-01
 
 ---
 ## Features - Financial Insights
-### 7. Checking Balance: `balance` [Financial Insights]
+### 8. Checking Balance: `balance` [Financial Insights]
 
 Shows your current account balance.
 
@@ -229,7 +246,7 @@ Shows your current account balance.
 
 ---
 
-### 8. Generating Summary: `summary`  [Financial Insights]
+### 9. Generating Summary: `summary`  [Financial Insights]
 
 Provides an overview of your financial activity for a specific period.
 
@@ -247,7 +264,7 @@ summary m/2 y/2025
 
 ---
 ## Features - Data Management
-### 9. Exporting Data: `export` [Data Management]
+### 10. Exporting Data: `export` [Data Management]
 
 Exports your financial records to a file.
 
@@ -264,7 +281,7 @@ export f/txt
 
 ---
 
-### 10. Clearing All Data: `clear`  [Data Management]
+### 11. Clearing All Data: `clear`  [Data Management]
 
 Deletes all your financial records.
 
@@ -277,7 +294,7 @@ Deletes all your financial records.
 
 ---
 
-### 11. Exiting the Program: `exit`
+### 12. Exiting the Program: `exit`
 
 Closes the application.
 
@@ -286,7 +303,7 @@ Closes the application.
 
 ---
 
-### 12. Getting Help: `help`
+### 13. Getting Help: `help`
 
 Displays the list of available commands.
 
@@ -296,20 +313,21 @@ Displays the list of available commands.
 
 ## Command Summary
 
-| Action             | Command Word                   | Following Fields                                | Example                                    |
-|--------------------|--------------------------------|-------------------------------------------------|--------------------------------------------|
-| Add Income         | `income`                       | `AMOUNT`, `DESCRIPTION`, `[TAGS]`               | `income`, `3000`, `Monthly salary`, `work` |
-| Add Expense        | `expense`                      | `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`   | `expense`, `25.50`, `Lunch`, `1`, `work`   |
-| List Transactions  | `list`                         | `[NUMBER]`, `[DATE]`                            | `list`, `10`                               |
-| Delete Transaction | `delete`                       | `INDEX`                                         | `delete`, `1`                              |
-| Search             | `search`                       | `KEYWORD`                                       | `search`, `grocery food`                   |
-| Filter             | `filter`                       | `STARTDATE`, `[ENDDATE]`                        | `filter`, `2025-02-01`, `2025-02-28`       |
-| View Balance       | `balance`                      | -                                               | `balance`                                  |
-| View Summary       | `summary`                      | `[MONTH] [YEAR]`                                | `summary`, `2`, `2025`                     |
-| Export Data        | `export`                       | `[FORMAT]`                                      | `export`, `csv`                            |
-| Clear Data         | `clear`                        | -                                               | `clear`                                    |
-| Exit               | `exit`                         | -                                               | `exit`                                     |
-| Help               | `help`                         | -                                               | `help`                                     |
+| Action             | Command Word                 | Following Fields                                | Example                                    |
+|--------------------|------------------------------|-------------------------------------------------|--------------------------------------------|
+| Add Income         | `income`                     | `AMOUNT`, `DESCRIPTION`, `[TAGS]`               | `income`, `3000`, `Monthly salary`, `work` |
+| Add Expense        | `expense`                    | `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`   | `expense`, `25.50`, `Lunch`, `1`, `work`   |
+| List Transactions  | `list`                       | `[NUMBER]`, `[DATE]`                            | `list`, `10`                               |
+Edit Transaction | `edit` | `[AMOUNT]`, `[DESCRIPTION]`, `[DATE]`, `[CATEGORY]`, `[TAGS]` | `edit`, `2` |
+| Delete Transaction | `delete`                     | `INDEX`                                         | `delete`, `1`                              |
+| Search             | `search`                     | `KEYWORD`                                       | `search`, `grocery food`                   |
+| Filter             | `filter`                     | `STARTDATE`, `[ENDDATE]`                        | `filter`, `2025-02-01`, `2025-02-28`       |
+| View Balance       | `balance`                    | -                                               | `balance`                                  |
+| View Summary       | `summary`                    | `[MONTH] [YEAR]`                                | `summary`, `2`, `2025`                     |
+| Export Data        | `export`                     | `[FORMAT]`                                      | `export`, `csv`                            |
+| Clear Data         | `clear`                      | -                                               | `clear`                                    |
+| Exit               | `exit`                       | -                                               | `exit`                                     |
+| Help               | `help`                       | -                                               | `help`                                     |
 
 ## FAQ
 

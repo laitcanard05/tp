@@ -22,19 +22,19 @@ import java.util.logging.Logger;
 public class EditCommand implements Command {
     private static final Logger logger = Logger.getLogger(EditCommand.class.getName());
 
-    private final String keyword;
+    private final int index;
     private final Map<String, String> parameters;
 
     /**
      * Constructs an EditCommand with the given keyword and parameters.
      *
-     * @param keyword the keyword to search for the transaction to edit
+     * @param index the keyword to search for the transaction to edit
      * @param parameters the parameters to update in the transaction
      */
-    public EditCommand(String keyword, Map<String, String> parameters) {
-        this.keyword = keyword;
+    public EditCommand(int index, Map<String, String> parameters) {
+        this.index = index;
         this.parameters = parameters;
-        logger.fine("Constructed EditCommand with keyword=" + keyword + ", parameters=" + parameters);
+        logger.fine("Constructed EditCommand with index =" + index + ", parameters=" + parameters);
     }
 
     /**
@@ -47,30 +47,18 @@ public class EditCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        logger.info("Executing EditCommand with keyword: " + keyword);
+        logger.info("Executing EditCommand with index: " + index);
 
         List<Transaction> transactions = transactionManager.listTransactions();
-        List<Transaction> matchingTransactions = new ArrayList<>();
 
-        // Find matching transactions
-        for (Transaction transaction : transactions) {
-            if (transaction.toString().toLowerCase().contains(keyword.toLowerCase())) {
-                matchingTransactions.add(transaction);
-            }
+        // Check if index is valid
+        if (index < 0 || index >= transactions.size()) {
+            logger.warning("Invalid index: " + index);
+            return "Invalid index. Please provide an index between 0 and " + (transactions.size() - 1) + ".";
         }
 
-        if (matchingTransactions.isEmpty()) {
-            logger.info("No transactions found matching keyword: " + keyword);
-            return "No matching transaction found for '" + keyword + "'.";
-        }
-
-        if (matchingTransactions.size() > 1) {
-            logger.info("Multiple transactions found matching keyword: " + keyword);
-            return "Please provide a more specific keyword. Multiple transactions matched.";
-        }
-
-        // Update the transaction
-        Transaction originalTransaction = matchingTransactions.get(0);
+        // Get the transaction at the specified index
+        Transaction originalTransaction = transactions.get(index);
         Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
 
         if (updatedTransaction != null) {

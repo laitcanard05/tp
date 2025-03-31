@@ -161,14 +161,10 @@ public class Parser {
         logger.fine("Parsing edit command");
         try {
             // Keyword is required - cannot be skipped
-            String keyword = ui.readString("Enter the keyword to find the transaction to edit:\n> ");
-            if (keyword.trim().isEmpty()) {
-                return new InvalidCommand("Please provide a keyword to find the transaction to edit.");
-            }
+            int index = ui.readIndex("Enter the index of transaction to edit:\n> ");
 
             Map<String, String> parameters = new HashMap<>();
 
-            // Amount (allow skipping)
             String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
             if (!amountStr.isEmpty()) {
                 try {
@@ -182,13 +178,11 @@ public class Parser {
                 }
             }
 
-            // Description (allow skipping)
             String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
             if (!description.isEmpty()) {
                 parameters.put("d", description);
             }
 
-            // Date (allow skipping)
             String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
             if (!dateStr.isEmpty()) {
                 try {
@@ -199,7 +193,6 @@ public class Parser {
                 }
             }
 
-            // Category (allow skipping)
             String categoryInput = ui.readCategory("Enter new category " +
                     "(press Enter to skip, 'y' to select from menu):\n> ");
             if (!categoryInput.isEmpty()) {
@@ -216,7 +209,6 @@ public class Parser {
                 }
             }
 
-            // Tags (allow skipping)
             String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
             if (!tagsInput.isEmpty()) {
                 if (tagsInput.toLowerCase().startsWith("y")) {
@@ -239,7 +231,7 @@ public class Parser {
                 return new InvalidCommand("Please specify at least one parameter to edit.");
             }
 
-            return new EditCommand(keyword, parameters);
+            return new EditCommand(index, parameters);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing edit command", e);
             return new InvalidCommand("Invalid edit command: " + e.getMessage());
