@@ -5,9 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Field;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,6 +42,12 @@ public class LoggingConfigTest {
         if (Files.exists(configPath)) {
             configExisted = true;
             backupConfig = Paths.get(CONFIG_FILE + ".bak");
+
+            // Delete backup file if it already exists
+            if (Files.exists(backupConfig)) {
+                Files.delete(backupConfig);
+            }
+
             Files.copy(configPath, backupConfig);
             Files.delete(configPath);
         }
@@ -48,22 +56,67 @@ public class LoggingConfigTest {
         LogManager.getLogManager().reset();
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        // Reset LogManager
+    /**
+     * Attempts to delete a file with retries if it's locked
+     */
+    private void deleteFileWithRetry(Path path, int maxRetries) throws Exception {
+        if (!Files.exists(path)) {
+            return;
+        }
+
+        // Close all handlers to release file locks
+        Logger rootLogger = Logger.getLogger("");
+        for (Handler handler : rootLogger.getHandlers()) {
+            handler.close();
+        }
         LogManager.getLogManager().reset();
 
-        // Restore config file if it was backed up
-        if (configExisted) {
-            Path configPath = Paths.get(CONFIG_FILE);
-            if (Files.exists(configPath)) {
-                Files.delete(configPath);
+        Exception lastException = null;
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                Files.delete(path);
+                return; // Success
+            } catch (FileSystemException e) {
+                // File is locked, wait and retry
+                lastException = e;
+                Thread.sleep(200);
+                System.gc(); // Encourage resource cleanup
             }
-            Files.copy(backupConfig, configPath);
-            Files.delete(backupConfig);
-        } else {
-            // Delete created config file
-            Files.deleteIfExists(Paths.get(CONFIG_FILE));
+        }
+
+        // If we got here, all retries failed
+        if (lastException != null) {
+            System.err.println("Warning: Could not delete file after " + maxRetries + " attempts: " + path);
+        }
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        // Reset LogManager and close all handlers first
+        Logger rootLogger = Logger.getLogger("");
+        for (Handler handler : rootLogger.getHandlers()) {
+            handler.close();
+        }
+        LogManager.getLogManager().reset();
+
+        try {
+            // Restore config file if it was backed up
+            if (configExisted) {
+                Path configPath = Paths.get(CONFIG_FILE);
+                if (Files.exists(configPath)) {
+                    deleteFileWithRetry(configPath, 5);
+                }
+
+                if (Files.exists(backupConfig)) {
+                    Files.copy(backupConfig, configPath);
+                    deleteFileWithRetry(backupConfig, 5);
+                }
+            } else {
+                // Delete created config file
+                deleteFileWithRetry(Paths.get(CONFIG_FILE), 5);
+            }
+        } catch (Exception e) {
+            System.err.println("Warning: Error during test cleanup: " + e.getMessage());
         }
     }
 
@@ -96,22 +149,40 @@ public class LoggingConfigTest {
         }
 
         try {
+            // Reset logging before initializing
+            Logger rootLogger = Logger.getLogger("");
+            for (Handler handler : rootLogger.getHandlers()) {
+                handler.close();
+            }
+            LogManager.getLogManager().reset();
+
             // Initialize logging
             LoggingConfig.init();
 
             // Verify log directory was created
             assertTrue(Files.exists(logPath), "Log directory should be created");
         } finally {
-            // Restore original state
-            if (Files.exists(logPath)) {
-                Files.walk(logPath)
-                        .sorted(java.util.Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
+            // Close all handlers before cleanup
+            Logger rootLogger = Logger.getLogger("");
+            for (Handler handler : rootLogger.getHandlers()) {
+                handler.close();
             }
+            LogManager.getLogManager().reset();
 
-            if (logDirExisted && backupLogPath != null) {
-                Files.move(backupLogPath, logPath);
+            // Restore original state
+            try {
+                if (Files.exists(logPath)) {
+                    Files.walk(logPath)
+                            .sorted(java.util.Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                }
+
+                if (logDirExisted && backupLogPath != null && Files.exists(backupLogPath)) {
+                    Files.move(backupLogPath, logPath);
+                }
+            } catch (Exception e) {
+                System.err.println("Warning: Error during test cleanup: " + e.getMessage());
             }
         }
     }
