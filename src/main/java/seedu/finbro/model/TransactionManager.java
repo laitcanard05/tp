@@ -44,7 +44,7 @@ public class TransactionManager {
     }
 
     /**
-     * Deletes a transaction at the specified index.
+     * Deletes a transaction at the specified index or range.
      *
      * @param index The index of the transaction to delete (1-based)
      * @throws IndexOutOfBoundsException if the index is out of range
@@ -57,9 +57,8 @@ public class TransactionManager {
             logger.warning("Attempt to delete transaction at invalid index: " + index);
             throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
         }
-        Transaction removed = transactions.remove(index - INDEX_OFFSET); // Convert from 1-based to 0-based
-        
-        // Update the index numbers for all transactions after the deleted one
+        Transaction removed = transactions.remove(index - INDEX_OFFSET);
+
         for (int i = index; i < transactions.size(); i++) {
             transactions.get(i).indexNum -= INDEX_OFFSET;
         }

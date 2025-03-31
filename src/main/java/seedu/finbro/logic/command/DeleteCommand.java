@@ -3,26 +3,24 @@ package seedu.finbro.logic.command;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a command to delete a transaction.
  */
 public class DeleteCommand implements Command {
     private static final int INDEX_OFFSET = 1;
-    private final int transactionIndex;
+    private final int startIndex;
+    private final int endIndex;
 
-    /**
-     * Constructs a DeleteCommand with the specified index.
-     *
-     * @param transactionIndex The index of the transaction to delete (1-based)
-     *
-     */
-    public DeleteCommand(int transactionIndex) {
-        this.transactionIndex = transactionIndex;
+    public DeleteCommand(int startIndex, int endIndex) {
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
     }
 
     /**
-     * Executes the command to delete a transaction.
+     * Executes the command to delete one transaction or a range of transactions.
      *
      * @param transactionManager The transaction manager to delete the transaction from
      * @param ui                 The UI to interact with the user
@@ -32,24 +30,34 @@ public class DeleteCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         try {
-            if (transactionIndex < 1 || transactionIndex > transactionManager.getTransactionCount()) {
-                return "Invalid transaction index. There are only " +
-                        transactionManager.getTransactionCount() + " transactions.";
+            int total = transactionManager.getTransactionCount();
+            if (startIndex < 1 || endIndex > total || startIndex > endIndex) {
+                return "Invalid index range. There are only " + total + " transactions.";
             }
 
-            // Get the transaction to display in the confirmation message
-            String transactionToDelete = transactionManager.listTransactions()
-                                         .get(transactionIndex - INDEX_OFFSET).toString();
+            List<String> deletedTransactions = new ArrayList<>();
+            for (int i = startIndex; i <= endIndex; i++) {
+                String transactionStr = transactionManager.listTransactions().get(i - INDEX_OFFSET).toString();
+                deletedTransactions.add(transactionStr);
+            }
 
-            // Delete the transaction
-            transactionManager.deleteTransaction(transactionIndex);
+            //Delete in reverse to avoid index shifting issues
+            for (int i = endIndex; i >= startIndex; i--) {
+                transactionManager.deleteTransaction(i);
+            }
+
+            StringBuilder result = new StringBuilder("Deleted transactions:\n");
+            for (String transaction : deletedTransactions) {
+                result.append("- ").append(transaction).append("\n");
+            }
+
             storage.saveTransactions(transactionManager);
-
-            return "Transaction deleted: " + transactionToDelete;
-        } catch (IndexOutOfBoundsException e) {
-            return "Error: " + e.getMessage();
+            return result.toString().trim();
+        } catch (Exception e) {
+            return "Error during deletion: " + e.getMessage();
         }
     }
+
 
     /**
      * Returns false since this is not an exit command.

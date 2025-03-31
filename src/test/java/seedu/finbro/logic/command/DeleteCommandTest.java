@@ -36,43 +36,43 @@ class DeleteCommandTest {
 
     @Test
     void executeValidIndexSuccess() {
-        DeleteCommand command = new DeleteCommand(2);
+        DeleteCommand command = new DeleteCommand(2,2);
         String result = command.execute(transactionManager, ui, storage);
         
         assertEquals(2, transactionManager.getTransactionCount());
-        assertEquals("Transaction deleted: [Expense][Food] $50.00 - Groceries", result);
+        assertEquals("Deleted transactions:\n- [Expense][Food] $50.00 - Groceries", result);
     }
 
     @Test
     void executeInvalidIndexTooLargeError() {
-        DeleteCommand command = new DeleteCommand(4);
+        DeleteCommand command = new DeleteCommand(4,4);
         String result = command.execute(transactionManager, ui, storage);
         
         assertEquals(3, transactionManager.getTransactionCount());
-        assertEquals("Invalid transaction index. There are only 3 transactions.", result);
+        assertEquals("Invalid index range. There are only 3 transactions.", result);
     }
 
     @Test
     void executeInvalidIndexZeroError() {
-        DeleteCommand command = new DeleteCommand(0);
+        DeleteCommand command = new DeleteCommand(0,0);
         String result = command.execute(transactionManager, ui, storage);
         
         assertEquals(3, transactionManager.getTransactionCount());
-        assertEquals("Invalid transaction index. There are only 3 transactions.", result);
+        assertEquals("Invalid index range. There are only 3 transactions.", result);
     }
 
     @Test
     void executeInvalidIndexNegativeError() {
-        DeleteCommand command = new DeleteCommand(-1);
+        DeleteCommand command = new DeleteCommand(-1,-1);
         String result = command.execute(transactionManager, ui, storage);
         
         assertEquals(3, transactionManager.getTransactionCount());
-        assertEquals("Invalid transaction index. There are only 3 transactions.", result);
+        assertEquals("Invalid index range. There are only 3 transactions.", result);
     }
 
     @Test
     void isExitReturnsFalse() {
-        DeleteCommand command = new DeleteCommand(1);
+        DeleteCommand command = new DeleteCommand(1,1);
         assertFalse(command.isExit());
     }
 }
