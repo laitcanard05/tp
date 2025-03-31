@@ -33,6 +33,7 @@ public class Storage {
     private static final String DATA_DIRECTORY = "data";
     private static final String DATA_FILE = "finbro.txt";
     private static final String BUDGET_FILE = "budgets.txt";
+    private static final String SAVINGS_FILE = "savings_goals.txt";
     private static final String DEFAULT_EXPORT_DIRECTORY = "exports";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -439,6 +440,61 @@ public class Storage {
             logger.info("Loaded budgets from " + budgetFilePath);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to load budgets", e);
+        }
+    }
+
+    /**
+     * Saves savings goals to the savings goals file.
+     *
+     * @param transactionManager The TransactionManager containing savings goals to save
+     */
+    public void saveSavingsGoals(TransactionManager transactionManager) {
+        String savingsFilePath = DATA_DIRECTORY + File.separator + SAVINGS_FILE;
+
+        try (FileWriter writer = new FileWriter(savingsFilePath)) {
+            for (Map.Entry<String, Double> entry : transactionManager.getAllSavingsGoals().entrySet()) {
+                writer.write(entry.getKey() + "|" + entry.getValue() + "\n"); // Format: goal|amount
+            }
+            logger.info("Saved savings goals to " + savingsFilePath);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to save savings goals", e);
+        }
+    }
+
+    /**
+     * Loads savings goals from the savings goals file.
+     *
+     * @param transactionManager The TransactionManager to load savings goals into
+     */
+    public void loadSavingsGoals(TransactionManager transactionManager) {
+        String savingsFilePath = DATA_DIRECTORY + File.separator + SAVINGS_FILE;
+        File file = new File(savingsFilePath);
+        if (!file.exists()) {
+            logger.info("No savings goals file found, skipping savings goals load.");
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split("\\|");
+                if (parts.length != 2) {
+                    continue;
+                }
+
+                String[] dateParts = parts[0].split("-");
+                if (dateParts.length != 2) {
+                    continue;
+                }
+
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                double amount = Double.parseDouble(parts[1]);
+
+                transactionManager.setSavingsGoal(month, year, amount);
+            }
+            logger.info("Loaded savings goals from " + savingsFilePath);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to load savings goals", e);
         }
     }
 }
