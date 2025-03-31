@@ -31,12 +31,16 @@ public class SearchCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         if (!transactionManager.listTransactions().isEmpty()) {
-            return transactionManager.getTransactionsContainingKeyword(keyword)
+            String matchingTransactions = transactionManager.getTransactionsContainingKeyword(keyword)
                     .stream()
                     .map(Object::toString)
                     .collect(Collectors.joining("\n"));
+            if (!matchingTransactions.isEmpty()) {
+                return matchingTransactions;
+            }
+            return "No matching transactions found for the keyword: " + keyword;
         } else {
-            return "No transactions found.";
+            return "No transactions entered yet!.";
         }
     }
 
