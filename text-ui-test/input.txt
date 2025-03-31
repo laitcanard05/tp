@@ -1,32 +1,97 @@
 help
-income 3000 d/Monthly salary t/work t/primary
-income 500.50 d/Freelance project t/side-hustle t/design
-income 1200 d/Tax refund t/annual
-expense 25.50 d/Lunch with colleagues c/Food t/work
-expense 75 d/New shoes c/Shopping t/clothing
-expense 150.20 d/Electricity bill c/Bills t/monthly t/utilities
-expense 10.80 d/Bus fare c/Transport t/commute
-expense 45.99 d/Movie tickets c/Entertainment t/weekend t/leisure
-expense 120 d/Groceries c/Food t/essential
+income
+3000
+Monthly salary
+Work, Primary
+income
+500.50
+Freelance project
+Side-hustle, Design
+income
+1200
+Tax refund
+Annual
+expense
+25.50
+Lunch with colleagues
+1
+Work
+expense
+75
+New shoes
+3
+Clothing
+expense
+150.20
+Electricity bill
+4
+Monthly-utilities
+expense
+10.80
+Bus fare
+2
+Transport, Commute
+expense
+45.99
+Movie tickets
+5
+Weekend-leisure
+expense
+120
+Groceries
+1
+Essential
 list
-list n/5
-search lunch
-search bill
-filter d/2025-03-01 to/2025-03-15
+
+
+list
+
+5
+search
+lunch
+search
+bill
+filter
+2025-03-01
+2025-03-15
 balance
 summary
-summary m/3 y/2025
-delete 3
+
+
+summary
+3
+2025
+delete
+3
 list
-search clothing
-expense 32.50 d/Coffee and snacks c/Food t/work
-income 450 d/Part-time gig t/side-hustle
+
+
+search
+clothing
+expense
+32.50
+Coffee and snacks
+1
+work
+income
+450
+Part-time gig
+side-hustle
 clear
 n
 clear
 y
-income 2000 d/New job payment t/work
-expense 30 d/Dinner c/Food t/dining-out
+income
+2000
+New job payment
+work
+expense
+30
+Dinner
+1
+Dining-out
 summary
+
+
 balance
 exit
