@@ -51,6 +51,8 @@ public class FinBro {
         try {
             logger.fine("Loading transaction data");
             transactionManager = storage.loadTransactions();
+            storage.loadBudgets(transactionManager);
+            storage.loadSavingsGoals(transactionManager);
             logger.info("Transaction data loaded successfully");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error loading transaction data", e);
