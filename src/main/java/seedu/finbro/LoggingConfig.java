@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -45,10 +46,10 @@ public class LoggingConfig {
                 System.err.println("Warning: " + LOG_CONFIG_FILE + " (No such file or directory) - creating file");
 
                 // Create properties file with silent console configuration
-                createSilentLoggingPropertiesFile();
+                createLoggingPropertiesFile();
 
                 // Apply configuration programmatically
-                configureSilentLogging();
+                configureLogging();
             }
 
             configured = true;
@@ -59,14 +60,14 @@ public class LoggingConfig {
     }
 
     /**
-     * Creates a logging.properties file that disables console output.
+     * Creates a logging.properties file with file logging and SEVERE-only console output.
      */
-    private static void createSilentLoggingPropertiesFile() {
+    private static void createLoggingPropertiesFile() {
         Properties props = new Properties();
 
         // Global properties
         props.setProperty(".level", "INFO");
-        props.setProperty("handlers", "java.util.logging.FileHandler");
+        props.setProperty("handlers", "java.util.logging.FileHandler, java.util.logging.ConsoleHandler");
 
         // File handler config
         props.setProperty("java.util.logging.FileHandler.level", "FINE");
@@ -74,6 +75,10 @@ public class LoggingConfig {
         props.setProperty("java.util.logging.FileHandler.limit", "50000");
         props.setProperty("java.util.logging.FileHandler.count", "1");
         props.setProperty("java.util.logging.FileHandler.formatter", "java.util.logging.SimpleFormatter");
+
+        // Console handler config - only SEVERE level
+        props.setProperty("java.util.logging.ConsoleHandler.level", "SEVERE");
+        props.setProperty("java.util.logging.ConsoleHandler.formatter", "java.util.logging.SimpleFormatter");
 
         // Format for SimpleFormatter
         props.setProperty("java.util.logging.SimpleFormatter.format",
@@ -95,20 +100,26 @@ public class LoggingConfig {
     }
 
     /**
-     * Configures logging programmatically to disable console output.
+     * Configures logging programmatically with file logging and SEVERE-only console output.
      */
-    private static void configureSilentLogging() throws IOException {
+    private static void configureLogging() throws IOException {
         // Get the root logger and remove all handlers
         Logger rootLogger = Logger.getLogger("");
         for (java.util.logging.Handler handler : rootLogger.getHandlers()) {
             rootLogger.removeHandler(handler);
         }
 
-        // Add file handler (no console handler)
+        // Add file handler for detailed logging
         FileHandler fileHandler = new FileHandler("logs/finbro.log");
         fileHandler.setLevel(Level.FINE);
         fileHandler.setFormatter(new SimpleFormatter());
         rootLogger.addHandler(fileHandler);
+
+        // Add console handler for SEVERE messages only
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.SEVERE);
+        consoleHandler.setFormatter(new SimpleFormatter());
+        rootLogger.addHandler(consoleHandler);
 
         // Set root logger level
         rootLogger.setLevel(Level.INFO);

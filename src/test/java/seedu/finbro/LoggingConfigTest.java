@@ -3,179 +3,204 @@ package seedu.finbro;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Tests for the LoggingConfig class.
- */
-class LoggingConfigTest {
-    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-    private final PrintStream originalErr = System.err;
-    private Field configuredField;
-    private Field logDirField;
-    private Field logConfigFileField;
-    private boolean originalConfigured;
-    private String originalLogDir;
-    private String originalLogConfigFile;
-    private Path tempLogConfigFile;
-    private Path backupLogConfigFile;
+public class LoggingConfigTest {
+
+    private static final String LOG_DIR = "logs";
+    private static final String CONFIG_FILE = "src/main/resources/logging.properties";
+
+    private Path originalConfig = null;
+    private Path backupConfig = null;
+    private boolean configExisted = false;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
-        // Capture System.err for testing error messages
-        System.setErr(new PrintStream(errContent));
+    public void setUp() throws Exception {
+        // Reset the configured flag in LoggingConfig to allow re-initialization
+        resetConfiguredFlag();
 
-        // Get access to private static fields
-        configuredField = LoggingConfig.class.getDeclaredField("configured");
-        configuredField.setAccessible(true);
-
-        logDirField = LoggingConfig.class.getDeclaredField("LOG_DIRECTORY");
-        logDirField.setAccessible(true);
-
-        logConfigFileField = LoggingConfig.class.getDeclaredField("LOG_CONFIG_FILE");
-        logConfigFileField.setAccessible(true);
-
-        // Store original values
-        originalConfigured = (boolean) configuredField.get(null);
-        originalLogDir = (String) logDirField.get(null);
-        originalLogConfigFile = (String) logConfigFileField.get(null);
-
-        // Back up the logging config file if it exists
-        tempLogConfigFile = Paths.get(originalLogConfigFile);
-        backupLogConfigFile = Paths.get(originalLogConfigFile + ".backup");
-        if (Files.exists(tempLogConfigFile)) {
-            Files.copy(tempLogConfigFile, backupLogConfigFile);
+        // Backup existing config file if it exists
+        Path configPath = Paths.get(CONFIG_FILE);
+        if (Files.exists(configPath)) {
+            configExisted = true;
+            backupConfig = Paths.get(CONFIG_FILE + ".bak");
+            Files.copy(configPath, backupConfig);
+            Files.delete(configPath);
         }
-    }
-
-    @AfterEach
-    public void tearDown() throws IllegalAccessException, IOException {
-        // Restore System.err
-        System.setErr(originalErr);
-
-        // Restore original field values
-        configuredField.set(null, originalConfigured);
 
         // Reset LogManager
         LogManager.getLogManager().reset();
+    }
 
-        // Restore the original config file if backup exists
-        if (Files.exists(backupLogConfigFile)) {
-            if (Files.exists(tempLogConfigFile)) {
-                Files.delete(tempLogConfigFile);
+    @AfterEach
+    public void tearDown() throws Exception {
+        // Reset LogManager
+        LogManager.getLogManager().reset();
+
+        // Restore config file if it was backed up
+        if (configExisted) {
+            Path configPath = Paths.get(CONFIG_FILE);
+            if (Files.exists(configPath)) {
+                Files.delete(configPath);
             }
-            Files.move(backupLogConfigFile, tempLogConfigFile);
-        } else if (Files.exists(tempLogConfigFile)) {
-            // If this was a generated file, delete it
-            Files.delete(tempLogConfigFile);
+            Files.copy(backupConfig, configPath);
+            Files.delete(backupConfig);
+        } else {
+            // Delete created config file
+            Files.deleteIfExists(Paths.get(CONFIG_FILE));
+        }
+    }
+
+    /**
+     * Helper method to reset the "configured" flag in LoggingConfig
+     */
+    private void resetConfiguredFlag() throws Exception {
+        Field configuredField = LoggingConfig.class.getDeclaredField("configured");
+        configuredField.setAccessible(true);
+        configuredField.set(null, false);
+    }
+
+    @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    public void testInitCreatesLogDirectory() throws Exception {
+        // Backup existing log directory if it exists
+        Path logPath = Paths.get(LOG_DIR);
+        Path backupLogPath = null;
+        boolean logDirExisted = Files.exists(logPath);
+
+        if (logDirExisted) {
+            backupLogPath = Paths.get(LOG_DIR + ".bak");
+            if (Files.exists(backupLogPath)) {
+                Files.walk(backupLogPath)
+                        .sorted(java.util.Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            Files.move(logPath, backupLogPath);
+        }
+
+        try {
+            // Initialize logging
+            LoggingConfig.init();
+
+            // Verify log directory was created
+            assertTrue(Files.exists(logPath), "Log directory should be created");
+        } finally {
+            // Restore original state
+            if (Files.exists(logPath)) {
+                Files.walk(logPath)
+                        .sorted(java.util.Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+
+            if (logDirExisted && backupLogPath != null) {
+                Files.move(backupLogPath, logPath);
+            }
         }
     }
 
     @Test
-    void initCreatesLogDirectory() throws IllegalAccessException {
-        // Ensure configured is false
-        configuredField.set(null, false);
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    public void testInitCreatesPropertiesFileIfMissing() throws Exception {
+        // Ensure config file doesn't exist
+        Path configPath = Paths.get(CONFIG_FILE);
+        Files.deleteIfExists(configPath);
 
-        // Call init
+        // Initialize logging
         LoggingConfig.init();
 
-        // Verify log directory was created
-        assertTrue(Files.exists(Path.of(originalLogDir)),
-                "Log directory should be created during initialization");
-    }
+        // Verify properties file was created
+        assertTrue(Files.exists(configPath), "Config file should be created");
 
-    @Test
-    void initSkipsIfAlreadyConfigured() throws IllegalAccessException {
-        // Set as already configured
-        configuredField.set(null, true);
-
-        // Capture logger output
-        Logger testLogger = Logger.getLogger(LoggingConfig.class.getName());
-        testLogger.setLevel(Level.ALL);
-
-        // Call init
-        LoggingConfig.init();
-
-        assertTrue((boolean) configuredField.get(null),
-                "Configured flag should remain true after reinitialization");
-    }
-
-    @Test
-    void initHandlesMissingConfigFile() throws IllegalAccessException, IOException {
-        // Set as not configured
-        configuredField.set(null, false);
-
-        // Temporarily remove the logging.properties file
-        if (Files.exists(tempLogConfigFile)) {
-            Files.delete(tempLogConfigFile);
-        }
-
-        // Call init - this should create a new config file
-        LoggingConfig.init();
-
-        // Verify the config file was created
-        assertTrue(Files.exists(tempLogConfigFile),
-                "Logging config file should be created when missing");
-
-        // Verify the config specifies only file logging (no console handlers)
+        // Verify properties content
         Properties props = new Properties();
-        props.load(Files.newInputStream(tempLogConfigFile));
-        assertTrue(props.getProperty("handlers").contains("FileHandler"),
-                "FileHandler should be configured");
-        assertFalse(props.getProperty("handlers").contains("ConsoleHandler"),
-                "ConsoleHandler should not be configured");
-    }
-
-    @Test
-    void initShouldCreateSilentLoggingConfiguration() throws IllegalAccessException, IOException {
-        // Set as not configured
-        configuredField.set(null, false);
-
-        // Ensure the logging config file doesn't exist
-        if (Files.exists(tempLogConfigFile)) {
-            Files.delete(tempLogConfigFile);
+        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
+            props.load(fis);
         }
 
-        // Call init
-        LoggingConfig.init();
-
-        // Verify error message contains the expected text
-        assertTrue(errContent.toString().contains("Warning: " + originalLogConfigFile),
-                "Should warn about missing config file");
-        assertTrue(errContent.toString().contains("creating file"),
-                "Should indicate a new file is being created");
-
-        // Check the log file was generated with silent configuration
-        assertTrue(Files.exists(tempLogConfigFile),
-                "Logging properties file should be created");
-
-        // Verify the correct configuration was set
-        Properties props = new Properties();
-        props.load(Files.newInputStream(tempLogConfigFile));
-        assertEquals("java.util.logging.FileHandler", props.getProperty("handlers"),
-                "Only FileHandler should be configured");
+        assertEquals("SEVERE", props.getProperty("java.util.logging.ConsoleHandler.level"),
+                "Console handler should be SEVERE level only");
         assertEquals("FINE", props.getProperty("java.util.logging.FileHandler.level"),
-                "FileHandler level should be FINE");
-        assertEquals("INFO", props.getProperty(".level"),
-                "Root logger level should be INFO");
+                "File handler should be FINE level");
     }
 
-    // Helper method to simplify assertions
-    private void assertEquals(String expected, String actual, String message) {
-        assertTrue(expected.equals(actual), message + " - Expected: " + expected + ", Actual: " + actual);
+    @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    public void testLoggerLevelsAreSetCorrectly() {
+        // Initialize logging
+        LoggingConfig.init();
+
+        // Check logger levels
+        Logger appLogger = Logger.getLogger("seedu.finbro");
+        assertEquals(Level.FINE, appLogger.getLevel(), "App logger should be FINE level");
+
+        // Check root logger configuration
+        Logger rootLogger = Logger.getLogger("");
+        assertEquals(Level.INFO, rootLogger.getLevel(), "Root logger should be INFO level");
+
+        // Verify handlers on root logger
+        boolean hasConsoleHandler = false;
+        boolean hasFileHandler = false;
+
+        for (Handler handler : rootLogger.getHandlers()) {
+            if (handler.getClass().getName().contains("ConsoleHandler")) {
+                hasConsoleHandler = true;
+                assertEquals(Level.SEVERE, handler.getLevel(), "Console handler should have SEVERE level");
+            }
+            if (handler.getClass().getName().contains("FileHandler")) {
+                hasFileHandler = true;
+                assertEquals(Level.FINE, handler.getLevel(), "File handler should have FINE level");
+            }
+        }
+
+        assertTrue(hasConsoleHandler, "Root logger should have ConsoleHandler");
+        assertTrue(hasFileHandler, "Root logger should have FileHandler");
+    }
+
+    @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    public void testRepeatedInitializationIsIgnored() throws Exception {
+        // First initialization
+        LoggingConfig.init();
+
+        // Get number of handlers after first init
+        Logger rootLogger = Logger.getLogger("");
+        int initialHandlerCount = rootLogger.getHandlers().length;
+
+        // Check that configured flag is true
+        Field configuredField = LoggingConfig.class.getDeclaredField("configured");
+        configuredField.setAccessible(true);
+        assertTrue((boolean) configuredField.get(null), "configured flag should be true after initialization");
+
+        // Try to initialize again
+        LoggingConfig.init();
+
+        // Verify no extra handlers were added
+        assertEquals(initialHandlerCount, rootLogger.getHandlers().length,
+                "Second initialization should not add more handlers");
+
+        // Verify configured flag is still true
+        assertTrue((boolean) configuredField.get(null), "configured flag should remain true");
+
+        // Check that logger levels remain consistent
+        Logger appLogger = Logger.getLogger("seedu.finbro");
+        assertEquals(Level.FINE, appLogger.getLevel(), "App logger level should remain consistent");
     }
 }
