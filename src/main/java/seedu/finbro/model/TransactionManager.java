@@ -424,4 +424,33 @@ public class TransactionManager {
     public Map<String, Double> getAllSavingsGoals() {
         return new HashMap<>(savingsGoals); // returns a copy for safety
     }
+
+    /**
+     * Returns a specific transaction by index.
+     *
+     * @param index The index of the transaction to retrieve
+     * @return The transaction at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of range
+     */
+    public Transaction getTransaction(int index) {
+        if (index < 0 || index >= transactions.size()) {
+            throw new IndexOutOfBoundsException("Transaction index out of range: " + index);
+        }
+        return transactions.get(index);
+    }
+
+    /**
+     * Finds the first transaction that contains the given description.
+     *
+     * @param description The description to search for
+     * @return The first transaction containing the description, or null if not found
+     */
+    public Transaction findTransactionByDescription(String description) {
+        for (Transaction transaction : transactions) {
+            if (transaction.getDescription().contains(description)) {
+                return transaction;
+            }
+        }
+        return null;
+    }
 }

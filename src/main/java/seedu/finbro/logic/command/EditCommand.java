@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 /**
  * Represents a command to edit a transaction.
- * Uses SearchCommand functionality to find the transaction to edit.
  */
 public class EditCommand implements Command {
     private static final Logger logger = Logger.getLogger(EditCommand.class.getName());
@@ -35,33 +34,39 @@ public class EditCommand implements Command {
     public EditCommand(String keyword, Map<String, String> parameters) {
         this.keyword = keyword;
         this.parameters = parameters;
+        logger.fine("Constructed EditCommand with keyword=" + keyword + ", parameters=" + parameters);
     }
 
     /**
-     * Executes the command to edit a transaction found using search functionality.
+     * Executes the command to edit a transaction.
      *
-     * @param transactionManager The transaction manager to edit the transaction in
+     * @param transactionManager The transaction manager to modify
      * @param ui The UI to interact with the user
-     * @param storage The storage to save the updated transaction list
-     * @return The response message indicating the result of the edit operation
+     * @param storage The storage to save data
+     * @return The response message from executing the command
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        logger.info("Executing edit command with keyword: " + keyword);
+        logger.info("Executing EditCommand with keyword: " + keyword);
 
-        // Use SearchCommand to find matching transactions
-        SearchCommand searchCommand = new SearchCommand(keyword);
-        String searchResult = searchCommand.execute(transactionManager, ui, storage);
+        List<Transaction> transactions = transactionManager.listTransactions();
+        List<Transaction> matchingTransactions = new ArrayList<>();
 
-        if (searchResult.equals("No transactions found.")) {
+        // Find matching transactions
+        for (Transaction transaction : transactions) {
+            if (transaction.toString().toLowerCase().contains(keyword.toLowerCase())) {
+                matchingTransactions.add(transaction);
+            }
+        }
+
+        if (matchingTransactions.isEmpty()) {
+            logger.info("No transactions found matching keyword: " + keyword);
             return "No matching transaction found for '" + keyword + "'.";
         }
 
-        // Parse the search results to get the transactions
-        List<Transaction> matchingTransactions = parseSearchResults(searchResult, transactionManager);
-
-        if (matchingTransactions.isEmpty() || matchingTransactions.size() > 1) {
-            return "Please provide a specific keyword that matches exactly one transaction.";
+        if (matchingTransactions.size() > 1) {
+            logger.info("Multiple transactions found matching keyword: " + keyword);
+            return "Please provide a more specific keyword. Multiple transactions matched.";
         }
 
         // Update the transaction
@@ -75,37 +80,11 @@ public class EditCommand implements Command {
                 storage.saveTransactions(transactionManager);
                 return "Transaction updated successfully:\n" + updatedTransaction;
             } else {
-                logger.warning("Failed to find transaction to update");
+                logger.warning("Failed to update transaction");
             }
         }
+
         return "Failed to update transaction.";
-    }
-
-    /**
-     * Parses search results to extract matching transactions.
-     *
-     * @param searchResult the result string from SearchCommand
-     * @param manager the transaction manager to verify transactions
-     * @return a list of matching transactions
-     */
-    private List<Transaction> parseSearchResults(String searchResult, TransactionManager manager) {
-        List<Transaction> results = new ArrayList<>();
-
-        if (searchResult.isEmpty() || searchResult.equals("No transactions found.")) {
-            return results;
-        }
-
-        String[] lines = searchResult.split("\n");
-        for (String line : lines) {
-            for (Transaction transaction : manager.listTransactions()) {
-                if (transaction.toString().equals(line)) {
-                    results.add(transaction);
-                    break;
-                }
-            }
-        }
-
-        return results;
     }
 
     /**
@@ -140,7 +119,10 @@ public class EditCommand implements Command {
                 tags.clear();
                 String[] tagArray = parameters.get("t").split(",");
                 for (String tag : tagArray) {
-                    tags.add(tag.trim());
+                    String trimmed = tag.trim();
+                    if (!trimmed.isEmpty()) {
+                        tags.add(trimmed);
+                    }
                 }
             }
 

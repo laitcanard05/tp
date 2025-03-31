@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
@@ -155,74 +157,88 @@ public class Parser {
         return parsedCommand;
     }
 
-    /**
-     * Parses arguments into an EditCommand using interactive input from UI.
-     *
-     * @param ui The UI to interact with the user
-     * @return The EditCommand
-     */
     private Command parseEditCommand(Ui ui) {
         logger.fine("Parsing edit command");
         try {
+            // Keyword is required - cannot be skipped
             String keyword = ui.readString("Enter the keyword to find the transaction to edit:\n> ");
             if (keyword.trim().isEmpty()) {
-                logger.warning("Empty keyword for edit command");
                 return new InvalidCommand("Please provide a keyword to find the transaction to edit.");
             }
 
-            logger.fine("Edit keyword: " + keyword);
-
             Map<String, String> parameters = new HashMap<>();
 
-            // Ask for amount
-            String amountStr = ui.readString("Enter new amount (or press Enter to skip):\n> ");
-            if (!amountStr.trim().isEmpty()) {
+            // Amount (allow skipping)
+            String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
+            if (!amountStr.isEmpty()) {
                 try {
-                    double amount = Double.parseDouble(amountStr.trim());
+                    double amount = Double.parseDouble(amountStr);
                     if (amount <= 0) {
                         return new InvalidCommand("Amount must be positive.");
                     }
-                    parameters.put("a", amountStr.trim());
+                    parameters.put("a", amountStr);
                 } catch (NumberFormatException e) {
-                    return new InvalidCommand("Invalid amount format. Please provide a valid number.");
+                    return new InvalidCommand("Invalid amount format.");
                 }
             }
 
-            // Ask for description
-            String description = ui.readString("Enter new description (or press Enter to skip):\n> ");
-            if (!description.trim().isEmpty()) {
-                parameters.put("d", description.trim());
+            // Description (allow skipping)
+            String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
+            if (!description.isEmpty()) {
+                parameters.put("d", description);
             }
 
-            // Ask for date
-            String date = ui.readString("Enter new date (YYYY-MM-DD) (or press Enter to skip):\n> ");
-            if (!date.trim().isEmpty()) {
+            // Date (allow skipping)
+            String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
+            if (!dateStr.isEmpty()) {
                 try {
-                    LocalDate.parse(date.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    parameters.put("date", date.trim());
+                    LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    parameters.put("date", dateStr);
                 } catch (DateTimeParseException e) {
                     return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
                 }
             }
 
-            // Ask for category
-            String category = ui.readString("Enter new category (or press Enter to skip):\n> ");
-            if (!category.trim().isEmpty()) {
-                parameters.put("c", category.trim());
+            // Category (allow skipping)
+            String categoryInput = ui.readCategory("Enter new category " +
+                    "(press Enter to skip, 'y' to select from menu):\n> ");
+            if (!categoryInput.isEmpty()) {
+                if (categoryInput.toLowerCase().startsWith("y")) {
+                    Expense.Category category = parseCategory(ui);
+                    parameters.put("c", category.toString());
+                } else {
+                    try {
+                        Expense.Category category = Expense.Category.fromString(categoryInput);
+                        parameters.put("c", category.toString());
+                    } catch (IllegalArgumentException e) {
+                        return new InvalidCommand("Invalid category.");
+                    }
+                }
             }
 
-            // Ask for tags
-            String tags = ui.readString("Enter new tags (or press Enter to skip):\n> ");
-            if (!tags.trim().isEmpty()) {
-                parameters.put("t", tags.trim());
+            // Tags (allow skipping)
+            String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
+            if (!tagsInput.isEmpty()) {
+                if (tagsInput.toLowerCase().startsWith("y")) {
+                    List<String> tags = parseTags(ui);
+                    if (!tags.isEmpty()) {
+                        parameters.put("t", String.join(",", tags));
+                    }
+                } else {
+                    List<String> tags = Arrays.stream(tagsInput.split(","))
+                            .map(String::trim)
+                            .filter(tag -> !tag.isEmpty())
+                            .collect(Collectors.toList());
+                    if (!tags.isEmpty()) {
+                        parameters.put("t", String.join(",", tags));
+                    }
+                }
             }
 
             if (parameters.isEmpty()) {
-                logger.warning("No edit parameters provided");
                 return new InvalidCommand("Please specify at least one parameter to edit.");
             }
 
-            logger.fine("Creating EditCommand with keyword=" + keyword + ", parameters=" + parameters);
             return new EditCommand(keyword, parameters);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing edit command", e);
@@ -790,3 +806,4 @@ public class Parser {
         }
     }
 }
+
