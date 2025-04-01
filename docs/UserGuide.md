@@ -273,7 +273,8 @@ Enter command word:
 Please enter the start date in the format yyyy-mm-dd.
 > 2025-02-01
 
-Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up to current date.)
+Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up 
+to current date.)
 > 2025-02-28
 ```
 
