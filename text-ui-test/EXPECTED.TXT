@@ -393,7 +393,7 @@ Please enter the month (1-12). (Leave blank for current month)
 Please enter the year. (Leave blank for current year)
 > ____________________________________________________________
 ____________________________________________________________
-Financial Summary for March 2025:
+Financial Summary for April 2025:
 
 Total Income: $2000.00
 Total Expenses: $30.00
