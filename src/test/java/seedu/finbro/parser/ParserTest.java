@@ -197,7 +197,7 @@ class ParserTest {
     // Income command detailed tests
 
     @Test
-    void parseCommandWord_income_validInput_returnsIncomeCommand() {
+    void parseCommandWordIncome_validInput_returnsIncomeCommand() {
         Ui ui = createUiWithInputs("1000", "Salary", "work");
         Command command = parser.parseCommandWord("income", ui);
         assertTrue(command instanceof IncomeCommand);
@@ -205,7 +205,7 @@ class ParserTest {
     }
 
     @Test
-    void parseCommandWord_income_invalidAmount_returnsInvalidCommand() {
+    void parseCommandWordIncome_invalidAmount_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("invalid", "1000", "Salary", "work");
         Command command = parser.parseCommandWord("income", ui);
         assertTrue(command instanceof IncomeCommand || command instanceof InvalidCommand);
@@ -214,7 +214,7 @@ class ParserTest {
     // Expense command detailed tests
 
     @Test
-    void parseCommandWord_expense_validInput_returnsExpenseCommand() {
+    void parseCommandWordExpense_validInput_returnsExpenseCommand() {
         Ui ui = createUiWithInputs("50", "Lunch", "1", "food");
         Command command = parser.parseCommandWord("expense", ui);
         assertTrue(command instanceof ExpenseCommand);
@@ -222,7 +222,7 @@ class ParserTest {
     }
 
     @Test
-    void parseCommandWord_expense_invalidCategory_handlesError() {
+    void parseCommandWordExpense_invalidCategory_handlesError() {
         Ui ui = createUiWithInputs("50", "Lunch", "10", "0", "food");
         Command command = parser.parseCommandWord("expense", ui);
         assertTrue(command instanceof ExpenseCommand || command instanceof InvalidCommand);
@@ -231,7 +231,7 @@ class ParserTest {
     // List command detailed tests
 
     @Test
-    void parseCommandWord_list_invalidDate_returnsInvalidCommand() {
+    void parseCommandWordList_invalidDate_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("invalid-date", "");
         Command command = parser.parseCommandWord("list", ui);
         assertTrue(command instanceof InvalidCommand);
@@ -240,7 +240,7 @@ class ParserTest {
     // Delete command detailed tests
 
     @Test
-    void parseCommandWord_delete_validRange_returnsDeleteCommand() {
+    void parseCommandWordDelete_validRange_returnsDeleteCommand() {
         Ui ui = createUiWithInputs("1-3");
         Command command = parser.parseCommandWord("delete", ui);
         assertTrue(command instanceof DeleteCommand);
@@ -249,7 +249,7 @@ class ParserTest {
     // Filter command detailed tests
 
     @Test
-    void parseCommandWord_filter_validDates_returnsFilterCommand() {
+    void parseCommandWordFilter_validDates_returnsFilterCommand() {
         Ui ui = createUiWithInputs("2025-03-01", "2025-03-31");
         Command command = parser.parseCommandWord("filter", ui);
         assertTrue(command instanceof FilterCommand);
@@ -257,7 +257,7 @@ class ParserTest {
     }
 
     @Test
-    void parseCommandWord_filter_startDateAfterEndDate_returnsInvalidCommand() {
+    void parseCommandWordFilter_startDateAfterEndDate_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("2025-03-31", "2025-03-01");
         Command command = parser.parseCommandWord("filter", ui);
         assertTrue(command instanceof InvalidCommand);
@@ -266,7 +266,7 @@ class ParserTest {
     // Export command detailed tests
 
     @Test
-    void parseCommandWord_export_invalidFormat_returnsInvalidCommand() {
+    void parseCommandWordExport_invalidFormat_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("pdf");
         Command command = parser.parseCommandWord("export", ui);
         assertTrue(command instanceof InvalidCommand);
@@ -275,7 +275,7 @@ class ParserTest {
     // Clear command detailed tests
 
     @Test
-    void parseCommandWord_clearConfirmation_yes_returnsConfirmedClearCommand() {
+    void parseCommandWordClearConfirmation_yes_returnsConfirmedClearCommand() {
         // First call sets up the pending confirmation
         parser.parseCommandWord("clear", createUiWithInputs());
 
@@ -285,7 +285,7 @@ class ParserTest {
     }
 
     @Test
-    void parseCommandWord_clearConfirmation_no_returnsCancellationCommand() {
+    void parseCommandWordClearConfirmation_no_returnsCancellationCommand() {
         // First call sets up the pending confirmation
         parser.parseCommandWord("clear", createUiWithInputs());
 
@@ -302,7 +302,7 @@ class ParserTest {
     // Edit command detailed tests
 
     @Test
-    void parseCommandWord_edit_cancelled_returnsNonEditCommand() {
+    void parseCommandWordEdit_cancelled_returnsNonEditCommand() {
         Ui ui = createUiWithInputs("1", "n");
         Command command = parser.parseCommandWord("edit", ui);
 
@@ -318,7 +318,7 @@ class ParserTest {
     // Budget and Savings commands detailed tests
 
     @Test
-    void parseCommandWord_setBudget_validInput_returnsSetBudgetCommand() {
+    void parseCommandWordSetBudget_validInput_returnsSetBudgetCommand() {
         Ui ui = createUiWithInputs("3", "2025", "1000");
         Command command = parser.parseCommandWord("setbudget", ui);
         assertTrue(command instanceof SetBudgetCommand);
@@ -326,7 +326,7 @@ class ParserTest {
     }
 
     @Test
-    void parseCommandWord_setSavingsGoal_validInput_returnsSetSavingsGoalCommand() {
+    void parseCommandWordSetSavingsGoal_validInput_returnsSetSavingsGoalCommand() {
         Ui ui = createUiWithInputs("3", "2025", "1000");
         Command command = parser.parseCommandWord("setsavings", ui);
         assertTrue(command instanceof SetSavingsGoalCommand);
@@ -336,21 +336,21 @@ class ParserTest {
     // Edge cases and input validation tests
 
     @Test
-    void parseCommandWord_setBudget_negativeBudget_returnsInvalidCommand() {
+    void parseCommandWordSetBudget_negativeBudget_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("3", "2025", "-1000");
         Command command = parser.parseCommandWord("setbudget", ui);
         assertTrue(command instanceof InvalidCommand);
     }
 
     @Test
-    void parseCommandWord_setSavingsGoal_zeroSavings_returnsInvalidCommand() {
+    void parseCommandWordSetSavingsGoal_zeroSavings_returnsInvalidCommand() {
         Ui ui = createUiWithInputs("3", "2025", "0");
         Command command = parser.parseCommandWord("setsavings", ui);
         assertTrue(command instanceof InvalidCommand);
     }
 
     @Test
-    void parseCommandWord_clearConfirmation_otherCommand_resetsClearPending() {
+    void parseCommandWordClearConfirmation_otherCommand_resetsClearPending() {
         // First call sets up the pending confirmation
         parser.parseCommandWord("clear", createUiWithInputs());
 
