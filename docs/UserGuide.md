@@ -46,7 +46,7 @@ Key capabilities include:
 
 ## Quick Start
 
-1. Ensure you have Java 17 or above installed on your computer.
+1. Ensure you have Java 17 installed on your computer.
 2. Download the latest `FinBro.jar` from [here](https://github.com/AY2425S2-CS2113-W13-3/tp/releases).
 3. Copy the file to the folder you want to use as the home folder for FinBro.
 4. Open a command prompt/terminal and navigate to the folder where you placed the jar file.
@@ -451,7 +451,6 @@ Tags Summary:
 1. Work: $3025.50
 2. Primary: $3000.00
 3. Annual: $1200.00
-...
 ```
 
 **Notes:**
