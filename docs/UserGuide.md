@@ -591,4 +591,4 @@ A: FinBro automatically saves your data after each transaction, so you shouldn't
 
 **Q: How far back can I track my finances?**
 
-A: There's no time limit - you can track your finances as far back as needed by entering the appropriate dates for your transactions.
+A: There is no time limit - you can track your finances as far back as needed by entering the appropriate dates for your transactions.
