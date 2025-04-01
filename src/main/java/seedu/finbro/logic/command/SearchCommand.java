@@ -1,11 +1,13 @@
 package seedu.finbro.logic.command;
 
 
+import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 
@@ -14,7 +16,10 @@ import java.util.stream.Collectors;
  */
 public class SearchCommand implements Command {
 
+    private static final Logger logger = Logger.getLogger(SearchCommand.class.getName());
+    private static final int INDEX_OFFSET = 1;
     private final String keyword;
+
 
     public SearchCommand(String keyword) {
         this.keyword = keyword;
@@ -30,14 +35,29 @@ public class SearchCommand implements Command {
      */
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-        if (!transactionManager.listTransactions().isEmpty()) {
-            return transactionManager.getTransactionsContainingKeyword(keyword)
-                    .stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining("\n"));
-        } else {
-            return "No transactions found.";
+
+        logger.info("Executing SearchCommand");
+
+        List<Transaction> matchingTransactionsList;
+        matchingTransactionsList = transactionManager.getTransactionsContainingKeyword(keyword);
+
+        StringBuilder response = new StringBuilder("Here are the transactions containing the keyword:"
+                + keyword + "\n");
+
+        for (int i = 0; i < matchingTransactionsList.size(); i++) {
+            Transaction t = matchingTransactionsList.get(i);
+            logger.finer("Listing transaction: " + t);
+            response.append(i + INDEX_OFFSET).append(". ").append(t);
+            response.append(" (Date created: ").append(t.getDate()).append(")\n");
         }
+
+        if (matchingTransactionsList.isEmpty()) {
+            logger.info("No matching transactions for " + keyword);
+            return "No transactions found to contain the keyword: " + "\"" + keyword + "\"";
+        }
+
+        logger.info("Successfully listed " + matchingTransactionsList.size() + " transactions");
+        return response.toString().trim();
     }
 
     /**

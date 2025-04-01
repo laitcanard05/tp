@@ -9,8 +9,9 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SearchCommandTest {
     private TransactionManager transactionManager;
@@ -46,8 +47,21 @@ class SearchCommandTest {
         SearchCommand command = new SearchCommand("a");
         String result = command.execute(transactionManager, ui, storage);
 
+        assertTrue(result.contains(aExists));
+        assertTrue(result.contains(abExists));
+        assertTrue(result.contains(abcExists));
+        assertTrue(result.contains(abcdExists));
+    }
 
-        assertEquals(aExists +"\n"+ abExists +"\n"+ abcExists +"\n"+ abcdExists, result);
+    @Test
+    void searchBigA_shouldDisplayATransactions() {
+        SearchCommand command = new SearchCommand("A");
+        String result = command.execute(transactionManager, ui, storage);
+
+        assertTrue(result.contains(aExists));
+        assertTrue(result.contains(abExists));
+        assertTrue(result.contains(abcExists));
+        assertTrue(result.contains(abcdExists));
     }
 
     /**
@@ -58,7 +72,8 @@ class SearchCommandTest {
         SearchCommand command = new SearchCommand("c");
         String result = command.execute(transactionManager, ui, storage);
 
-        assertEquals(abcExists +"\n"+ abcdExists, result);
+        assertTrue(result.contains(abcExists));
+        assertTrue(result.contains(abcdExists));
     }
 
     @Test
@@ -66,16 +81,10 @@ class SearchCommandTest {
         SearchCommand command = new SearchCommand("Z");
         String result = command.execute(transactionManager, ui, storage);
 
-        assertEquals("", result);
+        assertEquals("No transactions found to contain the keyword: \"Z\"", result);
     }
 
-    @Test
-    void searchBigA_shouldDisplayNoTransactions() {
-        SearchCommand command = new SearchCommand("A");
-        String result = command.execute(transactionManager, ui, storage);
 
-        assertEquals("", result);
-    }
 
     /**
      * Tests that isExit returns false.

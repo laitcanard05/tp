@@ -59,7 +59,21 @@ summary
 
 
 summary
-3
+4
+2025
+setbudget
+4
+2025
+1500
+trackbudget
+4
+2025
+setsavings
+4
+2025
+500
+tracksavings
+4
 2025
 delete
 3

@@ -61,6 +61,7 @@ class BalanceCommandTest {
         assertEquals(expected, result);
     }
 
+    @Test
     void execute_noTransactions_returnsZeroBalance() {
         // Ensure no transactions are in the system (default state)
         assertEquals(0, transactionManager.getTransactionCount(),
