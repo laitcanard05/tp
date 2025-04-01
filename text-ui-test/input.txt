@@ -1,6 +1,6 @@
 help
 income
-3000
+3000.00
 Monthly salary
 Work, Primary
 income
@@ -8,7 +8,7 @@ income
 Freelance project
 Side-hustle, Design
 income
-1200
+1200.00
 Tax refund
 Annual
 expense
@@ -17,7 +17,7 @@ Lunch with colleagues
 1
 Work
 expense
-75
+75.00
 New shoes
 3
 Clothing
@@ -37,10 +37,15 @@ Movie tickets
 5
 Weekend-leisure
 expense
-120
+120.00
 Groceries
 1
 Essential
+expense
+50.00
+Miscellaneous payment
+0
+One-time
 list
 
 
@@ -55,6 +60,7 @@ filter
 2025-03-01
 2025-03-15
 balance
+view
 summary
 
 
@@ -66,6 +72,21 @@ delete
 list
 
 
+delete
+5-6
+list
+
+
+edit
+2
+y
+
+50.75
+Updated project
+2025-04-02
+y
+3
+Side-hustle, Design, Important
 search
 clothing
 expense
@@ -74,19 +95,37 @@ Coffee and snacks
 1
 work
 income
-450
+450.00
 Part-time gig
 side-hustle
+export
+csv
+export
+txt
+setbudget
+5
+2025
+1500
+trackbudget
+5
+2025
+setsavings
+5
+2025
+500
+tracksavings
+5
+2025
 clear
 n
 clear
 y
 income
-2000
+2000.00
 New job payment
 work
 expense
-30
+30.00
 Dinner
 1
 Dining-out

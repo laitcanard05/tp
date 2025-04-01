@@ -160,20 +160,21 @@ New expense added: [Expense][Food] $120.00 - Groceries [Essential]
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can choose the number of transactions to show after this prompt.)
+Enter amount:
 > ____________________________________________________________
-Enter number of transactions to list. (Leave blank to show all transactions.)
+Enter description:
 > ____________________________________________________________
-Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Income] $1200.00 - Tax refund [Annual] (Date created: <DATE>)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
-6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: <DATE>)
-7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: <DATE>)
-8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: <DATE>)
-9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: <DATE>)
+Please select a category by entering its corresponding index
+0 - OTHERS
+1 - FOOD
+2 - TRANSPORT
+3 - SHOPPING
+4 - BILLS
+5 - ENTERTAINMENT
+> ____________________________________________________________
+Enter up to 3 tags (separated by space or comma), or press Enter to skip:
+> ____________________________________________________________
+New expense added: [Expense][Others] $50.00 - Miscellaneous payment [One-time]
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -182,11 +183,29 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all t
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Income] $1200.00 - Tax refund [Annual] (Date created: <DATE>)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Income] $1200.00 - Tax refund [Annual] (Date created: 2025-04-01)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
+6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-01)
+7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-01)
+8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-01)
+9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-01)
+10. [Expense][Others] $50.00 - Miscellaneous payment [One-time] (Date created: 2025-04-01)
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can choose the number of transactions to show after this prompt.)
+> ____________________________________________________________
+Enter number of transactions to list. (Leave blank to show all transactions.)
+> ____________________________________________________________
+Here are your transactions:
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Income] $1200.00 - Tax refund [Annual] (Date created: 2025-04-01)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -211,9 +230,15 @@ There are no transactions between Mar 1 2025 and Mar 15 2025.
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Current Balance: $4,273.01
+Current Balance: $4,223.01
 Total Income: $4,700.50
-Total Expenses: $427.49
+Total Expenses: $477.49
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Current Balance: $4,223.01
+Total Income: $4,700.50
+Total Expenses: $477.49
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -225,7 +250,7 @@ ____________________________________________________________
 Financial Summary for April 2025:
 
 Total Income: $4700.50
-Total Expenses: $427.49
+Total Expenses: $477.49
 
 Top Expense Categories:
 1. Bills: $150.20
@@ -241,9 +266,10 @@ Tags Summary:
 6. Monthly-utilities: $150.20
 7. Essential: $120.00
 8. Clothing: $75.00
-9. Weekend-leisure: $45.99
-10. Commute: $10.80
-11. Transport: $10.80
+9. One-time: $50.00
+10. Weekend-leisure: $45.99
+11. Commute: $10.80
+12. Transport: $10.80
 
 ____________________________________________________________
 Enter command word:
@@ -256,7 +282,7 @@ ____________________________________________________________
 Financial Summary for April 2025:
 
 Total Income: $4700.50
-Total Expenses: $427.49
+Total Expenses: $477.49
 
 Top Expense Categories:
 1. Bills: $150.20
@@ -272,9 +298,10 @@ Tags Summary:
 6. Monthly-utilities: $150.20
 7. Essential: $120.00
 8. Clothing: $75.00
-9. Weekend-leisure: $45.99
-10. Commute: $10.80
-11. Transport: $10.80
+9. One-time: $50.00
+10. Weekend-leisure: $45.99
+11. Commute: $10.80
+12. Transport: $10.80
 
 ____________________________________________________________
 Enter command word:
@@ -291,14 +318,72 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all t
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
-5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: <DATE>)
-6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: <DATE>)
-7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: <DATE>)
-8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: <DATE>)
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
+5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-01)
+6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-01)
+7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-01)
+8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-01)
+9. [Expense][Others] $50.00 - Miscellaneous payment [One-time] (Date created: 2025-04-01)
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Enter a number or range to delete. (e.g., '1' or '2-5')
+> ____________________________________________________________
+Deleted transactions:
+- [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities]
+- [Expense][Transport] $10.80 - Bus fare [Transport, Commute]
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can choose the number of transactions to show after this prompt.)
+> ____________________________________________________________
+Enter number of transactions to list. (Leave blank to show all transactions.)
+> ____________________________________________________________
+Here are your transactions:
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
+5. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-01)
+6. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-01)
+7. [Expense][Others] $50.00 - Miscellaneous payment [One-time] (Date created: 2025-04-01)
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Enter the index of transaction to edit:
+> ____________________________________________________________
+Do you want to edit transaction at index 2? (y/n)
+> ____________________________________________________________
+Enter new amount (press Enter to skip):
+> ____________________________________________________________
+Enter new description (press Enter to skip):
+> ____________________________________________________________
+Enter new date (YYYY-MM-DD) (press Enter to skip):
+> ____________________________________________________________
+Invalid command: Invalid date format. Please use YYYY-MM-DD.
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Unknown command: 2025-04-02
+Type 'help' to see available commands.
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Unknown command: y
+Type 'help' to see available commands.
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Unknown command: 3
+Type 'help' to see available commands.
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Unknown command: Side-hustle, Design, Important
+Type 'help' to see available commands.
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -333,6 +418,65 @@ ____________________________________________________________
 Enter up to 3 tags (separated by space or comma), or press Enter to skip:
 > ____________________________________________________________
 New income added: [Income] $450.00 - Part-time gig [side-hustle]
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Enter export format (csv/txt) or press Enter for default (csv):
+> ____________________________________________________________
+Data exported successfully to: exports/finbro_export_20250401.csv
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Enter export format (csv/txt) or press Enter for default (csv):
+> ____________________________________________________________
+Data exported successfully to: exports/finbro_export_20250401.txt
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Enter your budget:
+> ____________________________________________________________
+Budget of 1500.0 has been set for 5/2025
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Budget for 05/2025: $1500.00
+Total Expenses: $0.00
+You are within your budget.
+Remaining Budget: $1500.00
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Enter your savings goal:
+> ____________________________________________________________
+Savings Goal of 500.0 has been set for 5/2025
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Savings Goal for 5/2025: $500.00
+Total Income: $0.00
+Total Expenses: $0.00
+Total Savings: $0.00
+You are short of your savings goal by $500.0
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
