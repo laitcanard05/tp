@@ -198,7 +198,8 @@ Enter command word:
 > ____________________________________________________________
 Enter keyword or string to search:
 >____________________________________________________________
-[Expense][Bills] $150.20 - Electricity bill [Monthly-utilities]
+Here are the transactions containing the keyword:bill
+1. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
