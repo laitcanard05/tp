@@ -382,7 +382,8 @@ sequenceDiagram
 ### Filtering transactions 
 
 The follow sequence diagram illustrates the process of filtering transactions based on a date range:
-```
+
+``` mermaid
 sequenceDiagram
     participant User
     participant FinBro as FinBro
@@ -403,6 +404,7 @@ sequenceDiagram
     FinBro->>UI: showMessage(result)
     UI-->>User: display result
 ```
+
 Here's a more detailed sequence diagram showing the flow for filtering transactions based on a date range:
 ```mermaid 
 sequenceDiagram
