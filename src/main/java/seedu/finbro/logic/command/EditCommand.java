@@ -24,6 +24,7 @@ public class EditCommand implements Command {
 
     private final int index;
     private final Map<String, String> parameters;
+    private static final int INDEX_OFFSET = 1;
 
     /**
      * Constructs an EditCommand with the given keyword and parameters.
@@ -52,13 +53,13 @@ public class EditCommand implements Command {
         List<Transaction> transactions = transactionManager.listTransactions();
 
         // Check if index is valid
-        if (index < 0 || index >= transactions.size()) {
+        if (index <= 0 || index > transactions.size()) {
             logger.warning("Invalid index: " + index);
-            return "Invalid index. Please provide an index between 0 and " + (transactions.size() - 1) + ".";
+            return "Invalid index. Please provide an index between 1 and " + (transactions.size() - 1+ ".");
         }
 
         // Get the transaction at the specified index
-        Transaction originalTransaction = transactions.get(index);
+        Transaction originalTransaction = transactions.get(index - INDEX_OFFSET);
         Transaction updatedTransaction = createUpdatedTransaction(originalTransaction);
 
         if (updatedTransaction != null) {

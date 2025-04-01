@@ -163,6 +163,23 @@ public class Parser {
             // Keyword is required - cannot be skipped
             int index = ui.readIndex("Enter the index of transaction to edit:\n> ");
 
+            // Add confirmation step
+            boolean confirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
+            if (!confirmed) {
+                logger.fine("User cancelled edit operation");
+                return new Command() {
+                    @Override
+                    public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+                        return "Edit operation cancelled.";
+                    }
+
+                    @Override
+                    public boolean isExit() {
+                        return false;
+                    }
+                };
+            }
+
             Map<String, String> parameters = new HashMap<>();
 
             String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
