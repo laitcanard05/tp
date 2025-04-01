@@ -49,7 +49,7 @@ class SummaryCommandTest {
             LocalDate.now().getYear());
         String result = command.execute(transactionManager, ui, storage);
 
-        assertEquals("Financial Summary for March 2025:\n\n" +
+        assertEquals("Financial Summary for April 2025:\n\n" +
             "Total Income: $0.00\nTotal Expenses: $0.00\n", result);
     }
 
@@ -67,11 +67,11 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Income(2000,
             "Monthly salary", null));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
             
             Total Income: $2000.00
             Total Expenses: $20.30
@@ -97,11 +97,11 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Expense(45.99,
             "Movie tickets", Expense.Category.fromString("Entertainment"), null));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
            
             Total Income: $0.00
             Total Expenses: $138.09
@@ -139,11 +139,11 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Expense(25.50,
             "Lunch with colleagues", Expense.Category.fromString("Food"), tagSet4));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
            
             Total Income: $3000.00
             Total Expenses: $313.79
