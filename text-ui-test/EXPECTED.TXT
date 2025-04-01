@@ -165,15 +165,15 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all t
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Income] $1200.00 - Tax refund [Annual] (Date created: <DATE>)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
-6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: <DATE>)
-7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: <DATE>)
-8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: <DATE>)
-9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: <DATE>)
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Income] $1200.00 - Tax refund [Annual] (Date created: 2025-04-01)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
+6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-01)
+7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-01)
+8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-01)
+9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -182,11 +182,11 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all t
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Income] $1200.00 - Tax refund [Annual] (Date created: <DATE>)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Income] $1200.00 - Tax refund [Annual] (Date created: 2025-04-01)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -279,6 +279,53 @@ Tags Summary:
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Enter your budget:
+> ____________________________________________________________
+Budget of 1500.0 has been set for 4/2025
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Budget for 04/2025: $1500.00
+Total Expenses: $427.49
+You are within your budget.
+Remaining Budget: $1072.51
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Enter your savings goal:
+> ____________________________________________________________
+Savings Goal of 500.0 has been set for 4/2025
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
+Please enter the month (1-12). (Leave blank for current month)
+> ____________________________________________________________
+Please enter the year. (Leave blank for current year)
+> ____________________________________________________________
+____________________________________________________________
+Savings Goal for 4/2025: $500.00
+Total Income: $4700.50
+Total Expenses: $427.49
+Total Savings: $4273.01
+Congratulations! You have met your savings goal!
+____________________________________________________________
+Enter command word:
+> ____________________________________________________________
 Enter a number or range to delete. (e.g., '1' or '2-5')
 > ____________________________________________________________
 Deleted transactions:
@@ -291,14 +338,14 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all t
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: <DATE>)
-3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: <DATE>)
-4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: <DATE>)
-5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: <DATE>)
-6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: <DATE>)
-7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: <DATE>)
-8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: <DATE>)
+1. [Income] $3000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-01)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-01)
+3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
+4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-01)
+5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-01)
+6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-01)
+7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-01)
+8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
