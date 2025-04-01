@@ -19,7 +19,7 @@ public class ExitCommand implements Command {
     @Override
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         storage.saveTransactions(transactionManager);
-        return "Goodbye! Thank you for using FinBro.";
+        return "Thank you for using FinBro. Your finances are now in better shape!\n" + "Goodbye!";
     }
 
     /**
