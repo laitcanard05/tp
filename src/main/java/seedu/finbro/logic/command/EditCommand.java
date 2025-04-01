@@ -22,10 +22,11 @@ import java.util.logging.Logger;
 public class EditCommand implements Command {
     private static final Logger logger = Logger.getLogger(EditCommand.class.getName());
 
+    private static final int INDEX_OFFSET = 1;
     private final int index;
     private final Map<String, String> parameters;
-    private final int INDEX_OFFSET = 1;
 
+    
     /**
      * Constructs an EditCommand with the given keyword and parameters.
      *
