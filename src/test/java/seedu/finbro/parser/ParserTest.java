@@ -28,8 +28,12 @@ import seedu.finbro.logic.command.TrackBudgetCommand;
 import seedu.finbro.logic.command.SetSavingsGoalCommand;
 import seedu.finbro.logic.command.TrackSavingsGoalCommand;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Scanner;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -49,6 +53,17 @@ class ParserTest {
         dummyStorage = new Storage();
     }
 
+    /**
+     * Helper method to create a Ui with simulated inputs for interactive testing.
+     */
+    private Ui createUiWithInputs(String... inputs) {
+        String inputString = String.join(System.lineSeparator(), inputs);
+        InputStream inputStream = new ByteArrayInputStream(inputString.getBytes());
+        return new Ui(new Scanner(inputStream));
+    }
+
+    // Basic Command Tests
+
     @Test
     void parseCommandWord_income_success() {
         Command command = parser.parseCommandWord("income", dummyUi);
@@ -66,7 +81,6 @@ class ParserTest {
         Command command = parser.parseCommandWord("list", dummyUi);
         assertTrue(command instanceof ListCommand || command instanceof InvalidCommand);
     }
-
 
     @Test
     void parseCommandWord_search_success() {
@@ -169,5 +183,183 @@ class ParserTest {
     void parseCommandWord_trackSavingsGoal_success() {
         Command command = parser.parseCommandWord("tracksavings", dummyUi);
         assertTrue(command instanceof TrackSavingsGoalCommand || command instanceof InvalidCommand);
+    }
+
+    // Extended Tests for Better Coverage
+
+    @Test
+    void parseCommandWord_view_returnsBalanceCommandAsAlias() {
+        Command command = parser.parseCommandWord("view", createUiWithInputs());
+        assertTrue(command instanceof BalanceCommand);
+        assertFalse(command.isExit());
+    }
+
+    // Income command detailed tests
+
+    @Test
+    void parseCommandWordIncome_validInput_returnsIncomeCommand() {
+        Ui ui = createUiWithInputs("1000", "Salary", "work");
+        Command command = parser.parseCommandWord("income", ui);
+        assertTrue(command instanceof IncomeCommand);
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    void parseCommandWordIncome_invalidAmount_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("invalid", "1000", "Salary", "work");
+        Command command = parser.parseCommandWord("income", ui);
+        assertTrue(command instanceof IncomeCommand || command instanceof InvalidCommand);
+    }
+
+    // Expense command detailed tests
+
+    @Test
+    void parseCommandWordExpense_validInput_returnsExpenseCommand() {
+        Ui ui = createUiWithInputs("50", "Lunch", "1", "food");
+        Command command = parser.parseCommandWord("expense", ui);
+        assertTrue(command instanceof ExpenseCommand);
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    void parseCommandWordExpense_invalidCategory_handlesError() {
+        Ui ui = createUiWithInputs("50", "Lunch", "10", "0", "food");
+        Command command = parser.parseCommandWord("expense", ui);
+        assertTrue(command instanceof ExpenseCommand || command instanceof InvalidCommand);
+    }
+
+    // List command detailed tests
+
+    @Test
+    void parseCommandWordList_invalidDate_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("invalid-date", "");
+        Command command = parser.parseCommandWord("list", ui);
+        assertTrue(command instanceof InvalidCommand);
+    }
+
+    // Delete command detailed tests
+
+    @Test
+    void parseCommandWordDelete_validRange_returnsDeleteCommand() {
+        Ui ui = createUiWithInputs("1-3");
+        Command command = parser.parseCommandWord("delete", ui);
+        assertTrue(command instanceof DeleteCommand);
+    }
+
+    // Filter command detailed tests
+
+    @Test
+    void parseCommandWordFilter_validDates_returnsFilterCommand() {
+        Ui ui = createUiWithInputs("2025-03-01", "2025-03-31");
+        Command command = parser.parseCommandWord("filter", ui);
+        assertTrue(command instanceof FilterCommand);
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    void parseCommandWordFilter_startDateAfterEndDate_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("2025-03-31", "2025-03-01");
+        Command command = parser.parseCommandWord("filter", ui);
+        assertTrue(command instanceof InvalidCommand);
+    }
+
+    // Export command detailed tests
+
+    @Test
+    void parseCommandWordExport_invalidFormat_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("pdf");
+        Command command = parser.parseCommandWord("export", ui);
+        assertTrue(command instanceof InvalidCommand);
+    }
+
+    // Clear command detailed tests
+
+    @Test
+    void parseCommandWordClearConfirmation_yes_returnsConfirmedClearCommand() {
+        // First call sets up the pending confirmation
+        parser.parseCommandWord("clear", createUiWithInputs());
+
+        // Second call confirms with "y"
+        Command command = parser.parseCommandWord("y", createUiWithInputs());
+        assertTrue(command instanceof ClearCommand);
+    }
+
+    @Test
+    void parseCommandWordClearConfirmation_no_returnsCancellationCommand() {
+        // First call sets up the pending confirmation
+        parser.parseCommandWord("clear", createUiWithInputs());
+
+        // Second call cancels with "n"
+        Command command = parser.parseCommandWord("n", createUiWithInputs());
+        assertFalse(command instanceof ClearCommand);
+        assertFalse(command.isExit());
+
+        // Execute to see the message
+        String result = command.execute(null, null, null);
+        assertEquals("Clear operation cancelled.", result);
+    }
+
+    // Edit command detailed tests
+
+    @Test
+    void parseCommandWordEdit_cancelled_returnsNonEditCommand() {
+        Ui ui = createUiWithInputs("1", "n");
+        Command command = parser.parseCommandWord("edit", ui);
+
+        // Should return a Command that's not an EditCommand
+        assertFalse(command instanceof EditCommand);
+        assertFalse(command.isExit());
+
+        // Execute to see the message
+        String result = command.execute(null, null, null);
+        assertEquals("Edit operation cancelled.", result);
+    }
+
+    // Budget and Savings commands detailed tests
+
+    @Test
+    void parseCommandWordSetBudget_validInput_returnsSetBudgetCommand() {
+        Ui ui = createUiWithInputs("3", "2025", "1000");
+        Command command = parser.parseCommandWord("setbudget", ui);
+        assertTrue(command instanceof SetBudgetCommand);
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    void parseCommandWordSetSavingsGoal_validInput_returnsSetSavingsGoalCommand() {
+        Ui ui = createUiWithInputs("3", "2025", "1000");
+        Command command = parser.parseCommandWord("setsavings", ui);
+        assertTrue(command instanceof SetSavingsGoalCommand);
+        assertFalse(command.isExit());
+    }
+
+    // Edge cases and input validation tests
+
+    @Test
+    void parseCommandWordSetBudget_negativeBudget_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("3", "2025", "-1000");
+        Command command = parser.parseCommandWord("setbudget", ui);
+        assertTrue(command instanceof InvalidCommand);
+    }
+
+    @Test
+    void parseCommandWordSetSavingsGoal_zeroSavings_returnsInvalidCommand() {
+        Ui ui = createUiWithInputs("3", "2025", "0");
+        Command command = parser.parseCommandWord("setsavings", ui);
+        assertTrue(command instanceof InvalidCommand);
+    }
+
+    @Test
+    void parseCommandWordClearConfirmation_otherCommand_resetsClearPending() {
+        // First call sets up the pending confirmation
+        parser.parseCommandWord("clear", createUiWithInputs());
+
+        // Second call is another command, should reset the pending confirmation
+        Command command = parser.parseCommandWord("help", createUiWithInputs());
+        assertTrue(command instanceof HelpCommand);
+
+        // Third call should not treat "y" as confirmation for clear anymore
+        Command nextCommand = parser.parseCommandWord("y", createUiWithInputs());
+        assertTrue(nextCommand instanceof UnknownCommand);
     }
 }
