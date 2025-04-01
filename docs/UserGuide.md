@@ -180,6 +180,20 @@ Modifies an existing transaction's details.
 * For each field, you'll be prompted to enter a new value or press Enter to skip
 
 **Example:**
+```
+> edit 2
+Enter new amount (press Enter to skip):
+> 35.00
+Enter new description (press Enter to skip):
+> Grocery run
+Enter new date (YYYY-MM-DD) or press Enter to skip:
+>
+Enter a new category index (press Enter to skip):
+>
+Enter up to 3 tags separated by space or comma (press Enter to skip):
+>
+Transaction #2 edited successfully.
+```
 
 ---
 
@@ -241,8 +255,15 @@ filter d/2025-02-01
 
 Shows your current account balance.
 
-**Format:** `balance`
+**Format:** `balance` / `view`
 
+**Example:**
+```
+> balance
+Current Balance: $1,970.00
+Total Income: $2,000.00
+Total Expenses: $30.00
+```
 
 ---
 
@@ -313,21 +334,21 @@ Displays the list of available commands.
 
 ## Command Summary
 
-| Action             | Command Word                 | Following Fields                                | Example                                    |
-|--------------------|------------------------------|-------------------------------------------------|--------------------------------------------|
-| Add Income         | `income`                     | `AMOUNT`, `DESCRIPTION`, `[TAGS]`               | `income`, `3000`, `Monthly salary`, `work` |
-| Add Expense        | `expense`                    | `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`   | `expense`, `25.50`, `Lunch`, `1`, `work`   |
-| List Transactions  | `list`                       | `[NUMBER]`, `[DATE]`                            | `list`, `10`                               |
-Edit Transaction | `edit` | `[AMOUNT]`, `[DESCRIPTION]`, `[DATE]`, `[CATEGORY]`, `[TAGS]` | `edit`, `2` |
-| Delete Transaction | `delete`                     | `INDEX`                                         | `delete`, `1`                              |
-| Search             | `search`                     | `KEYWORD`                                       | `search`, `grocery food`                   |
-| Filter             | `filter`                     | `STARTDATE`, `[ENDDATE]`                        | `filter`, `2025-02-01`, `2025-02-28`       |
-| View Balance       | `balance`                    | -                                               | `balance`                                  |
-| View Summary       | `summary`                    | `[MONTH] [YEAR]`                                | `summary`, `2`, `2025`                     |
-| Export Data        | `export`                     | `[FORMAT]`                                      | `export`, `csv`                            |
-| Clear Data         | `clear`                      | -                                               | `clear`                                    |
-| Exit               | `exit`                       | -                                               | `exit`                                     |
-| Help               | `help`                       | -                                               | `help`                                     |
+| Action             | Command Word      | Following Fields                                | Example                                    |
+|--------------------|-------------------|-------------------------------------------------|--------------------------------------------|
+| Add Income         | `income`          | `AMOUNT`, `DESCRIPTION`, `[TAGS]`               | `income`, `3000`, `Monthly salary`, `work` |
+| Add Expense        | `expense`         | `AMOUNT`, `DESCRIPTION`, `CATEGORY`, `[TAGS]`   | `expense`, `25.50`, `Lunch`, `1`, `work`   |
+| List Transactions  | `list`            | `[NUMBER]`, `[DATE]`                            | `list`, `10`                               |
+Edit Transaction | `edit`            | `[AMOUNT]`, `[DESCRIPTION]`, `[DATE]`, `[CATEGORY]`, `[TAGS]` | `edit`, `2` |
+| Delete Transaction | `delete`          | `INDEX`                                         | `delete`, `1`                              |
+| Search             | `search`          | `KEYWORD`                                       | `search`, `grocery food`                   |
+| Filter             | `filter`          | `STARTDATE`, `[ENDDATE]`                        | `filter`, `2025-02-01`, `2025-02-28`       |
+| View Balance       | `balance` / `view` | -                                               | `balance`                                  |
+| View Summary       | `summary`         | `[MONTH] [YEAR]`                                | `summary`, `2`, `2025`                     |
+| Export Data        | `export`          | `[FORMAT]`                                      | `export`, `csv`                            |
+| Clear Data         | `clear`           | -                                               | `clear`                                    |
+| Exit               | `exit`            | -                                               | `exit`                                     |
+| Help               | `help`            | -                                               | `help`                                     |
 
 ## FAQ
 
