@@ -264,37 +264,38 @@ public class Ui {
         System.out.println(LINE);
         System.out.print(message);
 
-        try {
-            String input = scanner.nextLine().trim();
-            if (input.isEmpty()) {
-                throw new EmptyInputException();
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                if (input.isEmpty()) {
+                    throw new EmptyInputException();
+                }
+
+                if (input.contains("-")) {
+                    String[] parts = input.split("-");
+                    if (parts.length != 2) {
+                        throw new NumberFormatException("Invalid range format.");
+                    }
+
+                    int start = Integer.parseInt(parts[0].trim());
+                    int end = Integer.parseInt(parts[1].trim());
+
+                    if (start < 1 || end < 1 || start > end) {
+                        throw new IllegalArgumentException("Start and end must be positive, and start <= end.");
+                    }
+
+                    return new int[]{start, end};
+                } else {
+                    int index = Integer.parseInt(input);
+                    if (index < 1) {
+                        throw new IllegalArgumentException("Index must be a positive integer.");
+                    }
+                    return new int[]{index, index};
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Enter a number or range (e.g., '1' or '2-5')");
+                logger.log(Level.WARNING, "Invalid delete index input", e);
             }
-
-            if (input.contains("-")) {
-                String[] parts = input.split("-");
-                if (parts.length != 2) {
-                    throw new NumberFormatException("Invalid range format.");
-                }
-
-                int start = Integer.parseInt(parts[0].trim());
-                int end = Integer.parseInt(parts[1].trim());
-
-                if (start < 1 || end < 1 || start > end) {
-                    throw new IllegalArgumentException("Start and end must be positive, and start <= end.");
-                }
-
-                return new int[]{start, end};
-            } else {
-                int index = Integer.parseInt(input);
-                if (index < 1) {
-                    throw new IllegalArgumentException("Index must be a positive integer.");
-                }
-                return new int[]{index, index};
-            }
-        } catch (Exception e) {
-            System.out.println("Invalid input. Enter a number or range (e.g., '1' or '2-5')");
-            logger.log(Level.WARNING, "Invalid delete index input", e);
-            return readIndexRange(message); // retry
         }
     }
 
@@ -364,5 +365,69 @@ public class Ui {
         System.out.println(LINE);
         System.out.print(message);
         return scanner.nextLine().trim();
+    }
+
+    /**
+     * Reads user input for amount. Used in EditCommand.
+     * Allows empty input to skip the field.
+     *
+     * @param message The prompt message to display
+     * @return The amount entered by the user, can be empty
+     */
+    public String readAmount(String message) {
+        logger.fine("Requesting user input for amount");
+        System.out.println(LINE);
+        System.out.print(message);
+        String amount = scanner.nextLine().trim();
+        logger.fine("User input for amount received: " + amount);
+        return amount;
+    }
+
+    /**
+     * Reads user input for description. Used in EditCommand.
+     * Allows empty input to skip the field.
+     *
+     * @param message The prompt message to display
+     * @return The description entered by the user, can be empty
+     */
+    public String readDescription(String message) {
+        logger.fine("Requesting user input for description");
+        System.out.println(LINE);
+        System.out.print(message);
+        String description = scanner.nextLine().trim();
+        logger.fine("User input for description received: " + description);
+        return description;
+    }
+
+    /**
+     * Reads user input for date. Used in EditCommand.
+     * Allows empty input to skip the field.
+     *
+     * @param message The prompt message to display
+     * @return The date entered by the user, can be empty
+     */
+    public String readDate(String message) {
+        logger.fine("Requesting user input for date");
+        System.out.println(LINE);
+        System.out.print(message);
+        String date = scanner.nextLine().trim();
+        logger.fine("User input for date received: " + date);
+        return date;
+    }
+
+    /**
+     * Reads user input for category. Used in EditCommand.
+     * Allows empty input to skip the field.
+     *
+     * @param message The prompt message to display
+     * @return The category entered by the user, can be empty
+     */
+    public String readCategory(String message) {
+        logger.fine("Requesting user input for category");
+        System.out.println(LINE);
+        System.out.print(message);
+        String category = scanner.nextLine().trim();
+        logger.fine("User input for category received: " + category);
+        return category;
     }
 }

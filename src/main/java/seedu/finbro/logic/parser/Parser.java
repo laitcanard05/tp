@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
@@ -31,6 +33,7 @@ import seedu.finbro.logic.command.TrackBudgetCommand;
 import seedu.finbro.logic.command.SearchCommand;
 import seedu.finbro.logic.command.SetSavingsGoalCommand;
 import seedu.finbro.logic.command.TrackSavingsGoalCommand;
+import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
@@ -49,120 +52,12 @@ public class Parser {
     private boolean clearCommandPending = false;
 
     /**
-     * LEGACY CODE
-     * Parses user input into a Command.
-     *
-     * @param userInput Full user input string
-     * @return The command based on the user input
-     */
-    public Command parseCommand(String userInput) {
-        assert userInput != null : "User input cannot be null";
-
-        logger.fine("Parsing user input: " + userInput);
-        userInput = userInput.trim();
-        if (userInput.isEmpty()) {
-            logger.fine("Empty input, returning HelpCommand");
-            clearCommandPending = false;
-            return new HelpCommand();
-        }
-
-        String[] parts = userInput.split("\\s+", 2);
-        String commandWord = parts[0].toLowerCase();
-        String arguments = parts.length > 1 ? parts[1] : "";
-
-        // Handle y/n responses if a clear confirmation is pending
-        if (clearCommandPending) {
-            if (commandWord.equals("y") || commandWord.equals("yes")) {
-                clearCommandPending = false;
-                logger.fine("Clear command confirmed with 'y'");
-                return new ClearCommand(true);
-            } else if (commandWord.equals("n") || commandWord.equals("no")) {
-                clearCommandPending = false;
-                logger.fine("Clear command cancelled with 'n'");
-                return new Command() {
-                    @Override
-                    public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-                        return "Clear operation cancelled.";
-                    }
-
-                    @Override
-                    public boolean isExit() {
-                        return false;
-                    }
-                };
-            }
-            // If not y/n, reset the pending flag
-            clearCommandPending = false;
-        }
-
-        assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
-        logger.fine("Command word: " + commandWord + ", Arguments: " + arguments);
-
-        Command parsedCommand;
-        switch (commandWord) {
-        case "search":
-            parsedCommand = parseSearchCommand(arguments);
-            break;
-        case "income":
-            parsedCommand = parseIncomeCommand(arguments);
-            break;
-        case "expense":
-            parsedCommand = parseExpenseCommand(arguments);
-            break;
-        case "list":
-            parsedCommand = parseListCommand(arguments);
-            break;
-        case "delete":
-            parsedCommand = parseDeleteCommand(arguments);
-            break;
-        case "filter":
-            parsedCommand = parseFilterCommand(arguments);
-            break;
-        case "balance":
-        case "view": // Support for "view" as an alias for "balance"
-            parsedCommand = new BalanceCommand();
-            break;
-        case "summary":
-            parsedCommand = parseSummaryCommand(arguments);
-            break;
-        case "export":
-            parsedCommand = parseExportCommand(arguments);
-            break;
-        case "clear":
-            parsedCommand = parseClearCommand(arguments);
-            // Set the flag if this is the initial clear command (without confirm)
-            if (arguments.trim().isEmpty()) {
-                clearCommandPending = true;
-            }
-            break;
-        case "exit":
-            parsedCommand = new ExitCommand();
-            break;
-        case "help":
-            parsedCommand = new HelpCommand();
-            break;
-        case "edit":
-            parsedCommand = parseEditCommand(arguments);
-            break;
-        default:
-            logger.warning("Unknown command: " + commandWord);
-            parsedCommand = new UnknownCommand(commandWord);
-            break;
-        }
-
-        assert parsedCommand != null : "Parsed command cannot be null";
-        logger.fine("Parsed command: " + parsedCommand.getClass().getSimpleName());
-        return parsedCommand;
-    }
-
-    /**
      * Parses user input into a Command.
      *
      * @param commandWord The command word to parse
      * @param ui The UI to interact with the user
      */
     public Command parseCommandWord(String commandWord, Ui ui) {
-        assert commandWord != null && !commandWord.isEmpty() : "Command word cannot be null or empty";
         logger.fine("Command word: " + commandWord);
 
         commandWord = commandWord.trim();
@@ -225,7 +120,11 @@ public class Parser {
             parsedCommand = parseSummaryCommand(ui);
             break;
         case "export":
+            parsedCommand = parseExportCommand(ui);
+            break;
         case "clear":
+            parsedCommand = parseClearCommand(ui);
+            break;
         case "exit":
             parsedCommand = new ExitCommand();
             break;
@@ -245,6 +144,8 @@ public class Parser {
             parsedCommand = parseTrackSavingsGoalCommand(ui);
             break;
         case "edit":
+            parsedCommand = parseEditCommand(ui);
+            break;
         default:
             logger.warning("Unknown command: " + commandWord);
             parsedCommand = new UnknownCommand(commandWord);
@@ -256,70 +157,92 @@ public class Parser {
         return parsedCommand;
     }
 
-    /**
-     * Parses arguments into an EditCommand.
-     *
-     * @param args Command arguments
-     * @return The EditCommand
-     */
-    private Command parseEditCommand(String args) {
-        logger.fine("Parsing edit command with arguments: " + args);
+    private Command parseEditCommand(Ui ui) {
+        logger.fine("Parsing edit command");
         try {
-            String[] parts = args.trim().split("\\s+", 2);
-
-            if (parts.length < 2) {
-                logger.warning("Missing parameters for edit command");
-                return new InvalidCommand("Please provide a transaction keyword and parameters to edit.");
+            // Keyword is required - cannot be skipped
+            String keyword = ui.readString("Enter the keyword to find the transaction to edit:\n> ");
+            if (keyword.trim().isEmpty()) {
+                return new InvalidCommand("Please provide a keyword to find the transaction to edit.");
             }
 
-            String keyword = parts[0];
-            Map<String, String> parameters = parseParameters(parts[1]);
+            Map<String, String> parameters = new HashMap<>();
 
-            if (parameters.isEmpty()) {
-                logger.warning("No edit parameters provided");
-                return new InvalidCommand("Please specify at least one parameter to edit.");
-            }
-
-            logger.fine("Creating EditCommand with keyword=" + keyword + ", parameters=" + parameters);
-            return new EditCommand(keyword, parameters);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing edit command", e);
-            return new InvalidCommand("Invalid edit command: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Parses arguments into a ListCommand.
-     *
-     * @param args Command arguments
-     * @return The ListCommand
-     */
-    private Command parseListCommand(String args) {
-        try {
-            Map<String, String> parameters = parseParameters(args);
-
-            Integer limit = null;
-            if (parameters.containsKey("n")) {
-                limit = Integer.parseInt(parameters.get("n"));
-                if (limit <= 0) {
-                    return new InvalidCommand("Number of transactions must be positive.");
+            // Amount (allow skipping)
+            String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
+            if (!amountStr.isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(amountStr);
+                    if (amount <= 0) {
+                        return new InvalidCommand("Amount must be positive.");
+                    }
+                    parameters.put("a", amountStr);
+                } catch (NumberFormatException e) {
+                    return new InvalidCommand("Invalid amount format.");
                 }
             }
 
-            LocalDate date = null;
-            if (parameters.containsKey("d")) {
+            // Description (allow skipping)
+            String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
+            if (!description.isEmpty()) {
+                parameters.put("d", description);
+            }
+
+            // Date (allow skipping)
+            String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
+            if (!dateStr.isEmpty()) {
                 try {
-                    date = LocalDate.parse(parameters.get("d"), DATE_FORMATTER);
+                    LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    parameters.put("date", dateStr);
                 } catch (DateTimeParseException e) {
                     return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
                 }
             }
 
-            return new ListCommand(limit, date);
-        } catch (NumberFormatException e) {
-            return new InvalidCommand("Invalid number format.");
+            // Category (allow skipping)
+            String categoryInput = ui.readCategory("Enter new category " +
+                    "(press Enter to skip, 'y' to select from menu):\n> ");
+            if (!categoryInput.isEmpty()) {
+                if (categoryInput.toLowerCase().startsWith("y")) {
+                    Expense.Category category = parseCategory(ui);
+                    parameters.put("c", category.toString());
+                } else {
+                    try {
+                        Expense.Category category = Expense.Category.fromString(categoryInput);
+                        parameters.put("c", category.toString());
+                    } catch (IllegalArgumentException e) {
+                        return new InvalidCommand("Invalid category.");
+                    }
+                }
+            }
+
+            // Tags (allow skipping)
+            String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
+            if (!tagsInput.isEmpty()) {
+                if (tagsInput.toLowerCase().startsWith("y")) {
+                    List<String> tags = parseTags(ui);
+                    if (!tags.isEmpty()) {
+                        parameters.put("t", String.join(",", tags));
+                    }
+                } else {
+                    List<String> tags = Arrays.stream(tagsInput.split(","))
+                            .map(String::trim)
+                            .filter(tag -> !tag.isEmpty())
+                            .collect(Collectors.toList());
+                    if (!tags.isEmpty()) {
+                        parameters.put("t", String.join(",", tags));
+                    }
+                }
+            }
+
+            if (parameters.isEmpty()) {
+                return new InvalidCommand("Please specify at least one parameter to edit.");
+            }
+
+            return new EditCommand(keyword, parameters);
         } catch (Exception e) {
-            return new InvalidCommand("Invalid list command: " + e.getMessage());
+            logger.log(Level.WARNING, "Error parsing edit command", e);
+            return new InvalidCommand("Invalid edit command: " + e.getMessage());
         }
     }
 
@@ -362,26 +285,6 @@ public class Parser {
     }
 
     /**
-     * Parses arguments into a DeleteCommand.
-     *
-     * @param args Command arguments
-     * @return The DeleteCommand
-     */
-    private Command parseDeleteCommand(String args) {
-        try {
-            int index = Integer.parseInt(args.trim());
-            if (index <= 0) {
-                return new InvalidCommand("Index must be a positive integer.");
-            }
-            return new DeleteCommand(index,index);
-        } catch (NumberFormatException e) {
-            return new InvalidCommand("Invalid index. Please provide a valid number.");
-        } catch (Exception e) {
-            return new InvalidCommand("Invalid delete command: " + e.getMessage());
-        }
-    }
-
-    /**
      * Parses index read from the UI into a DeleteCommand.
      *
      * @param ui The UI to interact with the user
@@ -393,57 +296,15 @@ public class Parser {
             int[] index = ui.readIndexRange("Enter a number or range to delete. (e.g., '1' or '2-5')\n> ");
             int start = index[0];
             int end = index[1];
+            if (start == -1 && end == -1) {
+                throw new EmptyInputException();
+            }
             logger.fine("Creating DeleteCommand with start=" + start + ", end=" + end);
             return new DeleteCommand(start, end);
 
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing delete command", e);
             return new InvalidCommand("Invalid delete command: " + e.getMessage());
-        }
-    }
-
-
-    /**
-     * Parses arguments into a FilterCommand.
-     *
-     * @param args Command arguments
-     * @return The FilterCommand
-     */
-    private Command parseFilterCommand(String args) {
-        logger.fine("Parsing filter command with arguments: " + args);
-        try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("d")) {
-                logger.warning("Missing date parameter for filter command");
-                return new InvalidCommand("Start date must be specified for filter command.");
-            }
-
-            LocalDate startDate = LocalDate.parse(parameters.get("d"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalDate endDate;
-
-            if (!parameters.containsKey("to")) {
-                logger.fine("No end date specified, using current date");
-                endDate = LocalDate.now();
-            } else {
-                endDate = LocalDate.parse(parameters.get("to"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            }
-
-            if (startDate.isAfter(endDate)) {
-                logger.warning("Start date is after end date: " + startDate + " > " + endDate);
-                return new InvalidCommand("Start date cannot be after end date.");
-            }
-
-            logger.fine("Creating FilterCommand with startDate=" + startDate +
-                    ", endDate=" + endDate);
-            return new FilterCommand(startDate, endDate);
-        } catch (DateTimeParseException e) {
-            logger.log(Level.WARNING, "Date format error in filter command", e);
-            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing filter command", e);
-            return new InvalidCommand("Invalid filter command: " + e.getMessage());
         }
     }
 
@@ -498,40 +359,6 @@ public class Parser {
         }
     }
 
-
-    /**
-     * Parses arguments into a SummaryCommand with specified month and year
-     * @param args Command arguments
-     * @return The SummaryCommand
-     */
-    private Command parseSummaryCommand(String args) {
-        Map<String, String> parameters = parseParameters(args);
-
-        try {
-            int month;
-            int year;
-            if (!parameters.containsKey("m")) {
-                month = LocalDate.now().getMonthValue();
-            } else {
-                month = Integer.parseInt(parameters.get("m"));
-                if (month < 1 || month > 12) {
-                    return new InvalidCommand("Month input must be between 1 and 12.");
-                }
-            }
-            if (!parameters.containsKey("y")) {
-                year = LocalDate.now().getYear();
-            } else {
-                year = Integer.parseInt(parameters.get("y"));
-                if (year % 1000 == 0 || year > LocalDate.now().getYear()) {
-                    return new InvalidCommand("Year input must be 4-digit.");
-                }
-            }
-            return new SummaryCommand(month, year);
-        } catch (Exception e) {
-            return new InvalidCommand("Invalid summary command: " + e.getMessage());
-        }
-    }
-
     /**
      * Parses month and year read from ui into a SummaryCommand.
      *
@@ -567,24 +394,20 @@ public class Parser {
     }
 
     /**
-     * Parses arguments into an ExportCommand.
+     * Parses user input into an ExportCommand using interactive UI.
      *
-     * @param args Command arguments
+     * @param ui The UI to interact with the user
      * @return The ExportCommand
      */
-    private Command parseExportCommand(String args) {
-        logger.fine("Parsing export command with arguments: " + args);
+    private Command parseExportCommand(Ui ui) {
+        logger.fine("Parsing export command interactively");
         try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
+            String format = ui.readString("Enter export format (csv/txt) or press Enter for default (csv):\n> ");
+            format = format.trim().isEmpty() ? "csv" : format.toLowerCase();
 
-            String format = "csv"; // Default format
-            if (parameters.containsKey("f")) {
-                format = parameters.get("f").toLowerCase();
-                if (!format.equals("csv") && !format.equals("txt")) {
-                    logger.warning("Invalid export format: " + format);
-                    return new InvalidCommand("Export format must be either 'csv' or 'txt'.");
-                }
+            if (!format.equals("csv") && !format.equals("txt")) {
+                logger.warning("Invalid export format: " + format);
+                return new InvalidCommand("Export format must be either 'csv' or 'txt'.");
             }
 
             logger.fine("Creating ExportCommand with format=" + format);
@@ -596,16 +419,22 @@ public class Parser {
     }
 
     /**
-     * Parses arguments into a ClearCommand.
+     * Parses user input into a ClearCommand using interactive UI.
      *
-     * @param args Command arguments
+     * @param ui The UI to interact with the user
      * @return The ClearCommand
      */
-    private Command parseClearCommand(String args) {
-        logger.fine("Parsing clear command with arguments: " + args);
-        boolean isConfirmed = args.trim().equalsIgnoreCase("confirm");
-        logger.fine("Clear confirmation status: " + isConfirmed);
-        return new ClearCommand(isConfirmed);
+    private Command parseClearCommand(Ui ui) {
+        logger.fine("Parsing clear command interactively");
+
+        // Set the flag to indicate a confirmation is pending
+        clearCommandPending = true;
+
+        ui.showMessage("Warning: This will delete all your data. Are you sure? (y/n)");
+        logger.fine("Waiting for clear command confirmation");
+
+        // Return an unconfirmed ClearCommand - the confirmation will be handled in parseCommandWord
+        return new ClearCommand(false);
     }
 
     /**
@@ -687,26 +516,6 @@ public class Parser {
     }
 
     /**
-     * LEGACY CODE
-     * Extracts tags from parameters.
-     *
-     * @param parameters The parameters map
-     * @return A list of tags
-     */
-    private List<String> parseTags(Map<String, String> parameters) {
-        List<String> tags = new ArrayList<>();
-
-        // Look for parameters with prefix 't'
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            if (entry.getKey().equals("t")) {
-                tags.add(entry.getValue());
-            }
-        }
-
-        return tags;
-    }
-
-    /**
      * Prompts the user to input up to 3 tags and returns them as a list.
      * Tags are split by commas or spaces and trimmed. Empty input returns an empty list.
      *
@@ -736,54 +545,6 @@ public class Parser {
     }
 
     /**
-     * LEGACY CODE
-     * Parses arguments into an ExpenseCommand.
-     *
-     * @param args Command arguments
-     * @return The ExpenseCommand
-     */
-    private Command parseExpenseCommand(String args) {
-        logger.fine("Parsing expense command with arguments: " + args);
-        try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing amount parameter for expense command");
-                return new InvalidCommand("Amount is required for expense command.");
-            }
-
-            if (!parameters.containsKey("d")) {
-                logger.warning("Missing description parameter for expense command");
-                return new InvalidCommand("Description is required for expense command.");
-            }
-
-            double amount = parseAmount(parameters.get(""));
-            String description = parameters.get("d");
-
-            Expense.Category category = Expense.Category.OTHERS;
-            if (parameters.containsKey("c")) {
-                category = Expense.Category.fromString(parameters.get("c"));
-            }
-
-            List<String> tags = parseTags(parameters);
-
-            logger.fine("Creating ExpenseCommand with amount=" + amount +
-                    ", description=" + description + ", category=" + category +
-                    ", tags=" + tags);
-            return new ExpenseCommand(amount, description, category, tags);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in expense command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing expense command", e);
-            return new InvalidCommand("Invalid expense command: " + e.getMessage());
-        }
-    }
-
-    /**
      * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an ExpenseCommand.
      *
@@ -808,47 +569,6 @@ public class Parser {
     }
 
     /**
-     * LEGACY CODE
-     * Parses arguments into an IncomeCommand.
-     *
-     * @param args Command arguments
-     * @return The IncomeCommand
-     */
-    private Command parseIncomeCommand(String args) {
-        logger.fine("Parsing income command with arguments: " + args);
-        try {
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing amount parameter for income command");
-                return new InvalidCommand("Amount is required for income command.");
-            }
-
-            if (!parameters.containsKey("d")) {
-                logger.warning("Missing description parameter for income command");
-                return new InvalidCommand("Description is required for income command.");
-            }
-
-            double amount = parseAmount(parameters.get(""));
-            String description = parameters.get("d");
-            List<String> tags = parseTags(parameters);
-
-            logger.fine("Creating IncomeCommand with amount=" + amount +
-                    ", description=" + description + ", tags=" + tags);
-            return new IncomeCommand(amount, description, tags);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid amount format in income command", e);
-            return new InvalidCommand(
-                    "Invalid amount format. Please provide a valid number with up to 2 decimal places."
-            );
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing income command", e);
-            return new InvalidCommand("Invalid income command: " + e.getMessage());
-        }
-    }
-
-    /**
      * ONE COMMAND ONE ACTION OVERRIDE
      * Parses arguments into an IncomeCommand.
      *
@@ -868,36 +588,6 @@ public class Parser {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Unknown error parsing income command", e);
             return new InvalidCommand("Something went wrong, please try again.");
-        }
-    }
-
-    /**
-     * LEGACY CODE
-     * Parses arguments into a SearchCommand.
-     *
-     * @param args Command arguments
-     * @return The SearchCommand
-     */
-    private Command parseSearchCommand(String args) {
-        logger.fine("Parsing search command with arguments: " + args);
-        try {
-            if (args.trim().isEmpty()) {
-                return new InvalidCommand("Search command requires at least one keyword.");
-            }
-
-            Map<String, String> parameters = parseParameters(args);
-            logger.fine("Parsed parameters: " + parameters);
-
-            if (!parameters.containsKey("")) {
-                logger.warning("Missing keyword for search command");
-                return new InvalidCommand("keyword is required for search command.");
-            }
-
-            logger.fine("Searching transactions with keyword=" + args);
-            return new SearchCommand(args);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error parsing search command", e);
-            return new InvalidCommand("Invalid search command: " + e.getMessage());
         }
     }
 
@@ -1005,6 +695,7 @@ public class Parser {
             return new InvalidCommand("Invalid set budget command: " + e.getMessage());
         }
     }
+
     /**
      * Parses arguments into a TrackBudgetCommand.
      *
@@ -1038,6 +729,7 @@ public class Parser {
             return new InvalidCommand("Invalid track budget command: " + e.getMessage());
         }
     }
+
     /**
      * Parses arguments into a SetSavingsCommand.
      *
@@ -1114,3 +806,4 @@ public class Parser {
         }
     }
 }
+
