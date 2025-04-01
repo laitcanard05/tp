@@ -24,7 +24,7 @@ public class EditCommand implements Command {
 
     private final int index;
     private final Map<String, String> parameters;
-    private static final int INDEX_OFFSET = 1;
+    private final int INDEX_OFFSET = 1;
 
     /**
      * Constructs an EditCommand with the given keyword and parameters.
