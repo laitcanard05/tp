@@ -67,7 +67,7 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Income(2000,
             "Monthly salary", null));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
@@ -97,7 +97,7 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Expense(45.99,
             "Movie tickets", Expense.Category.fromString("Entertainment"), null));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
@@ -139,7 +139,7 @@ class SummaryCommandTest {
         transactionManager.addTransaction(new Expense(25.50,
             "Lunch with colleagues", Expense.Category.fromString("Food"), tagSet4));
 
-        SummaryCommand command = new SummaryCommand(3, 2025);
+        SummaryCommand command = new SummaryCommand(4, 2025);
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
