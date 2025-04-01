@@ -192,6 +192,7 @@ Enter command word:
 > ____________________________________________________________
 Enter keyword or string to search:
 >____________________________________________________________
+Here are the transactions containing the keyword:lunch
 1. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-01)
 ____________________________________________________________
 Enter command word:
