@@ -53,7 +53,7 @@ public class EditCommand implements Command {
         SearchCommand searchCommand = new SearchCommand(keyword);
         String searchResult = searchCommand.execute(transactionManager, ui, storage);
 
-        if (searchResult.equals("No transactions found.")) {
+        if (searchResult.contains("No transactions found to contain the keyword")) {
             return "No matching transaction found for '" + keyword + "'.";
         }
 
@@ -91,7 +91,7 @@ public class EditCommand implements Command {
     private List<Transaction> parseSearchResults(String searchResult, TransactionManager manager) {
         List<Transaction> results = new ArrayList<>();
 
-        if (searchResult.isEmpty() || searchResult.equals("No transactions found.")) {
+        if (searchResult.isEmpty() || searchResult.contains("No transactions found to contain the keyword")) {
             return results;
         }
 
