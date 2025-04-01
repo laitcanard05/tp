@@ -49,7 +49,7 @@ class SummaryCommandTest {
             LocalDate.now().getYear());
         String result = command.execute(transactionManager, ui, storage);
 
-        assertEquals("Financial Summary for March 2025:\n\n" +
+        assertEquals("Financial Summary for April 2025:\n\n" +
             "Total Income: $0.00\nTotal Expenses: $0.00\n", result);
     }
 
@@ -71,7 +71,7 @@ class SummaryCommandTest {
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
             
             Total Income: $2000.00
             Total Expenses: $20.30
@@ -101,7 +101,7 @@ class SummaryCommandTest {
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
            
             Total Income: $0.00
             Total Expenses: $138.09
@@ -143,7 +143,7 @@ class SummaryCommandTest {
         String result = command.execute(transactionManager, ui, storage);
 
         assertEquals("""
-            Financial Summary for March 2025:
+            Financial Summary for April 2025:
            
             Total Income: $3000.00
             Total Expenses: $313.79
