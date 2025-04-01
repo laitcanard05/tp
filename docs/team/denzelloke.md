@@ -2,7 +2,8 @@
 
 ## Overview
 
-Our team developed FinBro, a personal finance tracker application designed for command-line interaction. It allows users to manage their income and expenses, search and filter transactions, and gain financial insights with minimal friction.
+Our team developed FinBro, a personal finance tracker application designed for command-line interaction. 
+It allows users to manage their income and expenses, search and filter transactions, and gain financial insights with minimal friction.
 
 I focused on improving the user experience and robustness of FinBro by introducing interactive CLI prompts, defensive input handling, and transaction validation features.
 
