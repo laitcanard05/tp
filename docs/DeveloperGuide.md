@@ -237,7 +237,472 @@ classDiagram
     UI --> Logger : uses
 ```
 
-### Sequence Diagram
+### Sequence Diagrams
+
+The following sequence diagrams illustrate the interaction between components for key operations in FinBro.
+
+#### Adding a Transaction
+
+This sequence diagram illustrates the process when a user adds a new transaction:
+
+```plantuml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":IncomeCommand" as IncomeCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Income" as Income
+participant ":Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "income 3000 d/Monthly salary t/work"
+
+Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
+activate IncomeCommand
+IncomeCommand --> Parser : command
+deactivate IncomeCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> IncomeCommand : execute(transactionManager, ui, storage)
+activate IncomeCommand
+
+IncomeCommand -> TransactionMgr : getTransactionDuplicates(amount, description)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand : duplicates
+deactivate TransactionMgr
+
+note right of IncomeCommand: Check for duplicates
+
+alt duplicates found
+    IncomeCommand -> UI : warnDuplicate()
+    activate UI
+    UI --> IncomeCommand : confirmResult
+    deactivate UI
+
+    alt user cancels transaction
+        IncomeCommand --> FinBro : "Transaction cancelled by user"
+    end
+end
+
+IncomeCommand -> Income : new Income(amount, description, tags)
+activate Income
+Income --> IncomeCommand : income
+deactivate Income
+
+IncomeCommand -> TransactionMgr : addTransaction(income)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand
+deactivate TransactionMgr
+
+IncomeCommand -> Storage : saveTransactions(transactionManager)
+activate Storage
+Storage --> IncomeCommand
+deactivate Storage
+
+IncomeCommand --> FinBro : result message
+deactivate IncomeCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
+```
+
+#### Searching for a Transaction
+
+This sequence diagram illustrates the process of searching for transactions:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant SearchCommand as SearchCommand
+    participant TransactionMgr as TransactionManager
+
+    User->>UI: input command
+    activate UI
+    UI->>FinBro: readCommand()
+    activate FinBro
+    FinBro->>Parser: parseCommand(userInput)
+    activate Parser
+
+    Note right of Parser: Parse "search lunch"
+    Parser->>SearchCommand: new SearchCommand(keyword)
+    activate SearchCommand
+    SearchCommand-->>Parser: command
+    deactivate SearchCommand
+    Parser-->>FinBro: command
+    deactivate Parser
+
+    FinBro->>SearchCommand: execute(transactionManager, ui, storage)
+    activate SearchCommand
+
+    SearchCommand->>TransactionMgr: getTransactionsContainingKeyword(keyword)
+    activate TransactionMgr
+    TransactionMgr-->>SearchCommand: matchingTransactions
+    deactivate TransactionMgr
+
+    SearchCommand-->>FinBro: result message (list of matches)
+    deactivate SearchCommand
+
+    FinBro->>UI: showMessage(result)
+    UI-->>User: display result
+    deactivate UI
+    deactivate FinBro
+```
+
+#### Filtering Transactions
+
+This sequence diagram illustrates the process of filtering transactions based on a date range:
+
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant FilterCommand as FilterCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
+   Parser->>FilterCommand: new FilterCommand(startDate, endDate)
+   activate FilterCommand
+   FilterCommand-->>Parser: command
+   deactivate FilterCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>FilterCommand: execute(transactionManager, ui, storage)
+   activate FilterCommand
+
+   FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
+   activate TransactionMgr
+   TransactionMgr-->>FilterCommand: filteredTransactions
+   deactivate TransactionMgr
+
+   FilterCommand-->>FinBro: result message (list of filtered transactions)
+   deactivate FilterCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+
+#### Obtaining a Monthly Financial Summary
+
+This sequence diagram illustrates the process of obtaining a monthly financial summary:
+
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant SummaryCommand as SummaryCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "summary m/2 y/2025"
+   Parser->>SummaryCommand: new SummaryCommand(month, year)
+   activate SummaryCommand
+   SummaryCommand-->>Parser: command
+   deactivate SummaryCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
+   activate SummaryCommand
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalIncome
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: totalExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: categorisedExpenses
+   deactivate TransactionMgr
+
+   SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
+   activate TransactionMgr
+   TransactionMgr-->>SummaryCommand: taggedTransactions
+   deactivate TransactionMgr
+
+   SummaryCommand-->>FinBro: result message
+   deactivate SummaryCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+
+#### Obtaining the Current List of Transactions
+
+This sequence diagram illustrates the process of obtaining the current list of transactions:
+
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant ListCommand as ListCommand
+   participant TransactionMgr as TransactionManager
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "list n/5 d/2025-03-01"
+   Parser->>ListCommand: new ListCommand(limit, date)
+   activate ListCommand
+   ListCommand-->>Parser: command
+   deactivate ListCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>ListCommand: execute(transactionManager, ui, storage)
+   activate ListCommand
+
+   alt date provided
+      ListCommand->>TransactionMgr: listTransactionsFromDate(date)
+      activate TransactionMgr
+      TransactionMgr-->>ListCommand: filteredTransactions
+      deactivate TransactionMgr
+      alt limit provided
+         Note right of ListCommand: Apply limit to filtered list
+      end
+   else no date
+      alt limit provided
+         ListCommand->>TransactionMgr: listTransactions(limit)
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: limitedTransactions
+         deactivate TransactionMgr
+      else no limit
+         ListCommand->>TransactionMgr: listTransactions()
+         activate TransactionMgr
+         TransactionMgr-->>ListCommand: allTransactions
+         deactivate TransactionMgr
+      end
+   end
+
+   ListCommand-->>FinBro: result message
+   deactivate ListCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
+
+#### Viewing Balance
+
+This sequence diagram illustrates the process of viewing the current balance:
+
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant BalanceCommand as BalanceCommand
+   participant TransactionMgr as TransactionManager
+   participant Storage as Storage
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "balance" or "balance d/2023-01-01"
+   
+   alt date parameter provided
+      Parser->>Parser: Extract date parameter
+      Parser->>BalanceCommand: new BalanceCommand(date)
+   else no date parameter
+      Parser->>BalanceCommand: new BalanceCommand(null)
+   end
+   
+   activate BalanceCommand
+   BalanceCommand-->>Parser: command
+   deactivate BalanceCommand
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>BalanceCommand: execute(transactionManager, ui, storage)
+   activate BalanceCommand
+
+   alt date specified
+      BalanceCommand->>TransactionMgr: getTotalIncomeFromDate(date)
+      activate TransactionMgr
+      TransactionMgr-->>BalanceCommand: totalIncome
+      deactivate TransactionMgr
+
+      BalanceCommand->>TransactionMgr: getTotalExpensesFromDate(date)
+      activate TransactionMgr
+      TransactionMgr-->>BalanceCommand: totalExpenses
+      deactivate TransactionMgr
+   else no date
+      BalanceCommand->>TransactionMgr: getTotalIncome()
+      activate TransactionMgr
+      TransactionMgr-->>BalanceCommand: totalIncome
+      deactivate TransactionMgr
+
+      BalanceCommand->>TransactionMgr: getTotalExpenses()
+      activate TransactionMgr
+      TransactionMgr-->>BalanceCommand: totalExpenses
+      deactivate TransactionMgr
+   end
+
+   BalanceCommand->>BalanceCommand: formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+   BalanceCommand-->>FinBro: formatted balance message
+   deactivate BalanceCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display balance information
+   deactivate UI
+   deactivate FinBro
+```
+
+#### Editing a Transaction
+
+This sequence diagram illustrates the process of editing a transaction:
+
+```mermaid
+sequenceDiagram
+   participant User
+   participant UI as Ui
+   participant FinBro as FinBro
+   participant Parser as Parser
+   participant EditCommand as EditCommand
+   participant TransactionMgr as TransactionManager
+   participant Storage as Storage
+
+   User->>UI: input command
+   activate UI
+   UI->>FinBro: readCommand()
+   activate FinBro
+   FinBro->>Parser: parseCommand(userInput)
+   activate Parser
+
+   Note right of Parser: Parse "edit 1 a/200.0 d/Updated Description"
+   Parser->>UI: readIndex("Enter the index of transaction to edit")
+   activate UI
+   UI-->>Parser: index
+   deactivate UI
+   
+   Parser->>UI: readConfirmation("Do you want to edit transaction at index 1?")
+   activate UI
+   UI-->>Parser: confirmed (boolean)
+   deactivate UI
+   
+   alt user confirms
+      Parser->>UI: readAmount("Enter new amount (press Enter to skip)")
+      activate UI
+      UI-->>Parser: amountStr
+      deactivate UI
+      
+      Parser->>UI: readDescription("Enter new description (press Enter to skip)")
+      activate UI
+      UI-->>Parser: descriptionStr
+      deactivate UI
+      
+      Note right of Parser: Additional UI interactions for other parameters
+      
+      Parser->>EditCommand: new EditCommand(index, parameters)
+      activate EditCommand
+      EditCommand-->>Parser: command
+      deactivate EditCommand
+   else user cancels
+      Parser->>EditCommand: new SimpleCommand("Edit operation cancelled.")
+      activate EditCommand
+      EditCommand-->>Parser: command
+      deactivate EditCommand
+   end
+   
+   Parser-->>FinBro: command
+   deactivate Parser
+
+   FinBro->>EditCommand: execute(transactionManager, ui, storage)
+   activate EditCommand
+
+   alt valid index
+      EditCommand->>TransactionMgr: getTransaction(index - 1)
+      activate TransactionMgr
+      TransactionMgr-->>EditCommand: originalTransaction
+      deactivate TransactionMgr
+      
+      EditCommand->>EditCommand: createUpdatedTransaction(originalTransaction, parameters)
+      
+      alt valid updated transaction
+         EditCommand->>TransactionMgr: updateTransactionAt(index - 1, updatedTransaction)
+         activate TransactionMgr
+         TransactionMgr-->>EditCommand: success
+         deactivate TransactionMgr
+         
+         EditCommand->>Storage: saveTransactions(transactionManager)
+         activate Storage
+         Storage-->>EditCommand: success
+         deactivate Storage
+         
+         EditCommand-->>FinBro: "Transaction at index X successfully updated"
+      else invalid update parameters
+         EditCommand-->>FinBro: "Failed to update transaction"
+      end
+   else invalid index
+      EditCommand-->>FinBro: "Invalid index. Please provide a valid transaction index."
+   end
+   
+   deactivate EditCommand
+
+   FinBro->>UI: showMessage(result)
+   UI-->>User: display result
+   deactivate UI
+   deactivate FinBro
+```
 
 ### Component Overview
 
@@ -245,6 +710,153 @@ classDiagram
 - Serves as the entry point of the application
 - Coordinates interactions between other components
 - Manages the main execution flow
+
+```mermaid
+classDiagram
+    class FinBro {
+        -ui: Ui
+        -storage: Storage
+        -transactionManager: TransactionManager
+        -logger: Logger
+        +main(args): void
+        +start(): void
+        +run(): void
+        +runCommandLoop(): void
+        +exit(): void
+    }
+
+    class LoggingConfig {
+        +setup(): void
+        -configureFileHandler(): FileHandler
+        -configureConsoleHandler(): ConsoleHandler
+    }
+
+    FinBro --> LoggingConfig : uses
+```
+
+The main class diagram shows the relationship between components in FinBro:
+
+```mermaid
+classDiagram
+    class FinBro {
+        +run()
+        +start()
+        +runCommandLoop()
+        +exit()
+    }
+
+    class UI {
+        +showWelcome()
+        +showGoodbye()
+        +showMessage()
+        +showError()
+        +readCommand()
+        +readConfirmation()
+        +warnDuplicate()
+    }
+
+    class Parser {
+        +parseCommand()
+        -parseIncomeCommand()
+        -parseExpenseCommand()
+        -parseListCommand()
+        -parseDeleteCommand()
+        -parseFilterCommand()
+        -parseSummaryCommand()
+    }
+
+    class Command {
+        <<interface>>
+        +execute()
+        +isExit()
+    }
+
+    class TransactionManager {
+        +addTransaction()
+        +deleteTransaction()
+        +listTransactions()
+        +getFilteredTransactions()
+        +getBalance()
+        +getTotalIncome()
+        +getTotalExpenses()
+    }
+
+    class Transaction {
+        <<abstract>>
+        #amount
+        #description
+        #date
+        #tags
+        +getAmount()
+        +getDescription()
+        +getDate()
+        +getTags()
+    }
+
+    class Income {
+        +toString()
+    }
+
+    class Expense {
+        -category
+        +getCategory()
+        +toString()
+    }
+
+    class Storage {
+        +loadTransactions()
+        +saveTransactions()
+        +exportToCsv()
+        +exportToTxt()
+    }
+
+    class IncomeCommand {
+        +execute()
+    }
+
+    class ExpenseCommand {
+        +execute()
+    }
+
+    class ListCommand {
+        +execute()
+    }
+
+    class DeleteCommand {
+        +execute()
+    }
+
+    FinBro --> UI : uses
+    FinBro --> Parser : uses
+    FinBro --> TransactionManager : uses
+    FinBro --> Storage : uses
+
+    Parser ..> Command : creates
+    Parser ..> IncomeCommand : creates
+    Parser ..> ExpenseCommand : creates
+    Parser ..> ListCommand : creates
+    Parser ..> DeleteCommand : creates
+
+    Command <|-- IncomeCommand : implements
+    Command <|-- ExpenseCommand : implements
+    Command <|-- ListCommand : implements
+    Command <|-- DeleteCommand : implements
+
+    Transaction <|-- Income : extends
+    Transaction <|-- Expense : extends
+
+    TransactionManager o-- Transaction : manages
+
+    IncomeCommand ..> Income : creates
+    ExpenseCommand ..> Expense : creates
+
+    IncomeCommand --> TransactionManager : uses
+    IncomeCommand --> Storage : uses
+    ExpenseCommand --> TransactionManager : uses
+    ExpenseCommand --> Storage : uses
+    ListCommand --> TransactionManager : uses
+    DeleteCommand --> TransactionManager : uses
+```
 
 #### 2. UI Component (`Ui.java`)
 - Handles all user interaction through the command line
@@ -255,15 +867,343 @@ classDiagram
 - **Parser (`Parser.java`)**: Converts user input into command objects
 - **Command Classes**: Implement specific functionalities using the Command pattern
 
+```mermaid
+classDiagram
+    class Parser {
+        -logger: Logger
+        +parseCommand(userInput): Command
+        -parseIncomeCommand(arguments): Command
+        -parseExpenseCommand(arguments): Command
+        -parseListCommand(arguments): Command
+        -parseDeleteCommand(arguments): Command
+        -parseFilterCommand(arguments): Command
+        -parseSummaryCommand(arguments): Command
+        -parseSearchCommand(arguments): Command
+        -parseBalanceCommand(arguments): Command
+        -parseExportCommand(arguments): Command
+        -parseSetBudgetCommand(arguments): Command
+        -parseTrackBudgetCommand(arguments): Command
+        -parseSetSavingsGoalCommand(arguments): Command
+        -parseTrackSavingsGoalCommand(arguments): Command
+        -tryParseDate(dateStr): LocalDate
+        -tryParseAmount(amountStr): double
+        -extractParameter(arguments, prefix): String
+    }
+
+    class Command {
+        <<interface>>
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class IncomeCommand {
+        -amount: double
+        -description: String
+        -date: LocalDate
+        -tags: List~String~
+        +IncomeCommand(amount, description, date, tags)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class ExpenseCommand {
+        -amount: double
+        -description: String
+        -date: LocalDate
+        -category: Category
+        -tags: List~String~
+        +ExpenseCommand(amount, description, date, category, tags)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class ListCommand {
+        -limit: int
+        -date: LocalDate
+        +ListCommand(limit, date)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    Parser ..> Command : creates
+    Parser ..> IncomeCommand : creates
+    Parser ..> ExpenseCommand : creates
+    Command <|.. IncomeCommand : implements
+    Command <|.. ExpenseCommand : implements
+    Command <|.. ListCommand : implements
+```
+
+The Command class diagram shows the various commands that implement the Command interface:
+
+```mermaid
+classDiagram
+    class Command {
+        <<interface>>
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class IncomeCommand {
+        -amount: double
+        -description: String
+        -date: LocalDate
+        -tags: List~String~
+        +IncomeCommand(amount, description, date, tags)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class ExpenseCommand {
+        -amount: double
+        -description: String
+        -date: LocalDate
+        -category: Category
+        -tags: List~String~
+        +ExpenseCommand(amount, description, date, category, tags)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class ListCommand {
+        -limit: int
+        -date: LocalDate
+        +ListCommand(limit, date)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class DeleteCommand {
+        -index: int
+        +DeleteCommand(index)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class FilterCommand {
+        -startDate: LocalDate
+        -endDate: LocalDate
+        +FilterCommand(startDate, endDate)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class SummaryCommand {
+        -month: int
+        -year: int
+        +SummaryCommand(month, year)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class SearchCommand {
+        -keyword: String
+        +SearchCommand(keyword)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class BalanceCommand {
+        -date: LocalDate
+        +BalanceCommand(date)
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class ExitCommand {
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    class HelpCommand {
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    Command <|.. IncomeCommand : implements
+    Command <|.. ExpenseCommand : implements
+    Command <|.. ListCommand : implements
+    Command <|.. DeleteCommand : implements
+    Command <|.. FilterCommand : implements
+    Command <|.. SummaryCommand : implements
+    Command <|.. SearchCommand : implements
+    Command <|.. BalanceCommand : implements
+    Command <|.. ExitCommand : implements
+    Command <|.. HelpCommand : implements
+```
+
+The Budget-related Command class diagram:
+
+```mermaid
+classDiagram
+    class Command {
+        <<interface>>
+        +execute(TransactionManager, Ui, Storage): String
+        +isExit(): boolean
+    }
+
+    class SetBudgetCommand {
+        -amount: double
+        -month: int
+        -year: int
+        +SetBudgetCommand(amount, month, year)
+        +execute(TransactionManager, Ui, Storage): String
+        +isExit(): boolean
+    }
+
+    class TrackBudgetCommand {
+        -month: int
+        -year: int
+        +TrackBudgetCommand(month, year)
+        +execute(TransactionManager, Ui, Storage): String
+        +isExit(): boolean
+    }
+
+    class SetSavingsGoalCommand {
+        -amount: double
+        -month: int
+        -year: int
+        +SetSavingsGoalCommand(amount, month, year)
+        +execute(TransactionManager, Ui, Storage): String
+        +isExit(): boolean
+    }
+
+    class TrackSavingsGoalCommand {
+        -month: int
+        -year: int
+        +TrackSavingsGoalCommand(month, year)
+        +execute(TransactionManager, Ui, Storage): String
+        +isExit(): boolean
+    }
+
+    Command <|.. SetBudgetCommand : implements
+    Command <|.. TrackBudgetCommand : implements
+    Command <|.. SetSavingsGoalCommand : implements
+    Command <|.. TrackSavingsGoalCommand : implements
+```
+
 #### 4. Model Component
 - **Transaction Classes**: Define the core data structures
 - **TransactionManager**: Manages the collection of transactions
 - Implements business logic and operations on the data model
 
+```mermaid
+classDiagram
+    class Transaction {
+        <<abstract>>
+        #amount: double
+        #description: String
+        #date: LocalDate
+        #tags: List~String~
+        #indexNum: int
+        +Transaction(amount, description, date, tags)
+        +getAmount(): double
+        +getDescription(): String
+        +getDate(): LocalDate
+        +getTags(): List~String~
+        +toString(): String*
+    }
+
+    class TransactionManager {
+        -transactions: ArrayList~Transaction~
+        -budgets: Map~YearMonth, Double~
+        -savingsGoals: Map~YearMonth, Double~
+        -logger: Logger
+        +addTransaction(transaction): void
+        +deleteTransaction(index): void
+        +getTransaction(index): Transaction
+        +updateTransactionAt(index, transaction): void
+        +listTransactions(): ArrayList~Transaction~
+        +listTransactions(limit): ArrayList~Transaction~
+        +listTransactionsFromDate(date): ArrayList~Transaction~
+        +getFilteredTransactions(startDate, endDate): ArrayList~Transaction~
+        +getTransactionsContainingKeyword(keyword): ArrayList~Transaction~
+        +getTransactionDuplicates(amount, description): ArrayList~Transaction~
+        +getTransactionCount(): int
+        +getBalance(): double
+        +getTotalIncome(): double
+        +getTotalExpenses(): double
+        +setBudget(amount, month, year): void
+        +getBudget(month, year): double
+        +setSavingsGoal(amount, month, year): void
+        +getSavingsGoal(month, year): double
+    }
+
+    class Income {
+        +Income(amount, description, date, tags)
+        +toString(): String
+    }
+
+    class Expense {
+        -category: Category
+        +Expense(amount, description, date, category, tags)
+        +getCategory(): Category
+        +toString(): String
+    }
+
+    class Category {
+        <<enumeration>>
+        FOOD
+        TRANSPORT
+        ENTERTAINMENT
+        UTILITIES
+        SHOPPING
+        HEALTHCARE
+        EDUCATION
+        OTHERS
+        +fromString(categoryStr): Category
+        +toString(): String
+    }
+
+    Transaction <|-- Income : extends
+    Transaction <|-- Expense : extends
+    Expense --> Category : has-a
+    TransactionManager o-- Transaction : manages
+```
+
 #### 5. Storage Component (`Storage.java`)
 - Handles persistence of data
 - Manages saving and loading of transaction data
 - Supports data export in various formats
+
+```mermaid
+classDiagram
+    class Storage {
+        -filePath: String
+        -logger: Logger
+        +Storage(filePath)
+        +loadTransactions(): TransactionManager
+        +saveTransactions(transactionManager): void
+        +exportToCsv(transactionManager, filePath): String
+        +exportToTxt(transactionManager, filePath): String
+        -parseTransaction(line): Transaction
+        -serializeTransaction(transaction): String
+    }
+
+    class TransactionManager {
+        -transactions: ArrayList~Transaction~
+        -budgets: Map~YearMonth, Double~
+        -savingsGoals: Map~YearMonth, Double~
+        +addTransaction(transaction): void
+        +deleteTransaction(index): void
+        +listTransactions(): ArrayList~Transaction~
+        +getTransactionCount(): int
+    }
+
+    class Transaction {
+        <<abstract>>
+        #amount: double
+        #description: String
+        #date: LocalDate
+        #tags: List~String~
+        +getAmount(): double
+        +getDescription(): String
+        +getDate(): LocalDate
+        +getTags(): List~String~
+    }
+
+    Storage --> TransactionManager : loads/saves
+    TransactionManager o-- Transaction : manages
+```
 
 ### Class Structure
 
