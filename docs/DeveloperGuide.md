@@ -1,5 +1,38 @@
 # FinBro Developer Guide
 
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Setting Up the Development Environment](#setting-up-the-development-environment)
+3. [High-Level Architecture](#high-level-architecture)
+4. [Component Details](#component-details)
+   - [Main Component](#main-component)
+   - [UI Component](#ui-component)
+   - [Logic Component](#logic-component)
+   - [Model Component](#model-component)
+   - [Storage Component](#storage-component)
+   - [Command Classes](#command-classes)
+   - [Exceptions Component](#exceptions-component)
+5. [Class Structure](#class-structure)
+6. [Design Patterns](#design-patterns)
+7. [Key Features and Implementation](#key-features-and-implementation)
+   - [Transaction Management](#transaction-management-feature)
+   - [Command Parsing](#command-parsing)
+   - [Data Persistence](#data-persistence)
+   - [Financial Summaries](#financial-summaries)
+8. [Sequence Diagrams for Key Operations](#sequence-diagrams-for-key-operations)
+   - [Adding a Transaction](#adding-a-transaction)
+   - [Searching for a Transaction](#searching-for-a-transaction)
+   - [Filtering Transactions](#filtering-transactions)
+   - [Obtaining a Monthly Financial Summary](#obtaining-a-monthly-financial-summary)
+   - [Obtaining the Current List of Transactions](#obtaining-the-current-list-of-transactions)
+   - [Viewing Balance](#viewing-balance)
+   - [Editing a Transaction](#editing-a-transaction)
+9. [Testing](#testing)
+10. [Future Enhancements](#future-enhancements)
+11. [Appendix](#appendix)
+   - [Glossary](#glossary)
+   - [References](#references)
+
 ## Introduction
 
 FinBro is a personal finance management application that operates through a Command Line Interface (CLI). This developer guide provides comprehensive information about the architecture, implementation, and design decisions behind FinBro to help developers understand the codebase and contribute effectively.
@@ -28,11 +61,11 @@ FinBro is a personal finance management application that operates through a Comm
    - Run the tests: `./gradlew test`
    - Run the application: `./gradlew run`
 
-## Architecture
+## High-Level Architecture
 
 FinBro follows a layered architecture pattern with clear separation of concerns:
 
-``` mermaid
+```mermaid
 flowchart TB
     User([User]) <--> UI
 
@@ -71,11 +104,11 @@ flowchart TB
     class Parser,CommandClasses,TransactionClasses,TransactionMgr subcomponent;
 ```
 
-### Key Components
+## Component Details
 
-#### 1. Main Component
+### Main Component
 
-``` mermaid
+```mermaid
 classDiagram
     class FinBro {
         +run()
@@ -199,9 +232,9 @@ classDiagram
     DeleteCommand --> TransactionManager : uses
 ```
 
-#### 2. UI Component
+### UI Component
 
-``` mermaid
+```mermaid
 classDiagram
     class UI {
         -scanner: Scanner
@@ -237,975 +270,57 @@ classDiagram
     UI --> Logger : uses
 ```
 
-### Sequence Diagrams
-
-The following sequence diagrams illustrate the interaction between components for key operations in FinBro.
-
-#### Adding a Transaction
-
-This sequence diagram illustrates the process when a user adds a new transaction:
-
-```plantuml
-@startuml
-!theme plain
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-
-actor ":User" as User
-participant ":Ui" as UI
-participant ":FinBro" as FinBro
-participant ":Parser" as Parser
-participant ":IncomeCommand" as IncomeCommand
-participant ":TransactionManager" as TransactionMgr
-participant ":Income" as Income
-participant ":Storage" as Storage
-
-User -> UI : input command
-activate UI
-
-UI -> FinBro : readCommand()
-activate FinBro
-
-FinBro -> Parser : parseCommand(userInput)
-activate Parser
-note right: Parse "income 3000 d/Monthly salary t/work"
-
-Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
-activate IncomeCommand
-IncomeCommand --> Parser : command
-deactivate IncomeCommand
-Parser --> FinBro : command
-deactivate Parser
-
-FinBro -> IncomeCommand : execute(transactionManager, ui, storage)
-activate IncomeCommand
-
-IncomeCommand -> TransactionMgr : getTransactionDuplicates(amount, description)
-activate TransactionMgr
-TransactionMgr --> IncomeCommand : duplicates
-deactivate TransactionMgr
-
-note right of IncomeCommand: Check for duplicates
-
-alt duplicates found
-    IncomeCommand -> UI : warnDuplicate()
-    activate UI
-    UI --> IncomeCommand : confirmResult
-    deactivate UI
-
-    alt user cancels transaction
-        IncomeCommand --> FinBro : "Transaction cancelled by user"
-    end
-end
-
-IncomeCommand -> Income : new Income(amount, description, tags)
-activate Income
-Income --> IncomeCommand : income
-deactivate Income
-
-IncomeCommand -> TransactionMgr : addTransaction(income)
-activate TransactionMgr
-TransactionMgr --> IncomeCommand
-deactivate TransactionMgr
-
-IncomeCommand -> Storage : saveTransactions(transactionManager)
-activate Storage
-Storage --> IncomeCommand
-deactivate Storage
-
-IncomeCommand --> FinBro : result message
-deactivate IncomeCommand
-
-FinBro -> UI : showMessage(result)
-UI --> User : display result
-deactivate UI
-deactivate FinBro
-
-@enduml
+```mermaid
+paste in content of ui-detail-class.mermaid
 ```
 
-#### Searching for a Transaction
-
-This sequence diagram illustrates the process of searching for transactions:
+### Logic Component
 
 ```mermaid
-sequenceDiagram
-    participant User
-    participant UI as Ui
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant SearchCommand as SearchCommand
-    participant TransactionMgr as TransactionManager
-
-    User->>UI: input command
-    activate UI
-    UI->>FinBro: readCommand()
-    activate FinBro
-    FinBro->>Parser: parseCommand(userInput)
-    activate Parser
-
-    Note right of Parser: Parse "search lunch"
-    Parser->>SearchCommand: new SearchCommand(keyword)
-    activate SearchCommand
-    SearchCommand-->>Parser: command
-    deactivate SearchCommand
-    Parser-->>FinBro: command
-    deactivate Parser
-
-    FinBro->>SearchCommand: execute(transactionManager, ui, storage)
-    activate SearchCommand
-
-    SearchCommand->>TransactionMgr: getTransactionsContainingKeyword(keyword)
-    activate TransactionMgr
-    TransactionMgr-->>SearchCommand: matchingTransactions
-    deactivate TransactionMgr
-
-    SearchCommand-->>FinBro: result message (list of matches)
-    deactivate SearchCommand
-
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-    deactivate UI
-    deactivate FinBro
+paste in content of parser-class.mermaid
 ```
-
-#### Filtering Transactions
-
-This sequence diagram illustrates the process of filtering transactions based on a date range:
 
 ```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant FilterCommand as FilterCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
-   Parser->>FilterCommand: new FilterCommand(startDate, endDate)
-   activate FilterCommand
-   FilterCommand-->>Parser: command
-   deactivate FilterCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>FilterCommand: execute(transactionManager, ui, storage)
-   activate FilterCommand
-
-   FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
-   activate TransactionMgr
-   TransactionMgr-->>FilterCommand: filteredTransactions
-   deactivate TransactionMgr
-
-   FilterCommand-->>FinBro: result message (list of filtered transactions)
-   deactivate FilterCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
+paste in content of parser-detail-class.mermaid
 ```
 
-#### Obtaining a Monthly Financial Summary
-
-This sequence diagram illustrates the process of obtaining a monthly financial summary:
+### Model Component
 
 ```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant SummaryCommand as SummaryCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "summary m/2 y/2025"
-   Parser->>SummaryCommand: new SummaryCommand(month, year)
-   activate SummaryCommand
-   SummaryCommand-->>Parser: command
-   deactivate SummaryCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
-   activate SummaryCommand
-
-   SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: totalIncome
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: totalExpenses
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: categorisedExpenses
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: taggedTransactions
-   deactivate TransactionMgr
-
-   SummaryCommand-->>FinBro: result message
-   deactivate SummaryCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
+paste in content of model-class.mermaid
 ```
 
-#### Obtaining the Current List of Transactions
-
-This sequence diagram illustrates the process of obtaining the current list of transactions:
+### Storage Component
 
 ```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant ListCommand as ListCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "list n/5 d/2025-03-01"
-   Parser->>ListCommand: new ListCommand(limit, date)
-   activate ListCommand
-   ListCommand-->>Parser: command
-   deactivate ListCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>ListCommand: execute(transactionManager, ui, storage)
-   activate ListCommand
-
-   alt date provided
-      ListCommand->>TransactionMgr: listTransactionsFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>ListCommand: filteredTransactions
-      deactivate TransactionMgr
-      alt limit provided
-         Note right of ListCommand: Apply limit to filtered list
-      end
-   else no date
-      alt limit provided
-         ListCommand->>TransactionMgr: listTransactions(limit)
-         activate TransactionMgr
-         TransactionMgr-->>ListCommand: limitedTransactions
-         deactivate TransactionMgr
-      else no limit
-         ListCommand->>TransactionMgr: listTransactions()
-         activate TransactionMgr
-         TransactionMgr-->>ListCommand: allTransactions
-         deactivate TransactionMgr
-      end
-   end
-
-   ListCommand-->>FinBro: result message
-   deactivate ListCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
+paste in content of storage-class.mermaid
 ```
-
-#### Viewing Balance
-
-This sequence diagram illustrates the process of viewing the current balance:
 
 ```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant BalanceCommand as BalanceCommand
-   participant TransactionMgr as TransactionManager
-   participant Storage as Storage
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "balance" or "balance d/2023-01-01"
-   
-   alt date parameter provided
-      Parser->>Parser: Extract date parameter
-      Parser->>BalanceCommand: new BalanceCommand(date)
-   else no date parameter
-      Parser->>BalanceCommand: new BalanceCommand(null)
-   end
-   
-   activate BalanceCommand
-   BalanceCommand-->>Parser: command
-   deactivate BalanceCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>BalanceCommand: execute(transactionManager, ui, storage)
-   activate BalanceCommand
-
-   alt date specified
-      BalanceCommand->>TransactionMgr: getTotalIncomeFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalIncome
-      deactivate TransactionMgr
-
-      BalanceCommand->>TransactionMgr: getTotalExpensesFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalExpenses
-      deactivate TransactionMgr
-   else no date
-      BalanceCommand->>TransactionMgr: getTotalIncome()
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalIncome
-      deactivate TransactionMgr
-
-      BalanceCommand->>TransactionMgr: getTotalExpenses()
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalExpenses
-      deactivate TransactionMgr
-   end
-
-   BalanceCommand->>BalanceCommand: formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
-   BalanceCommand-->>FinBro: formatted balance message
-   deactivate BalanceCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display balance information
-   deactivate UI
-   deactivate FinBro
+paste in content of storage-detail-class.mermaid
 ```
 
-#### Editing a Transaction
-
-This sequence diagram illustrates the process of editing a transaction:
+### Command Classes
 
 ```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant EditCommand as EditCommand
-   participant TransactionMgr as TransactionManager
-   participant Storage as Storage
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "edit 1 a/200.0 d/Updated Description"
-   Parser->>UI: readIndex("Enter the index of transaction to edit")
-   activate UI
-   UI-->>Parser: index
-   deactivate UI
-   
-   Parser->>UI: readConfirmation("Do you want to edit transaction at index 1?")
-   activate UI
-   UI-->>Parser: confirmed (boolean)
-   deactivate UI
-   
-   alt user confirms
-      Parser->>UI: readAmount("Enter new amount (press Enter to skip)")
-      activate UI
-      UI-->>Parser: amountStr
-      deactivate UI
-      
-      Parser->>UI: readDescription("Enter new description (press Enter to skip)")
-      activate UI
-      UI-->>Parser: descriptionStr
-      deactivate UI
-      
-      Note right of Parser: Additional UI interactions for other parameters
-      
-      Parser->>EditCommand: new EditCommand(index, parameters)
-      activate EditCommand
-      EditCommand-->>Parser: command
-      deactivate EditCommand
-   else user cancels
-      Parser->>EditCommand: new SimpleCommand("Edit operation cancelled.")
-      activate EditCommand
-      EditCommand-->>Parser: command
-      deactivate EditCommand
-   end
-   
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>EditCommand: execute(transactionManager, ui, storage)
-   activate EditCommand
-
-   alt valid index
-      EditCommand->>TransactionMgr: getTransaction(index - 1)
-      activate TransactionMgr
-      TransactionMgr-->>EditCommand: originalTransaction
-      deactivate TransactionMgr
-      
-      EditCommand->>EditCommand: createUpdatedTransaction(originalTransaction, parameters)
-      
-      alt valid updated transaction
-         EditCommand->>TransactionMgr: updateTransactionAt(index - 1, updatedTransaction)
-         activate TransactionMgr
-         TransactionMgr-->>EditCommand: success
-         deactivate TransactionMgr
-         
-         EditCommand->>Storage: saveTransactions(transactionManager)
-         activate Storage
-         Storage-->>EditCommand: success
-         deactivate Storage
-         
-         EditCommand-->>FinBro: "Transaction at index X successfully updated"
-      else invalid update parameters
-         EditCommand-->>FinBro: "Failed to update transaction"
-      end
-   else invalid index
-      EditCommand-->>FinBro: "Invalid index. Please provide a valid transaction index."
-   end
-   
-   deactivate EditCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
+paste in content of command-class.mermaid
 ```
-
-### Component Overview
-
-#### 1. Main Component (`FinBro.java`)
-- Serves as the entry point of the application
-- Coordinates interactions between other components
-- Manages the main execution flow
 
 ```mermaid
-classDiagram
-    class FinBro {
-        -ui: Ui
-        -storage: Storage
-        -transactionManager: TransactionManager
-        -logger: Logger
-        +main(args): void
-        +start(): void
-        +run(): void
-        +runCommandLoop(): void
-        +exit(): void
-    }
-
-    class LoggingConfig {
-        +setup(): void
-        -configureFileHandler(): FileHandler
-        -configureConsoleHandler(): ConsoleHandler
-    }
-
-    FinBro --> LoggingConfig : uses
+paste in content of command-detail-class.mermaid
 ```
-
-The main class diagram shows the relationship between components in FinBro:
 
 ```mermaid
-classDiagram
-    class FinBro {
-        +run()
-        +start()
-        +runCommandLoop()
-        +exit()
-    }
-
-    class UI {
-        +showWelcome()
-        +showGoodbye()
-        +showMessage()
-        +showError()
-        +readCommand()
-        +readConfirmation()
-        +warnDuplicate()
-    }
-
-    class Parser {
-        +parseCommand()
-        -parseIncomeCommand()
-        -parseExpenseCommand()
-        -parseListCommand()
-        -parseDeleteCommand()
-        -parseFilterCommand()
-        -parseSummaryCommand()
-    }
-
-    class Command {
-        <<interface>>
-        +execute()
-        +isExit()
-    }
-
-    class TransactionManager {
-        +addTransaction()
-        +deleteTransaction()
-        +listTransactions()
-        +getFilteredTransactions()
-        +getBalance()
-        +getTotalIncome()
-        +getTotalExpenses()
-    }
-
-    class Transaction {
-        <<abstract>>
-        #amount
-        #description
-        #date
-        #tags
-        +getAmount()
-        +getDescription()
-        +getDate()
-        +getTags()
-    }
-
-    class Income {
-        +toString()
-    }
-
-    class Expense {
-        -category
-        +getCategory()
-        +toString()
-    }
-
-    class Storage {
-        +loadTransactions()
-        +saveTransactions()
-        +exportToCsv()
-        +exportToTxt()
-    }
-
-    class IncomeCommand {
-        +execute()
-    }
-
-    class ExpenseCommand {
-        +execute()
-    }
-
-    class ListCommand {
-        +execute()
-    }
-
-    class DeleteCommand {
-        +execute()
-    }
-
-    FinBro --> UI : uses
-    FinBro --> Parser : uses
-    FinBro --> TransactionManager : uses
-    FinBro --> Storage : uses
-
-    Parser ..> Command : creates
-    Parser ..> IncomeCommand : creates
-    Parser ..> ExpenseCommand : creates
-    Parser ..> ListCommand : creates
-    Parser ..> DeleteCommand : creates
-
-    Command <|-- IncomeCommand : implements
-    Command <|-- ExpenseCommand : implements
-    Command <|-- ListCommand : implements
-    Command <|-- DeleteCommand : implements
-
-    Transaction <|-- Income : extends
-    Transaction <|-- Expense : extends
-
-    TransactionManager o-- Transaction : manages
-
-    IncomeCommand ..> Income : creates
-    ExpenseCommand ..> Expense : creates
-
-    IncomeCommand --> TransactionManager : uses
-    IncomeCommand --> Storage : uses
-    ExpenseCommand --> TransactionManager : uses
-    ExpenseCommand --> Storage : uses
-    ListCommand --> TransactionManager : uses
-    DeleteCommand --> TransactionManager : uses
+paste in content of command-budget-class.mermaid
 ```
 
-#### 2. UI Component (`Ui.java`)
-- Handles all user interaction through the command line
-- Displays messages, prompts, and results to the user
-- Captures and forwards user input to the parser
-
-#### 3. Logic Component
-- **Parser (`Parser.java`)**: Converts user input into command objects
-- **Command Classes**: Implement specific functionalities using the Command pattern
+### Exceptions Component
 
 ```mermaid
-classDiagram
-    class Parser {
-        -logger: Logger
-        +parseCommand(userInput): Command
-        -parseIncomeCommand(arguments): Command
-        -parseExpenseCommand(arguments): Command
-        -parseListCommand(arguments): Command
-        -parseDeleteCommand(arguments): Command
-        -parseFilterCommand(arguments): Command
-        -parseSummaryCommand(arguments): Command
-        -parseSearchCommand(arguments): Command
-        -parseBalanceCommand(arguments): Command
-        -parseExportCommand(arguments): Command
-        -parseSetBudgetCommand(arguments): Command
-        -parseTrackBudgetCommand(arguments): Command
-        -parseSetSavingsGoalCommand(arguments): Command
-        -parseTrackSavingsGoalCommand(arguments): Command
-        -tryParseDate(dateStr): LocalDate
-        -tryParseAmount(amountStr): double
-        -extractParameter(arguments, prefix): String
-    }
-
-    class Command {
-        <<interface>>
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class IncomeCommand {
-        -amount: double
-        -description: String
-        -date: LocalDate
-        -tags: List~String~
-        +IncomeCommand(amount, description, date, tags)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class ExpenseCommand {
-        -amount: double
-        -description: String
-        -date: LocalDate
-        -category: Category
-        -tags: List~String~
-        +ExpenseCommand(amount, description, date, category, tags)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class ListCommand {
-        -limit: int
-        -date: LocalDate
-        +ListCommand(limit, date)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    Parser ..> Command : creates
-    Parser ..> IncomeCommand : creates
-    Parser ..> ExpenseCommand : creates
-    Command <|.. IncomeCommand : implements
-    Command <|.. ExpenseCommand : implements
-    Command <|.. ListCommand : implements
+paste in content of exceptions-class.mermaid
 ```
 
-The Command class diagram shows the various commands that implement the Command interface:
-
-```mermaid
-classDiagram
-    class Command {
-        <<interface>>
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class IncomeCommand {
-        -amount: double
-        -description: String
-        -date: LocalDate
-        -tags: List~String~
-        +IncomeCommand(amount, description, date, tags)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class ExpenseCommand {
-        -amount: double
-        -description: String
-        -date: LocalDate
-        -category: Category
-        -tags: List~String~
-        +ExpenseCommand(amount, description, date, category, tags)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class ListCommand {
-        -limit: int
-        -date: LocalDate
-        +ListCommand(limit, date)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class DeleteCommand {
-        -index: int
-        +DeleteCommand(index)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class FilterCommand {
-        -startDate: LocalDate
-        -endDate: LocalDate
-        +FilterCommand(startDate, endDate)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class SummaryCommand {
-        -month: int
-        -year: int
-        +SummaryCommand(month, year)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class SearchCommand {
-        -keyword: String
-        +SearchCommand(keyword)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class BalanceCommand {
-        -date: LocalDate
-        +BalanceCommand(date)
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class ExitCommand {
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    class HelpCommand {
-        +execute(transactionManager, ui, storage): String
-        +isExit(): boolean
-    }
-
-    Command <|.. IncomeCommand : implements
-    Command <|.. ExpenseCommand : implements
-    Command <|.. ListCommand : implements
-    Command <|.. DeleteCommand : implements
-    Command <|.. FilterCommand : implements
-    Command <|.. SummaryCommand : implements
-    Command <|.. SearchCommand : implements
-    Command <|.. BalanceCommand : implements
-    Command <|.. ExitCommand : implements
-    Command <|.. HelpCommand : implements
-```
-
-The Budget-related Command class diagram:
-
-```mermaid
-classDiagram
-    class Command {
-        <<interface>>
-        +execute(TransactionManager, Ui, Storage): String
-        +isExit(): boolean
-    }
-
-    class SetBudgetCommand {
-        -amount: double
-        -month: int
-        -year: int
-        +SetBudgetCommand(amount, month, year)
-        +execute(TransactionManager, Ui, Storage): String
-        +isExit(): boolean
-    }
-
-    class TrackBudgetCommand {
-        -month: int
-        -year: int
-        +TrackBudgetCommand(month, year)
-        +execute(TransactionManager, Ui, Storage): String
-        +isExit(): boolean
-    }
-
-    class SetSavingsGoalCommand {
-        -amount: double
-        -month: int
-        -year: int
-        +SetSavingsGoalCommand(amount, month, year)
-        +execute(TransactionManager, Ui, Storage): String
-        +isExit(): boolean
-    }
-
-    class TrackSavingsGoalCommand {
-        -month: int
-        -year: int
-        +TrackSavingsGoalCommand(month, year)
-        +execute(TransactionManager, Ui, Storage): String
-        +isExit(): boolean
-    }
-
-    Command <|.. SetBudgetCommand : implements
-    Command <|.. TrackBudgetCommand : implements
-    Command <|.. SetSavingsGoalCommand : implements
-    Command <|.. TrackSavingsGoalCommand : implements
-```
-
-#### 4. Model Component
-- **Transaction Classes**: Define the core data structures
-- **TransactionManager**: Manages the collection of transactions
-- Implements business logic and operations on the data model
-
-```mermaid
-classDiagram
-    class Transaction {
-        <<abstract>>
-        #amount: double
-        #description: String
-        #date: LocalDate
-        #tags: List~String~
-        #indexNum: int
-        +Transaction(amount, description, date, tags)
-        +getAmount(): double
-        +getDescription(): String
-        +getDate(): LocalDate
-        +getTags(): List~String~
-        +toString(): String*
-    }
-
-    class TransactionManager {
-        -transactions: ArrayList~Transaction~
-        -budgets: Map~YearMonth, Double~
-        -savingsGoals: Map~YearMonth, Double~
-        -logger: Logger
-        +addTransaction(transaction): void
-        +deleteTransaction(index): void
-        +getTransaction(index): Transaction
-        +updateTransactionAt(index, transaction): void
-        +listTransactions(): ArrayList~Transaction~
-        +listTransactions(limit): ArrayList~Transaction~
-        +listTransactionsFromDate(date): ArrayList~Transaction~
-        +getFilteredTransactions(startDate, endDate): ArrayList~Transaction~
-        +getTransactionsContainingKeyword(keyword): ArrayList~Transaction~
-        +getTransactionDuplicates(amount, description): ArrayList~Transaction~
-        +getTransactionCount(): int
-        +getBalance(): double
-        +getTotalIncome(): double
-        +getTotalExpenses(): double
-        +setBudget(amount, month, year): void
-        +getBudget(month, year): double
-        +setSavingsGoal(amount, month, year): void
-        +getSavingsGoal(month, year): double
-    }
-
-    class Income {
-        +Income(amount, description, date, tags)
-        +toString(): String
-    }
-
-    class Expense {
-        -category: Category
-        +Expense(amount, description, date, category, tags)
-        +getCategory(): Category
-        +toString(): String
-    }
-
-    class Category {
-        <<enumeration>>
-        FOOD
-        TRANSPORT
-        ENTERTAINMENT
-        UTILITIES
-        SHOPPING
-        HEALTHCARE
-        EDUCATION
-        OTHERS
-        +fromString(categoryStr): Category
-        +toString(): String
-    }
-
-    Transaction <|-- Income : extends
-    Transaction <|-- Expense : extends
-    Expense --> Category : has-a
-    TransactionManager o-- Transaction : manages
-```
-
-#### 5. Storage Component (`Storage.java`)
-- Handles persistence of data
-- Manages saving and loading of transaction data
-- Supports data export in various formats
-
-```mermaid
-classDiagram
-    class Storage {
-        -filePath: String
-        -logger: Logger
-        +Storage(filePath)
-        +loadTransactions(): TransactionManager
-        +saveTransactions(transactionManager): void
-        +exportToCsv(transactionManager, filePath): String
-        +exportToTxt(transactionManager, filePath): String
-        -parseTransaction(line): Transaction
-        -serializeTransaction(transaction): String
-    }
-
-    class TransactionManager {
-        -transactions: ArrayList~Transaction~
-        -budgets: Map~YearMonth, Double~
-        -savingsGoals: Map~YearMonth, Double~
-        +addTransaction(transaction): void
-        +deleteTransaction(index): void
-        +listTransactions(): ArrayList~Transaction~
-        +getTransactionCount(): int
-    }
-
-    class Transaction {
-        <<abstract>>
-        #amount: double
-        #description: String
-        #date: LocalDate
-        #tags: List~String~
-        +getAmount(): double
-        +getDescription(): String
-        +getDate(): LocalDate
-        +getTags(): List~String~
-    }
-
-    Storage --> TransactionManager : loads/saves
-    TransactionManager o-- Transaction : manages
-```
-
-### Class Structure
+## Class Structure
 
 ```
 seedu.finbro/
@@ -1228,627 +343,6 @@ seedu.finbro/
 └── ui/
     └── Ui.java                  # User interface
 ```
-
-## Sequence Diagrams
-
-### Adding a Transaction
-
-The following sequence diagram illustrates the basic process when a user adds a new transaction:
-
-```puml
-@startuml
-!theme plain
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-
-actor ":User" as User
-participant ":Ui" as UI
-participant ":FinBro" as FinBro
-participant ":Parser" as Parser
-participant ":IncomeCommand" as IncomeCommand
-participant ":TransactionManager" as TransactionMgr
-participant ":Income" as Income
-participant ":Storage" as Storage
-
-User -> UI : input command
-activate UI
-
-UI -> FinBro : readCommand()
-activate FinBro
-
-FinBro -> Parser : parseCommand(userInput)
-activate Parser
-note right: Parse "income 3000 d/Monthly salary t/work"
-
-Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
-activate IncomeCommand
-IncomeCommand --> Parser : command
-deactivate IncomeCommand
-Parser --> FinBro : command
-deactivate Parser
-
-FinBro -> IncomeCommand : execute(transactionManager, ui, storage)
-activate IncomeCommand
-
-IncomeCommand -> TransactionMgr : getTransactionDuplicates(amount, description)
-activate TransactionMgr
-TransactionMgr --> IncomeCommand : duplicates
-deactivate TransactionMgr
-
-note right of IncomeCommand: Check for duplicates
-
-alt duplicates found
-    IncomeCommand -> UI : warnDuplicate()
-    activate UI
-    UI --> IncomeCommand : confirmResult
-    deactivate UI
-
-    alt user cancels transaction
-        IncomeCommand --> FinBro : "Transaction cancelled by user"
-    end
-end
-
-IncomeCommand -> Income : new Income(amount, description, tags)
-activate Income
-Income --> IncomeCommand : income
-deactivate Income
-
-IncomeCommand -> TransactionMgr : addTransaction(income)
-activate TransactionMgr
-TransactionMgr --> IncomeCommand
-deactivate TransactionMgr
-
-IncomeCommand -> Storage : saveTransactions(transactionManager)
-activate Storage
-Storage --> IncomeCommand
-deactivate Storage
-
-IncomeCommand --> FinBro : result message
-deactivate IncomeCommand
-
-FinBro -> UI : showMessage(result)
-UI --> User : display result
-deactivate UI
-deactivate FinBro
-
-@enduml
-```
-
-Here's a more detailed sequence diagram showing the flow for adding an income transaction, including duplicate transaction checking:
-
-``` mermaid
-sequenceDiagram
-    participant User
-    participant UI as Ui
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant IncomeCommand as IncomeCommand
-    participant TransactionMgr as TransactionManager
-    participant Income as Income
-    participant Storage as Storage
-
-    User->>UI: input command
-    activate UI
-    UI->>FinBro: readCommand()
-    activate FinBro
-    FinBro->>Parser: parseCommand(userInput)
-    activate Parser
-    
-    Note right of Parser: Parse "income 3000 d/Monthly salary t/work"
-    Parser->>IncomeCommand: new IncomeCommand(amount, description, tags)
-    activate IncomeCommand
-    IncomeCommand-->>Parser: command
-    deactivate IncomeCommand
-    Parser-->>FinBro: command
-    deactivate Parser
-    
-    FinBro->>IncomeCommand: execute(transactionManager, ui, storage)
-    activate IncomeCommand
-    
-    IncomeCommand->>TransactionMgr: getTransactionDuplicates(amount, description)
-    activate TransactionMgr
-    TransactionMgr-->>IncomeCommand: duplicates
-    deactivate TransactionMgr
-    
-    Note right of IncomeCommand: Check for duplicates
-    
-    alt duplicates found
-        IncomeCommand->>UI: warnDuplicate()
-        activate UI
-        UI-->>IncomeCommand: confirmResult
-        deactivate UI
-        
-        alt user cancels transaction
-            IncomeCommand-->>FinBro: "Transaction cancelled by user"
-        end
-    end
-    
-    IncomeCommand->>Income: new Income(amount, description, tags)
-    activate Income
-    Income-->>IncomeCommand: income
-    deactivate Income
-    
-    IncomeCommand->>TransactionMgr: addTransaction(income)
-    activate TransactionMgr
-    TransactionMgr-->>IncomeCommand: 
-    deactivate TransactionMgr
-    
-    IncomeCommand->>Storage: saveTransactions(transactionManager)
-    activate Storage
-    Storage-->>IncomeCommand: 
-    deactivate Storage
-    
-    IncomeCommand-->>FinBro: result message
-    deactivate IncomeCommand
-    
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-    deactivate UI
-    deactivate FinBro
-```
-
-### Searching for a transaction
-```mermaid
-sequenceDiagram
-    participant User
-    participant UI as Ui
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant SearchCommand as SearchCommand
-    participant TransactionMgr as TransactionManager
-
-    User->>UI: input command
-    activate UI
-    UI->>FinBro: readCommand()
-    activate FinBro
-    FinBro->>Parser: parseCommand(userInput)
-    activate Parser
-
-    Note right of Parser: Parse "search lunch"
-    Parser->>SearchCommand: new SearchCommand(keyword)
-    activate SearchCommand
-    SearchCommand-->>Parser: command
-    deactivate SearchCommand
-    Parser-->>FinBro: command
-    deactivate Parser
-
-    FinBro->>SearchCommand: execute(transactionManager, ui, storage)
-    activate SearchCommand
-
-    SearchCommand->>TransactionMgr: getTransactionsContainingKeyword(keyword)
-    activate TransactionMgr
-    TransactionMgr-->>SearchCommand: matchingTransactions
-    deactivate TransactionMgr
-
-    SearchCommand-->>FinBro: result message (list of matches)
-    deactivate SearchCommand
-
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-    deactivate UI
-    deactivate FinBro
-
-```
-### Filtering transactions 
-
-The follow sequence diagram illustrates the process of filtering transactions based on a date range:
-
-``` mermaid
-sequenceDiagram
-    participant User
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant FilterCommand as FilterCommand
-    participant TransactionMgr as TransactionManager
-    participant Storage as Storage
-    participant UI as Ui
-
-    User->>FinBro: input command
-    FinBro->>Parser: parseCommand(userInput)
-    Parser->>FilterCommand: new FilterCommand(startDate, endDate)
-    Parser-->>FinBro: command
-    FinBro->>FilterCommand: execute(transactionManager, ui, storage)
-    FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
-    TransactionMgr-->>FilterCommand: filteredTransactions
-    FilterCommand-->>FinBro: result message
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-```
-
-Here's a more detailed sequence diagram showing the flow for filtering transactions based on a date range:
-```mermaid 
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant FilterCommand as FilterCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
-   Parser->>FilterCommand: new FilterCommand(startDate, endDate)
-   activate FilterCommand
-   FilterCommand-->>Parser: command
-   deactivate FilterCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>FilterCommand: execute(transactionManager, ui, storage)
-   activate FilterCommand
-
-   FilterCommand->>TransactionMgr: getFilteredTransactions(startDate, endDate)
-   activate TransactionMgr
-   TransactionMgr-->>FilterCommand: filteredTransactions
-   deactivate TransactionMgr
-
-   FilterCommand-->>FinBro: result message (list of filtered transactions)
-   deactivate FilterCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
-   ```
-### Obtaining a monthly financial summary
-
-The follow sequence diagram illustrates the process of obtaining a monthly financial summary based on a given month and year:
-```mermaid
-sequenceDiagram
-    participant User
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant SummaryCommand as SummaryCommand
-    participant TransactionMgr as TransactionManager
-    participant UI as Ui
-
-    User->>FinBro: input command
-    FinBro->>Parser: parseCommand(userInput)
-    Parser->>SummaryCommand: new SummaryCommand(month, year)
-    Parser-->>FinBro: command
-    FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
-    SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
-    TransactionMgr-->>SummaryCommand: totalIncome
-    SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
-    TransactionMgr-->>SummaryCommand: totalExpenses
-    SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
-    TransactionMgr-->>SummaryCommand: categorisedExpenses
-    SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
-    TransactionMgr-->>SummaryCommand: taggedTransactions
-    SummaryCommand-->>FinBro: result message
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-```
-Here's a more detailed sequence diagram showing the flow for obtaining a monthly financial summary based on a given month and year:
-```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant SummaryCommand as SummaryCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "summary m/2 y/2025"
-   Parser->>SummaryCommand: new SummaryCommand(month, year)
-   activate SummaryCommand
-   SummaryCommand-->>Parser: command
-   deactivate SummaryCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>SummaryCommand: execute(transactionManager, ui, storage)
-   activate SummaryCommand
-
-   SummaryCommand->>TransactionMgr: getMonthlyTotalIncome(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: totalIncome
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyTotalExpenses(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: totalExpenses
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyCategorisedExpenses(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: categorisedExpenses
-   deactivate TransactionMgr
-
-   SummaryCommand->>TransactionMgr: getMonthlyTaggedTransactions(month, year)
-   activate TransactionMgr
-   TransactionMgr-->>SummaryCommand: taggedTransactions
-   deactivate TransactionMgr
-
-   SummaryCommand-->>FinBro: result message
-   deactivate SummaryCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
-```
-### Obtaining the current list of transactions
-
-The follow sequence diagram illustrates the process of obtaining the current list of transactions:
-```mermaid
-sequenceDiagram
-    participant User
-    participant FinBro as FinBro
-    participant Parser as Parser
-    participant ListCommand as ListCommand
-    participant TransactionMgr as TransactionManager
-    participant UI as Ui
-
-    User->>FinBro: input command
-    FinBro->>Parser: parseCommand(userInput)
-    Parser->>ListCommand: new ListCommand(limit, date)
-    Parser-->>FinBro: command
-    FinBro->>ListCommand: execute(transactionManager, ui, storage)
-    alt date provided
-        ListCommand->>TransactionMgr: listTransactionsFromDate(date)
-        TransactionMgr-->>ListCommand: filteredTransactions
-        alt limit provided
-            Note right of ListCommand: Apply limit to filtered list
-        end
-    else no date
-        alt limit provided
-            ListCommand->>TransactionMgr: listTransactions(limit)
-            TransactionMgr-->>ListCommand: limitedTransactions
-        else no limit
-            ListCommand->>TransactionMgr: listTransactions()
-            TransactionMgr-->>ListCommand: allTransactions
-        end
-    end
-    ListCommand-->>FinBro: result message
-    FinBro->>UI: showMessage(result)
-    UI-->>User: display result
-```
-Here's a more detailed sequence diagram showing the flow for obtaining the current list of transactions:
-```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant ListCommand as ListCommand
-   participant TransactionMgr as TransactionManager
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "list n/5 d/2025-03-01"
-   Parser->>ListCommand: new ListCommand(limit, date)
-   activate ListCommand
-   ListCommand-->>Parser: command
-   deactivate ListCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>ListCommand: execute(transactionManager, ui, storage)
-   activate ListCommand
-
-   alt date provided
-      ListCommand->>TransactionMgr: listTransactionsFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>ListCommand: filteredTransactions
-      deactivate TransactionMgr
-      alt limit provided
-         Note right of ListCommand: Apply limit to filtered list
-      end
-   else no date
-      alt limit provided
-         ListCommand->>TransactionMgr: listTransactions(limit)
-         activate TransactionMgr
-         TransactionMgr-->>ListCommand: limitedTransactions
-         deactivate TransactionMgr
-      else no limit
-         ListCommand->>TransactionMgr: listTransactions()
-         activate TransactionMgr
-         TransactionMgr-->>ListCommand: allTransactions
-         deactivate TransactionMgr
-      end
-   end
-
-   ListCommand-->>FinBro: result message
-   deactivate ListCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
-```
-### Viewing Balance
-This sequence diagram shows:
-
-1. User initiates the balance command (with or without date parameter)
-2. Parser creates the appropriate BalanceCommand
-3. BalanceCommand requests financial data from TransactionManager:
-4. Either filtered by date or overall totals
-5. BalanceCommand formats the balance information
-6. Results are displayed to the user
-
-```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant BalanceCommand as BalanceCommand
-   participant TransactionMgr as TransactionManager
-   participant Storage as Storage
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "balance" or "balance d/2023-01-01"
-   
-   alt date parameter provided
-      Parser->>Parser: Extract date parameter
-      Parser->>BalanceCommand: new BalanceCommand(date)
-   else no date parameter
-      Parser->>BalanceCommand: new BalanceCommand(null)
-   end
-   
-   activate BalanceCommand
-   BalanceCommand-->>Parser: command
-   deactivate BalanceCommand
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>BalanceCommand: execute(transactionManager, ui, storage)
-   activate BalanceCommand
-
-   alt date specified
-      BalanceCommand->>TransactionMgr: getTotalIncomeFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalIncome
-      deactivate TransactionMgr
-
-      BalanceCommand->>TransactionMgr: getTotalExpensesFromDate(date)
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalExpenses
-      deactivate TransactionMgr
-   else no date
-      BalanceCommand->>TransactionMgr: getTotalIncome()
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalIncome
-      deactivate TransactionMgr
-
-      BalanceCommand->>TransactionMgr: getTotalExpenses()
-      activate TransactionMgr
-      TransactionMgr-->>BalanceCommand: totalExpenses
-      deactivate TransactionMgr
-   end
-
-   BalanceCommand->>BalanceCommand: formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
-   BalanceCommand-->>FinBro: formatted balance message
-   deactivate BalanceCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display balance information
-   deactivate UI
-   deactivate FinBro
-```
-
-### Editing a transaction
-
-The follow sequence diagram illustrates the process of editing a transaction:
-
-```mermaid
-sequenceDiagram
-   participant User
-   participant UI as Ui
-   participant FinBro as FinBro
-   participant Parser as Parser
-   participant EditCommand as EditCommand
-   participant TransactionMgr as TransactionManager
-   participant Storage as Storage
-
-   User->>UI: input command
-   activate UI
-   UI->>FinBro: readCommand()
-   activate FinBro
-   FinBro->>Parser: parseCommand(userInput)
-   activate Parser
-
-   Note right of Parser: Parse "edit 1 a/200.0 d/Updated Description"
-   Parser->>UI: readIndex("Enter the index of transaction to edit")
-   activate UI
-   UI-->>Parser: index
-   deactivate UI
-   
-   Parser->>UI: readConfirmation("Do you want to edit transaction at index 1?")
-   activate UI
-   UI-->>Parser: confirmed (boolean)
-   deactivate UI
-   
-   alt user confirms
-      Parser->>UI: readAmount("Enter new amount (press Enter to skip)")
-      activate UI
-      UI-->>Parser: amountStr
-      deactivate UI
-      
-      Parser->>UI: readDescription("Enter new description (press Enter to skip)")
-      activate UI
-      UI-->>Parser: descriptionStr
-      deactivate UI
-      
-      Note right of Parser: Additional UI interactions for other parameters
-      
-      Parser->>EditCommand: new EditCommand(index, parameters)
-      activate EditCommand
-      EditCommand-->>Parser: command
-      deactivate EditCommand
-   else user cancels
-      Parser->>EditCommand: new SimpleCommand("Edit operation cancelled.")
-      activate EditCommand
-      EditCommand-->>Parser: command
-      deactivate EditCommand
-   end
-   
-   Parser-->>FinBro: command
-   deactivate Parser
-
-   FinBro->>EditCommand: execute(transactionManager, ui, storage)
-   activate EditCommand
-
-   alt valid index
-      EditCommand->>TransactionMgr: getTransaction(index - 1)
-      activate TransactionMgr
-      TransactionMgr-->>EditCommand: originalTransaction
-      deactivate TransactionMgr
-      
-      EditCommand->>EditCommand: createUpdatedTransaction(originalTransaction, parameters)
-      
-      alt valid updated transaction
-         EditCommand->>TransactionMgr: updateTransactionAt(index - 1, updatedTransaction)
-         activate TransactionMgr
-         TransactionMgr-->>EditCommand: success
-         deactivate TransactionMgr
-         
-         EditCommand->>Storage: saveTransactions(transactionManager)
-         activate Storage
-         Storage-->>EditCommand: success
-         deactivate Storage
-         
-         EditCommand-->>FinBro: "Transaction at index X successfully updated"
-      else invalid update parameters
-         EditCommand-->>FinBro: "Failed to update transaction"
-      end
-   else invalid index
-      EditCommand-->>FinBro: "Invalid index. Please provide a valid transaction index."
-   end
-   
-   deactivate EditCommand
-
-   FinBro->>UI: showMessage(result)
-   UI-->>User: display result
-   deactivate UI
-   deactivate FinBro
-```
-
 
 ## Design Patterns
 
@@ -1878,21 +372,19 @@ The application follows an MVC-like structure:
 - **View**: `Ui` class
 - **Controller**: `Command` classes and `FinBro` class
 
-## Implementation Details
+## Key Features and Implementation
 
-### Key Features
+### Transaction Management Feature
 
-#### 1. Transaction Management Feature
-
-##### Overview
+#### Overview
 
 The Transaction Management feature is a core component of FinBro that allows users to add, delete, search, and filter financial transactions. Transactions can be either income or expenses, each with different attributes and behaviors.
 
 This section explains the design considerations and implementation details of the Transaction Management system, focusing on adding and deleting transactions.
 
-##### Design Considerations
+#### Design Considerations
 
-###### Transaction Hierarchy
+##### Transaction Hierarchy
 
 The Transaction Management system uses inheritance to model different types of financial transactions:
 
@@ -1905,7 +397,7 @@ This approach provides several benefits:
 2. Polymorphism enabling operations on collections of different transaction types
 3. Type safety provided by Java's type system
 
-###### Alternative Designs Considered
+##### Alternative Designs Considered
 
 **1. Single Transaction Class with Type Enum**
 
@@ -1940,9 +432,9 @@ This approach was considered but not implemented because:
 - Added complexity without significant benefits for our use case
 - Inheritance provided a cleaner solution for the current requirements
 
-##### Implementation Details
+#### Implementation Details
 
-###### Adding a Transaction
+##### Adding a Transaction
 
 The process of adding a transaction involves several components interacting together:
 
@@ -1952,7 +444,7 @@ The process of adding a transaction involves several components interacting toge
 4. **TransactionManager** stores the transaction
 5. **Storage** persists the transaction to disk
 
-###### Duplicate Detection
+##### Duplicate Detection
 
 The system checks for potential duplicate transactions based on amount and description:
 
@@ -1978,7 +470,7 @@ if (!transactionManager.getTransactionDuplicates(amount, description).isEmpty())
 
 This helps prevent accidental duplication of transactions while still allowing intentional repetition.
 
-###### Deleting a Transaction
+##### Deleting a Transaction
 
 Deleting a transaction follows a similar component interaction pattern:
 
@@ -2013,7 +505,7 @@ public void deleteTransaction(int index) {
 
 The implementation maintains proper indexing by updating the index numbers of all transactions following the deleted one.
 
-###### Viewing of Balance
+##### Viewing of Balance
 
 The balance viewing feature follows this component interaction pattern:
 1. **UI** captures the balance command with optional date parameters
@@ -2023,7 +515,7 @@ The balance viewing feature follows this component interaction pattern:
 5. **BalanceCommand** formats and returns the balance information
 6. **UI** displays the formatted balance to the user
 
-***Implementation Details***
+**Implementation Details**
 
 **Date-Filtered Balance Calculation**
 ```java
@@ -2062,8 +554,7 @@ public String execute(TransactionManager transactionManager, Ui ui, Storage stor
 
 This implementation provides users with a quick overview of their financial position, either overall or from a specific date forward, enhancing financial awareness.
 
-
-###### Editing a Transaction
+##### Editing a Transaction
 
 Editing a transaction also follows a similar component interaction pattern:
 
@@ -2074,7 +565,7 @@ Editing a transaction also follows a similar component interaction pattern:
 5. **TransactionManager** updates the transaction in its collection
 6. **Storage** persists the updated transaction list
 
-***Implementation Details***
+**Implementation Details**
 
 **Index-Based Transaction Selection**
 
@@ -2201,21 +692,16 @@ private Transaction createUpdatedTransaction(Transaction original, Map<String, S
 
 **Key Design Features**
 
-**1. Direct index reference**: Uses explicit index numbers for unambiguous transaction targeting
-
-**2. User confirmation**: Prevents accidental edits through a confirmation prompt
-
-**3. Type preservation**: Maintains the original transaction type (Income or Expense)
-
-**4. Selective updates**: Only modifies fields explicitly specified in the edit command
-
-**5. Robust validation**: Handles invalid indices, amounts, dates, and categories
-
-**6. 1-based user indexing**: Presents user-friendly 1-based indexing while using 0-based indexing internally
+1. Direct index reference: Uses explicit index numbers for unambiguous transaction targeting
+2. User confirmation: Prevents accidental edits through a confirmation prompt
+3. Type preservation: Maintains the original transaction type (Income or Expense)
+4. Selective updates: Only modifies fields explicitly specified in the edit command
+5. Robust validation: Handles invalid indices, amounts, dates, and categories
+6. 1-based user indexing: Presents user-friendly 1-based indexing while using 0-based indexing internally
 
 This implementation balances user experience with data integrity and provides clear feedback throughout the editing process.
 
-###### Class Diagram of Transaction Component
+##### Class Diagram of Transaction Component
 
 ```
 Transaction (abstract)
@@ -2233,7 +719,7 @@ The Transaction class provides common attributes and methods:
 - `getAmount()`, `getDescription()`, etc.: Accessor methods
 - `toString()`: Abstract method implemented by subclasses
 
-##### Storage Considerations
+#### Storage Considerations
 
 Transactions are persisted to disk in a text file format where fields are separated by a pipe character ('|'):
 
@@ -2244,7 +730,7 @@ EXPENSE|2025-03-16|50.00|Groceries|FOOD|essential
 
 When saving and loading transactions, the system performs conversion between the object model and this text representation. This approach was chosen for its simplicity and human readability, while still providing adequate structure for reliable parsing.
 
-##### Defensive Programming Aspects
+#### Defensive Programming Aspects
 
 The Transaction Management system uses several defensive programming techniques:
 
@@ -2273,7 +759,7 @@ The Transaction Management system uses several defensive programming techniques:
 
 These techniques enhance the robustness of the system and make debugging easier.
 
-#### 2. Command Parsing
+### Command Parsing
 
 The `Parser` class converts user input into appropriate command objects through several phases:
 1. Tokenization of input
@@ -2298,7 +784,7 @@ public Command parseCommand(String userInput) {
 }
 ```
 
-#### 3. Data Persistence
+### Data Persistence
 
 The `Storage` class manages saving and loading of transaction data using a custom text-based format.
 
@@ -2311,13 +797,146 @@ The `Storage` class manages saving and loading of transaction data using a custo
 - Data is loaded into memory at application startup
 - Changes are saved to disk after each transaction modification
 
-#### 4. Financial Summaries
+### Financial Summaries
 
 The `SummaryCommand` generates financial reports with the following capabilities:
 - Filtering by time period (month/year)
 - Categorized expense breakdown
 - Tag-based transaction analysis
 - Income vs. expense comparison
+
+## Sequence Diagrams for Key Operations
+
+### Adding a Transaction
+
+This sequence diagram illustrates the process when a user adds a new transaction:
+
+```puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":IncomeCommand" as IncomeCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Income" as Income
+participant ":Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "income 3000 d/Monthly salary t/work"
+
+Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
+activate IncomeCommand
+IncomeCommand --> Parser : command
+deactivate IncomeCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> IncomeCommand : execute(transactionManager, ui, storage)
+activate IncomeCommand
+
+IncomeCommand -> TransactionMgr : getTransactionDuplicates(amount, description)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand : duplicates
+deactivate TransactionMgr
+
+note right of IncomeCommand: Check for duplicates
+
+alt duplicates found
+    IncomeCommand -> UI : warnDuplicate()
+    activate UI
+    UI --> IncomeCommand : confirmResult
+    deactivate UI
+
+    alt user cancels transaction
+        IncomeCommand --> FinBro : "Transaction cancelled by user"
+    end
+end
+
+IncomeCommand -> Income : new Income(amount, description, tags)
+activate Income
+Income --> IncomeCommand : income
+deactivate Income
+
+IncomeCommand -> TransactionMgr : addTransaction(income)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand
+deactivate TransactionMgr
+
+IncomeCommand -> Storage : saveTransactions(transactionManager)
+activate Storage
+Storage --> IncomeCommand
+deactivate Storage
+
+IncomeCommand --> FinBro : result message
+deactivate IncomeCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
+```
+
+### Searching for a Transaction
+
+This sequence diagram illustrates the process of searching for transactions:
+
+```puml
+paste in content of sequence-search.puml
+```
+
+### Filtering Transactions
+
+This sequence diagram illustrates the process of filtering transactions based on a date range:
+
+```puml
+paste in content of sequence-filter.puml
+```
+
+### Obtaining a Monthly Financial Summary
+
+This sequence diagram illustrates the process of obtaining a monthly financial summary:
+
+```puml
+paste in content of sequence-summary.puml
+```
+
+### Obtaining the Current List of Transactions
+
+This sequence diagram illustrates the process of obtaining the current list of transactions:
+
+```puml
+paste in content of sequence-list.puml
+```
+
+### Viewing Balance
+
+This sequence diagram illustrates the process of viewing the current balance:
+
+```puml
+paste in content of sequence-balance.puml
+```
+
+### Editing a Transaction
+
+This sequence diagram illustrates the process of editing a transaction:
+
+```puml
+paste in content of sequence-edit.puml
+```
 
 ## Testing
 
