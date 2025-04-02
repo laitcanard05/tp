@@ -1,0 +1,27 @@
+sequenceDiagram
+    actor User as User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant FilterCommand as FilterCommand
+    participant TransactionMgr as TransactionManager
+
+    User->>+UI: input command
+    UI->>+FinBro: readCommand()
+    FinBro->>+Parser: parseCommand(userInput)
+
+    Note right of Parser: Parse "filter d/2023-01-01 to/2023-12-31"
+    Parser->>+FilterCommand: new FilterCommand(startDate, endDate)
+    FilterCommand-->>-Parser: command
+    Parser-->>-FinBro: command
+
+    FinBro->>+FilterCommand: execute(transactionManager, ui, storage)
+
+    FilterCommand->>+TransactionMgr: getFilteredTransactions(startDate, endDate)
+    TransactionMgr-->>-FilterCommand: filteredTransactions
+
+    FilterCommand-->>-FinBro: result message (list of filtered transactions)
+
+    FinBro->>UI: showMessage(result)
+    UI-->>-User: display result
+    deactivate FinBro

@@ -1,0 +1,36 @@
+sequenceDiagram
+    actor User as User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant SummaryCommand as SummaryCommand
+    participant TransactionMgr as TransactionManager
+
+    User->>+UI: input command
+    UI->>+FinBro: readCommand()
+    FinBro->>+Parser: parseCommand(userInput)
+
+    Note right of Parser: Parse "summary m/2 y/2025"
+    Parser->>+SummaryCommand: new SummaryCommand(month, year)
+    SummaryCommand-->>-Parser: command
+    Parser-->>-FinBro: command
+
+    FinBro->>+SummaryCommand: execute(transactionManager, ui, storage)
+
+    SummaryCommand->>+TransactionMgr: getMonthlyTotalIncome(month, year)
+    TransactionMgr-->>-SummaryCommand: totalIncome
+
+    SummaryCommand->>+TransactionMgr: getMonthlyTotalExpenses(month, year)
+    TransactionMgr-->>-SummaryCommand: totalExpenses
+
+    SummaryCommand->>+TransactionMgr: getMonthlyCategorisedExpenses(month, year)
+    TransactionMgr-->>-SummaryCommand: categorisedExpenses
+
+    SummaryCommand->>+TransactionMgr: getMonthlyTaggedTransactions(month, year)
+    TransactionMgr-->>-SummaryCommand: taggedTransactions
+
+    SummaryCommand-->>-FinBro: result message
+
+    FinBro->>UI: showMessage(result)
+    UI-->>-User: display result
+    deactivate FinBro

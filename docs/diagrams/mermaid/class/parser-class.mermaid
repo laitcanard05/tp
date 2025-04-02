@@ -1,0 +1,31 @@
+classDiagram
+    class Parser {
+        -logger: Logger
+        +Parser()
+        +parseCommand(userInput): Command
+        -parseIncomeCommand(arguments): Command
+        -parseExpenseCommand(arguments): Command
+        -parseListCommand(arguments): Command
+        -parseDeleteCommand(arguments): Command
+        -parseFilterCommand(arguments): Command
+        -parseSummaryCommand(arguments): Command
+        -parseSearchCommand(arguments): Command
+        -parseBalanceCommand(arguments): Command
+        -parseEditCommand(ui): Command
+        -parseExportCommand(arguments): Command
+        -parseHelpCommand(): Command
+        -parseExitCommand(): Command
+        -extractAmount(arguments): double
+        -extractDescription(arguments): String
+        -extractDate(arguments): LocalDate
+        -extractCategory(arguments): Expense.Category
+        -extractTags(arguments): List~String~
+    }
+
+    class Command {
+        <<interface>>
+        +execute(transactionManager, ui, storage): String
+        +isExit(): boolean
+    }
+
+    Parser ..> Command : creates

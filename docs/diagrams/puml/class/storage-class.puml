@@ -1,0 +1,33 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+class Storage {
+  -filePath: String
+  -logger: Logger
+  +Storage(filePath: String)
+  +loadTransactions(): List<Transaction>
+  +saveTransactions(manager: TransactionManager): void
+  +exportToCsv(transactions: List<Transaction>, filePath: String): void
+  +exportToTxt(transactions: List<Transaction>, filePath: String): void
+  -parseTransaction(line: String): Transaction
+  -writeTransaction(transaction: Transaction): String
+}
+
+class TransactionManager {
+  -transactions: List<Transaction>
+  +addTransaction(transaction: Transaction): void
+  +deleteTransaction(index: int): void
+  +listTransactions(): List<Transaction>
+  +listTransactions(limit: int): List<Transaction>
+  +getTransaction(index: int): Transaction
+  +getTransactionCount(): int
+}
+
+abstract class Transaction {
+}
+
+Storage --> TransactionManager : saves/loads
+TransactionManager --> Transaction : manages
+
+@enduml

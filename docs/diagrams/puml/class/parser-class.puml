@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+class Parser {
+  -logger: Logger
+  +Parser()
+  +parseCommand(userInput: String): Command
+  -parseIncomeCommand(arguments: String): Command
+  -parseExpenseCommand(arguments: String): Command
+  -parseListCommand(arguments: String): Command
+  -parseDeleteCommand(arguments: String): Command
+  -parseFilterCommand(arguments: String): Command
+  -parseSummaryCommand(arguments: String): Command
+  -parseSearchCommand(arguments: String): Command
+  -parseBalanceCommand(arguments: String): Command
+  -parseEditCommand(ui: Ui): Command
+  -parseExportCommand(arguments: String): Command
+  -parseHelpCommand(): Command
+  -parseExitCommand(): Command
+  -extractAmount(arguments: String): double
+  -extractDescription(arguments: String): String
+  -extractDate(arguments: String): LocalDate
+  -extractCategory(arguments: String): Expense.Category
+  -extractTags(arguments: String): List<String>
+}
+
+interface Command {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+Parser ..> Command : creates
+
+@enduml
