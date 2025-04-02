@@ -271,11 +271,18 @@ Enter command word:
 > filter
 
 Please enter the start date in the format yyyy-mm-dd.
-> 2025-02-01
+> 2025-03-14
 
 Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up 
 to current date.)
-> 2025-02-28
+> 2025-04-01
+```
+
+**Example Output:**
+```
+Showing transactions from 2025-03-01 to 2025-04-02:
+1. [Income] $1000.00 - salary [work]
+2. [Income] $3.14 - Test description
 ```
 
 **Notes:**
@@ -310,7 +317,7 @@ Enter your budget:
 
 **Notes:**
 - Month is specified as a number (1-12)
-- Year should be a 4-digit number
+- Year should be a 4-digit positive number
 - Budget is a positive number representing your spending limit
 - If a budget already exists for the specified month, it will be updated
 
@@ -334,7 +341,17 @@ Please enter the year. (Leave blank for current year)
 > 2025
 ```
 
+**Example Output:**
+```
+Budget for 04/2025: $500.00
+Total Expenses: $40.00
+You are within your budget.
+Remaining Budget: $460.00
+```
+
 **Notes:**
+- Month is specified as a number (1-12)
+- Year should be a 4-digit positive number
 - Shows the budget amount, total expenses, and remaining budget
 - Warns if you have exceeded your budget
 - If no budget is set for the specified month, prompts you to set one
@@ -359,12 +376,17 @@ Please enter the year. (Leave blank for current year)
 > 2025
 
 Enter your savings goal:
-> 500
+> 1000
+```
+
+**Example Output:**
+```
+Savings Goal of 500.0 has been set for 4/2025
 ```
 
 **Notes:**
 - Month is specified as a number (1-12)
-- Year should be a 4-digit number
+- Year should be a 4-digit positive number
 - Savings goal is a positive number representing your target
 - If a savings goal already exists for the specified month, it will be updated
 
@@ -388,10 +410,21 @@ Please enter the year. (Leave blank for current year)
 > 2025
 ```
 
+**Example Output:**
+```
+Savings Goal for 4/2025: $500.00
+Total Income: $1003.14
+Total Expenses: $40.00
+Total Savings: $963.14
+Congratulations! You have met your savings goal!
+```
+
 **Notes:**
+- Month is specified as a number (1-12)
+- Year should be a 4-digit positive number
 - Shows the savings goal, total income, total expenses, and calculated savings
 - Congratulates you if you've met your savings goal
-- If no goal is set for the specified month, prompts you to set one
+- Informs user if no goal is set for the specified month
 
 ---
 
@@ -454,6 +487,8 @@ Tags Summary:
 ```
 
 **Notes:**
+- Month is specified as a number (1-12)
+- Year should be a 4-digit positive number
 - Provides a comprehensive financial overview for the specified month
 - Shows total income and expenses
 - Lists top expense categories in descending order

@@ -38,8 +38,8 @@ I focused on implementing and testing the command parsing logic, ensuring that k
 ### Contributions to the User Guide
 
 - Documented:
-    - Interactive usage of `summary`, `budget`, and `savings` commands.
-    - Provided examples and edge-case scenarios for better user understanding.
+    - Interactive usage of `summary`, `filter`, `trackbudget`, `setsavings` and `tracksavings` commands.
+    - Provided examples for better user understanding.
 
 ---
 
