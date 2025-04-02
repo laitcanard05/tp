@@ -20,7 +20,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "list n/5 d/2025-03-01"
 
-Parser -> ListCommand** : new ListCommand(limit, date)
+Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
 deactivate ListCommand

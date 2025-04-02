@@ -33,6 +33,49 @@ FinBro is a personal finance management application that operates through a Comm
 FinBro follows a layered architecture pattern with clear separation of concerns:
 
 ``` mermaid
+flowchart TB
+    User([User]) <--> UI
+
+    subgraph FinBro
+        UI[UI Component]
+        Logic[Logic Component]
+        Model[Model Component]
+        Storage[Storage Component]
+
+        UI <--> Logic
+        Logic <--> Model
+        Logic <--> Storage
+        Model <--> Storage
+    end
+
+    Storage <--> FileSystem[(File System)]
+
+    subgraph "Logic Component"
+        Parser[Parser]
+        CommandClasses[Command Classes]
+
+        Parser --> CommandClasses
+    end
+
+    subgraph "Model Component"
+        TransactionClasses[Transaction Classes]
+        TransactionMgr[TransactionManager]
+
+        TransactionMgr --> TransactionClasses
+    end
+
+    classDef component fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef subcomponent fill:#bbf,stroke:#333,stroke-width:1px;
+
+    class UI,Logic,Model,Storage component;
+    class Parser,CommandClasses,TransactionClasses,TransactionMgr subcomponent;
+```
+
+### Key Components
+
+#### 1. Main Component
+
+``` mermaid
 classDiagram
     class FinBro {
         +run()
@@ -40,7 +83,7 @@ classDiagram
         +runCommandLoop()
         +exit()
     }
-    
+
     class UI {
         +showWelcome()
         +showGoodbye()
@@ -50,7 +93,7 @@ classDiagram
         +readConfirmation()
         +warnDuplicate()
     }
-    
+
     class Parser {
         +parseCommand()
         -parseIncomeCommand()
@@ -60,13 +103,13 @@ classDiagram
         -parseFilterCommand()
         -parseSummaryCommand()
     }
-    
+
     class Command {
         <<interface>>
         +execute()
         +isExit()
     }
-    
+
     class TransactionManager {
         +addTransaction()
         +deleteTransaction()
@@ -76,7 +119,7 @@ classDiagram
         +getTotalIncome()
         +getTotalExpenses()
     }
-    
+
     class Transaction {
         <<abstract>>
         #amount
@@ -88,66 +131,66 @@ classDiagram
         +getDate()
         +getTags()
     }
-    
+
     class Income {
         +toString()
     }
-    
+
     class Expense {
         -category
         +getCategory()
         +toString()
     }
-    
+
     class Storage {
         +loadTransactions()
         +saveTransactions()
         +exportToCsv()
         +exportToTxt()
     }
-    
-    %% Command implementations
+
+%% Command implementations
     class IncomeCommand {
         +execute()
     }
-    
+
     class ExpenseCommand {
         +execute()
     }
-    
+
     class ListCommand {
         +execute()
     }
-    
+
     class DeleteCommand {
         +execute()
     }
-    
-    %% Relationships
+
+%% Relationships
     FinBro --> UI : uses
     FinBro --> Parser : uses
     FinBro --> TransactionManager : uses
     FinBro --> Storage : uses
-    
+
     Parser ..> Command : creates
     Parser ..> IncomeCommand : creates
     Parser ..> ExpenseCommand : creates
     Parser ..> ListCommand : creates
     Parser ..> DeleteCommand : creates
-    
+
     Command <|-- IncomeCommand : implements
     Command <|-- ExpenseCommand : implements
     Command <|-- ListCommand : implements
     Command <|-- DeleteCommand : implements
-    
+
     Transaction <|-- Income : extends
     Transaction <|-- Expense : extends
-    
+
     TransactionManager o-- Transaction : manages
-    
+
     IncomeCommand ..> Income : creates
     ExpenseCommand ..> Expense : creates
-    
+
     IncomeCommand --> TransactionManager : uses
     IncomeCommand --> Storage : uses
     ExpenseCommand --> TransactionManager : uses
@@ -155,6 +198,45 @@ classDiagram
     ListCommand --> TransactionManager : uses
     DeleteCommand --> TransactionManager : uses
 ```
+
+#### 2. UI Component
+
+``` mermaid
+classDiagram
+    class UI {
+        -scanner: Scanner
+        -logger: Logger
+        +UI()
+        +showWelcome(): void
+        +showGoodbye(): void
+        +showMessage(message): void
+        +showError(message): void
+        +readCommand(): String
+        +readIndex(prompt): int
+        +readAmount(prompt): String
+        +readDescription(prompt): String
+        +readDate(prompt): String
+        +readCategory(prompt): String
+        +readTags(prompt): String
+        +readConfirmation(prompt): boolean
+        +warnDuplicate(): boolean
+    }
+
+    class Scanner {
+        +next(): String
+        +nextLine(): String
+    }
+
+    class Logger {
+        +info(message): void
+        +warning(message): void
+        +severe(message): void
+    }
+
+    UI --> Scanner : uses
+    UI --> Logger : uses
+```
+
 ### Sequence Diagram
 
 ### Component Overview
@@ -213,17 +295,83 @@ seedu.finbro/
 
 The following sequence diagram illustrates the basic process when a user adds a new transaction:
 
-```
-User -> FinBro: input command
-FinBro -> Parser: parseCommand(userInput)
-Parser -> IncomeCommand: new IncomeCommand(...)
-Parser --> FinBro: command
-FinBro -> IncomeCommand: execute()
-IncomeCommand -> TransactionManager: addTransaction(income)
-IncomeCommand -> Storage: saveTransactions()
-IncomeCommand --> FinBro: result message
-FinBro -> Ui: showMessage(result)
-Ui --> User: display result
+```puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":IncomeCommand" as IncomeCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Income" as Income
+participant ":Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "income 3000 d/Monthly salary t/work"
+
+Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
+activate IncomeCommand
+IncomeCommand --> Parser : command
+deactivate IncomeCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> IncomeCommand : execute(transactionManager, ui, storage)
+activate IncomeCommand
+
+IncomeCommand -> TransactionMgr : getTransactionDuplicates(amount, description)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand : duplicates
+deactivate TransactionMgr
+
+note right of IncomeCommand: Check for duplicates
+
+alt duplicates found
+    IncomeCommand -> UI : warnDuplicate()
+    activate UI
+    UI --> IncomeCommand : confirmResult
+    deactivate UI
+
+    alt user cancels transaction
+        IncomeCommand --> FinBro : "Transaction cancelled by user"
+    end
+end
+
+IncomeCommand -> Income : new Income(amount, description, tags)
+activate Income
+Income --> IncomeCommand : income
+deactivate Income
+
+IncomeCommand -> TransactionMgr : addTransaction(income)
+activate TransactionMgr
+TransactionMgr --> IncomeCommand
+deactivate TransactionMgr
+
+IncomeCommand -> Storage : saveTransactions(transactionManager)
+activate Storage
+Storage --> IncomeCommand
+deactivate Storage
+
+IncomeCommand --> FinBro : result message
+deactivate IncomeCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 Here's a more detailed sequence diagram showing the flow for adding an income transaction, including duplicate transaction checking:
@@ -299,44 +447,6 @@ sequenceDiagram
     deactivate FinBro
 ```
 
-```mermaid
-flowchart TB
-    User([User]) <--> UI
-    
-    subgraph FinBro
-        UI[UI Component]
-        Logic[Logic Component]
-        Model[Model Component]
-        Storage[Storage Component]
-        
-        UI <--> Logic
-        Logic <--> Model
-        Logic <--> Storage
-        Model <--> Storage
-    end
-    
-    Storage <--> FileSystem[(File System)]
-    
-    subgraph "Logic Component"
-        Parser[Parser]
-        CommandClasses[Command Classes]
-        
-        Parser --> CommandClasses
-    end
-    
-    subgraph "Model Component"
-        TransactionClasses[Transaction Classes]
-        TransactionMgr[TransactionManager]
-        
-        TransactionMgr --> TransactionClasses
-    end
-    
-    classDef component fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef subcomponent fill:#bbf,stroke:#333,stroke-width:1px;
-    
-    class UI,Logic,Model,Storage component;
-    class Parser,CommandClasses,TransactionClasses,TransactionMgr subcomponent;
-```
 ### Searching for a transaction
 ```mermaid
 sequenceDiagram

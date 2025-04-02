@@ -22,7 +22,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "income 3000 d/Monthly salary t/work"
 
-Parser -> IncomeCommand** : new IncomeCommand(amount, description, tags)
+Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
 deactivate IncomeCommand
@@ -50,7 +50,7 @@ alt duplicates found
     end
 end
 
-IncomeCommand -> Income** : new Income(amount, description, tags)
+IncomeCommand -> Income : new Income(amount, description, tags)
 activate Income
 Income --> IncomeCommand : income
 deactivate Income
