@@ -305,11 +305,91 @@ classDiagram
 ### Logic Component
 
 ```mermaid
-paste in content of parser-class.mermaid
+classDiagram
+   class Parser {
+      -logger: Logger
+      +Parser()
+      +parseCommand(userInput): Command
+      -parseIncomeCommand(arguments): Command
+      -parseExpenseCommand(arguments): Command
+      -parseListCommand(arguments): Command
+      -parseDeleteCommand(arguments): Command
+      -parseFilterCommand(arguments): Command
+      -parseSummaryCommand(arguments): Command
+      -parseSearchCommand(arguments): Command
+      -parseBalanceCommand(arguments): Command
+      -parseEditCommand(ui): Command
+      -parseExportCommand(arguments): Command
+      -parseHelpCommand(): Command
+      -parseExitCommand(): Command
+      -extractAmount(arguments): double
+      -extractDescription(arguments): String
+      -extractDate(arguments): LocalDate
+      -extractCategory(arguments): Expense.Category
+      -extractTags(arguments): List~String~
+   }
+
+   class Command {
+      <<interface>>
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   Parser ..> Command : creates
 ```
 
 ```mermaid
-paste in content of parser-detail-class.mermaid
+classDiagram
+   class Parser {
+      -Pattern AMOUNT_PATTERN
+      -DateTimeFormatter DATE_FORMATTER
+      -boolean clearCommandPending
+      +parseCommandWord(String, Ui)
+      +parseIncomeCommand(String, Ui)
+      +parseExpenseCommand(String, Ui)
+      +parseDeleteCommand(String, Ui)
+      +parseEditCommand(String, Ui)
+      +parseListCommand(String)
+      +parseFilterCommand(String, Ui)
+      +parseSearchCommand(String, Ui)
+      +parseSummaryCommand(String, Ui)
+      +parseSetBudgetCommand(String, Ui)
+      +parseTrackBudgetCommand(String, Ui)
+      +parseSetSavingsGoalCommand(String, Ui)
+      +parseTrackSavingsGoalCommand(String, Ui)
+      +parseExportCommand(String, Ui)
+      -parseParameters(String)
+      -parseAmount(String)
+      -parseTags(Ui)
+      -parseCategory(Ui)
+   }
+
+   class Command {
+      <<interface>>
+      +execute(TransactionManager, Ui, Storage)
+      +isExit()
+   }
+
+   Parser ..> Command : creates
+   Parser ..> ExpenseCommand : creates
+   Parser ..> IncomeCommand : creates
+   Parser ..> DeleteCommand : creates
+   Parser ..> EditCommand : creates
+   Parser ..> ListCommand : creates
+   Parser ..> FilterCommand : creates
+   Parser ..> SearchCommand : creates
+   Parser ..> SummaryCommand : creates
+   Parser ..> SetBudgetCommand : creates
+   Parser ..> TrackBudgetCommand : creates
+   Parser ..> SetSavingsGoalCommand : creates
+   Parser ..> TrackSavingsGoalCommand : creates
+   Parser ..> ExportCommand : creates
+   Parser ..> BalanceCommand : creates
+   Parser ..> ClearCommand : creates
+   Parser ..> ExitCommand : creates
+   Parser ..> HelpCommand : creates
+   Parser ..> InvalidCommand : creates
+   Parser ..> UnknownCommand : creates
 ```
 
 ### Model Component
@@ -1117,15 +1197,182 @@ paste in content of sequence-list.puml
 This sequence diagram illustrates the process of viewing the current balance:
 
 ```puml
-paste in content of sequence-balance.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "User" as User
+participant "UI" as UI
+participant "FinBro" as FinBro
+participant "Parser" as Parser
+participant "BalanceCommand" as BalanceCommand
+participant "TransactionManager" as TransactionMgr
+participant "Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "balance" or "balance d/2023-01-01"
+
+alt date parameter provided
+    Parser -> Parser : Extract date parameter
+    Parser -> BalanceCommand : new BalanceCommand(date)
+else no date parameter
+    Parser -> BalanceCommand : new BalanceCommand(null)
+end
+
+activate BalanceCommand
+BalanceCommand --> Parser : command
+deactivate BalanceCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> BalanceCommand : execute(transactionManager, ui, storage)
+activate BalanceCommand
+
+alt date specified
+    BalanceCommand -> TransactionMgr : getTotalIncomeFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalIncome
+    deactivate TransactionMgr
+
+    BalanceCommand -> TransactionMgr : getTotalExpensesFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalExpenses
+    deactivate TransactionMgr
+else no date
+    BalanceCommand -> TransactionMgr : getTotalIncome()
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalIncome
+    deactivate TransactionMgr
+
+    BalanceCommand -> TransactionMgr : getTotalExpenses()
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalExpenses
+    deactivate TransactionMgr
+end
+
+BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+BalanceCommand --> FinBro : formatted balance message
+deactivate BalanceCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display balance information
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Editing a Transaction
 
 This sequence diagram illustrates the process of editing a transaction:
-
 ```puml
-paste in content of sequence-edit.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":EditCommand" as EditCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+
+note right: Parse "edit 1 a/200.0 d/Updated Description"
+
+Parser -> UI : readIndex("Enter the index of transaction to edit")
+activate UI
+UI --> Parser : index
+deactivate UI
+
+Parser -> UI : readConfirmation("Do you want to edit transaction at index 1?")
+activate UI
+UI --> Parser : confirmed (boolean)
+deactivate UI
+
+alt user confirms
+    Parser -> UI : readAmount("Enter new amount (press Enter to skip)")
+    activate UI
+    UI --> Parser : amountStr
+    deactivate UI
+
+    Parser -> UI : readDescription("Enter new description (press Enter to skip)")
+    activate UI
+    UI --> Parser : descriptionStr
+    deactivate UI
+
+    note right of Parser: Additional UI interactions for other parameters
+
+    Parser -> EditCommand : new EditCommand(index, parameters)
+    activate EditCommand
+    EditCommand --> Parser : command
+    deactivate EditCommand
+else user cancels
+    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
+    activate EditCommand
+    EditCommand --> Parser : command
+    deactivate EditCommand
+end
+
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> EditCommand : execute(transactionManager, ui, storage)
+activate EditCommand
+
+alt valid index
+    EditCommand -> TransactionMgr : getTransaction(index - 1)
+    activate TransactionMgr
+    TransactionMgr --> EditCommand : originalTransaction
+    deactivate TransactionMgr
+
+    EditCommand -> EditCommand : createUpdatedTransaction(originalTransaction, parameters)
+
+    alt valid updated transaction
+        EditCommand -> TransactionMgr : updateTransactionAt(index - 1, updatedTransaction)
+        activate TransactionMgr
+        TransactionMgr --> EditCommand : success
+        deactivate TransactionMgr
+
+        EditCommand -> Storage : saveTransactions(transactionManager)
+        activate Storage
+        Storage --> EditCommand : success
+        deactivate Storage
+
+        EditCommand --> FinBro : "Transaction at index X successfully updated"
+    else invalid update parameters
+        EditCommand --> FinBro : "Failed to update transaction"
+    end
+else invalid index
+    EditCommand --> FinBro : "Invalid index. Please provide a valid transaction index."
+end
+
+deactivate EditCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ## Testing
