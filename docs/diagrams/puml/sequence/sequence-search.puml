@@ -20,7 +20,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "search lunch"
 
-Parser -> SearchCommand** : new SearchCommand(keyword)
+Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
 deactivate SearchCommand

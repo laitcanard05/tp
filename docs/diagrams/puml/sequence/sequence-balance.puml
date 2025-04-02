@@ -3,13 +3,13 @@
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 
-actor ":User" as User
-participant ":Ui" as UI
-participant ":FinBro" as FinBro
-participant ":Parser" as Parser
-participant ":BalanceCommand" as BalanceCommand
-participant ":TransactionManager" as TransactionMgr
-participant ":Storage" as Storage
+actor "User" as User
+participant "UI" as UI
+participant "FinBro" as FinBro
+participant "Parser" as Parser
+participant "BalanceCommand" as BalanceCommand
+participant "TransactionManager" as TransactionMgr
+participant "Storage" as Storage
 
 User -> UI : input command
 activate UI
@@ -23,9 +23,9 @@ note right: Parse "balance" or "balance d/2023-01-01"
 
 alt date parameter provided
     Parser -> Parser : Extract date parameter
-    Parser -> BalanceCommand** : new BalanceCommand(date)
+    Parser -> BalanceCommand : new BalanceCommand(date)
 else no date parameter
-    Parser -> BalanceCommand** : new BalanceCommand(null)
+    Parser -> BalanceCommand : new BalanceCommand(null)
 end
 
 activate BalanceCommand

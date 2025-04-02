@@ -1,5 +1,6 @@
 @startuml
 !theme plain
+title Filter Command Sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 
@@ -20,7 +21,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "filter d/2023-01-01 to/2023-12-31"
 
-Parser -> FilterCommand** : new FilterCommand(startDate, endDate)
+Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
 deactivate FilterCommand

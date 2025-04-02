@@ -19,6 +19,7 @@ activate FinBro
 
 FinBro -> Parser : parseCommand(userInput)
 activate Parser
+
 note right: Parse "edit 1 a/200.0 d/Updated Description"
 
 Parser -> UI : readIndex("Enter the index of transaction to edit")
@@ -44,12 +45,12 @@ alt user confirms
 
     note right of Parser: Additional UI interactions for other parameters
 
-    Parser -> EditCommand** : new EditCommand(index, parameters)
+    Parser -> EditCommand : new EditCommand(index, parameters)
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand
 else user cancels
-    Parser -> EditCommand** : new SimpleCommand("Edit operation cancelled.")
+    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand

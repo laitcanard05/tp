@@ -20,7 +20,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "summary m/2 y/2025"
 
-Parser -> SummaryCommand** : new SummaryCommand(month, year)
+Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
 deactivate SummaryCommand
