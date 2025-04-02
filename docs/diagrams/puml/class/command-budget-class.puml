@@ -1,0 +1,63 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+interface Command {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SetBudgetCommand {
+  -amount: double
+  -month: YearMonth
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class TrackBudgetCommand {
+  -month: YearMonth
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SetSavingsGoalCommand {
+  -amount: double
+  -month: YearMonth
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class TrackSavingsGoalCommand {
+  -month: YearMonth
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class BalanceCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ClearCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ExportCommand {
+  -format: String
+  -path: String
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+Command <|.. SetBudgetCommand : implements
+Command <|.. TrackBudgetCommand : implements
+Command <|.. SetSavingsGoalCommand : implements
+Command <|.. TrackSavingsGoalCommand : implements
+Command <|.. BalanceCommand : implements
+Command <|.. ClearCommand : implements
+Command <|.. ExportCommand : implements
+
+@enduml

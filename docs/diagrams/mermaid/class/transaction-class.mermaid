@@ -1,0 +1,64 @@
+classDiagram
+    class TransactionManager {
+        -transactions: List~Transaction~
+        -nextIndex: int
+        -logger: Logger
+        -instance: TransactionManager$
+        +getInstance(): TransactionManager$
+        +addTransaction(transaction): void
+        +deleteTransaction(index): void
+        +updateTransactionAt(index, transaction): void
+        +listTransactions(): List~Transaction~
+        +listTransactions(limit): List~Transaction~
+        +listTransactionsFromDate(date): List~Transaction~
+        +getTransaction(index): Transaction
+        +getTransactionCount(): int
+        +getTransactionDuplicates(amount, description): ArrayList~Transaction~
+        +getFilteredTransactions(startDate, endDate): List~Transaction~
+        +getTransactionsContainingKeyword(keyword): List~Transaction~
+        +getBalance(): double
+        +getTotalIncome(): double
+        +getTotalExpenses(): double
+        +getMonthlyTotalIncome(month, year): double
+        +getMonthlyTotalExpenses(month, year): double
+        +getMonthlyCategorisedExpenses(month, year): Map~Category, Double~
+        +getMonthlyTaggedTransactions(month, year): Map~String, Double~
+        -isInSameMonth(date, month, year): boolean
+    }
+
+    class Transaction {
+        <<abstract>>
+        #amount: double
+        #description: String
+        #date: LocalDate
+        #tags: List~String~
+        #indexNum: int
+        +getAmount(): double
+        +getDescription(): String
+        +getDate(): LocalDate
+        +getTags(): List~String~
+        +getIndexNum(): int
+    }
+
+    class Income {
+        +Income(amount, description, date, tags)
+        +toString(): String
+    }
+
+    class Expense {
+        -category: Category
+        +Expense(amount, description, date, category, tags)
+        +getCategory(): Category
+        +toString(): String
+    }
+
+    class Logger {
+        +info(message): void
+        +warning(message): void
+        +severe(message): void
+    }
+
+    TransactionManager o-- Transaction : manages
+    Transaction <|-- Income : extends
+    Transaction <|-- Expense : extends
+    TransactionManager --> Logger : uses

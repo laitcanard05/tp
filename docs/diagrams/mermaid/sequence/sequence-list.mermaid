@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor User as User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant ListCommand as ListCommand
+    participant TransactionMgr as TransactionManager
+
+    User->>+UI: input command
+    UI->>+FinBro: readCommand()
+    FinBro->>+Parser: parseCommand(userInput)
+
+    Note right of Parser: Parse "list n/5 d/2025-03-01"
+    Parser->>+ListCommand: new ListCommand(limit, date)
+    ListCommand-->>-Parser: command
+    Parser-->>-FinBro: command
+
+    FinBro->>+ListCommand: execute(transactionManager, ui, storage)
+
+    alt date provided
+        ListCommand->>+TransactionMgr: listTransactionsFromDate(date)
+        TransactionMgr-->>-ListCommand: filteredTransactions
+        alt limit provided
+            Note right of ListCommand: Apply limit to filtered list
+        end
+    else no date
+        alt limit provided
+            ListCommand->>+TransactionMgr: listTransactions(limit)
+            TransactionMgr-->>-ListCommand: limitedTransactions
+        else no limit
+            ListCommand->>+TransactionMgr: listTransactions()
+            TransactionMgr-->>-ListCommand: allTransactions
+        end
+    end
+
+    ListCommand-->>-FinBro: result message
+
+    FinBro->>UI: showMessage(result)
+    UI-->>-User: display result
+    deactivate FinBro

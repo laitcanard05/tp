@@ -1,0 +1,121 @@
+classDiagram
+    class FinBro {
+        +run()
+        +start()
+        +runCommandLoop()
+        +exit()
+    }
+
+    class UI {
+        +showWelcome()
+        +showGoodbye()
+        +showMessage()
+        +showError()
+        +readCommand()
+        +readConfirmation()
+        +warnDuplicate()
+    }
+
+    class Parser {
+        +parseCommand()
+        -parseIncomeCommand()
+        -parseExpenseCommand()
+        -parseListCommand()
+        -parseDeleteCommand()
+        -parseFilterCommand()
+        -parseSummaryCommand()
+    }
+
+    class Command {
+        <<interface>>
+        +execute()
+        +isExit()
+    }
+
+    class TransactionManager {
+        +addTransaction()
+        +deleteTransaction()
+        +listTransactions()
+        +getFilteredTransactions()
+        +getBalance()
+        +getTotalIncome()
+        +getTotalExpenses()
+    }
+
+    class Transaction {
+        <<abstract>>
+        #amount
+        #description
+        #date
+        #tags
+        +getAmount()
+        +getDescription()
+        +getDate()
+        +getTags()
+    }
+
+    class Income {
+        +toString()
+    }
+
+    class Expense {
+        -category
+        +getCategory()
+        +toString()
+    }
+
+    class Storage {
+        +loadTransactions()
+        +saveTransactions()
+        +exportToCsv()
+        +exportToTxt()
+    }
+
+%% Command implementations
+    class IncomeCommand {
+        +execute()
+    }
+
+    class ExpenseCommand {
+        +execute()
+    }
+
+    class ListCommand {
+        +execute()
+    }
+
+    class DeleteCommand {
+        +execute()
+    }
+
+%% Relationships
+    FinBro --> UI : uses
+    FinBro --> Parser : uses
+    FinBro --> TransactionManager : uses
+    FinBro --> Storage : uses
+
+    Parser ..> Command : creates
+    Parser ..> IncomeCommand : creates
+    Parser ..> ExpenseCommand : creates
+    Parser ..> ListCommand : creates
+    Parser ..> DeleteCommand : creates
+
+    Command <|-- IncomeCommand : implements
+    Command <|-- ExpenseCommand : implements
+    Command <|-- ListCommand : implements
+    Command <|-- DeleteCommand : implements
+
+    Transaction <|-- Income : extends
+    Transaction <|-- Expense : extends
+
+    TransactionManager o-- Transaction : manages
+
+    IncomeCommand ..> Income : creates
+    ExpenseCommand ..> Expense : creates
+
+    IncomeCommand --> TransactionManager : uses
+    IncomeCommand --> Storage : uses
+    ExpenseCommand --> TransactionManager : uses
+    ExpenseCommand --> Storage : uses
+    ListCommand --> TransactionManager : uses
+    DeleteCommand --> TransactionManager : uses

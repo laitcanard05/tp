@@ -1,0 +1,124 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+class FinBro {
+  +run(): void
+  +start(): void
+  +runCommandLoop(): void
+  +exit(): void
+}
+
+class Ui {
+  +showWelcome(): void
+  +showGoodbye(): void
+  +showMessage(message: String): void
+  +showError(message: String): void
+  +readCommand(): String
+  +readConfirmation(prompt: String): boolean
+  +warnDuplicate(): boolean
+}
+
+class Parser {
+  +parseCommand(input: String): Command
+  -parseIncomeCommand(args: String): Command
+  -parseExpenseCommand(args: String): Command
+  -parseListCommand(args: String): Command
+  -parseDeleteCommand(args: String): Command
+  -parseFilterCommand(args: String): Command
+  -parseSummaryCommand(args: String): Command
+}
+
+interface Command {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class TransactionManager {
+  +addTransaction(transaction: Transaction): void
+  +deleteTransaction(index: int): void
+  +listTransactions(): List<Transaction>
+  +getFilteredTransactions(startDate: LocalDate, endDate: LocalDate): List<Transaction>
+  +getBalance(): double
+  +getTotalIncome(): double
+  +getTotalExpenses(): double
+}
+
+abstract class Transaction {
+  #amount: double
+  #description: String
+  #date: LocalDate
+  #tags: List<String>
+  +getAmount(): double
+  +getDescription(): String
+  +getDate(): LocalDate
+  +getTags(): List<String>
+}
+
+class Income {
+  +toString(): String
+}
+
+class Expense {
+  -category: Category
+  +getCategory(): Category
+  +toString(): String
+}
+
+class Storage {
+  +loadTransactions(): List<Transaction>
+  +saveTransactions(manager: TransactionManager): void
+  +exportToCsv(transactions: List<Transaction>, path: String): void
+  +exportToTxt(transactions: List<Transaction>, path: String): void
+}
+
+class IncomeCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+}
+
+class ExpenseCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+}
+
+class ListCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+}
+
+class DeleteCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+}
+
+FinBro --> Ui : uses
+FinBro --> Parser : uses
+FinBro --> TransactionManager : uses
+FinBro --> Storage : uses
+
+Parser ..> Command : creates
+Parser ..> IncomeCommand : creates
+Parser ..> ExpenseCommand : creates
+Parser ..> ListCommand : creates
+Parser ..> DeleteCommand : creates
+
+Command <|.. IncomeCommand : implements
+Command <|.. ExpenseCommand : implements
+Command <|.. ListCommand : implements
+Command <|.. DeleteCommand : implements
+
+Transaction <|-- Income : extends
+Transaction <|-- Expense : extends
+
+TransactionManager o-- Transaction : manages
+
+IncomeCommand ..> Income : creates
+ExpenseCommand ..> Expense : creates
+
+IncomeCommand --> TransactionManager : uses
+IncomeCommand --> Storage : uses
+ExpenseCommand --> TransactionManager : uses
+ExpenseCommand --> Storage : uses
+ListCommand --> TransactionManager : uses
+DeleteCommand --> TransactionManager : uses
+
+@enduml

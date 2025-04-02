@@ -1,0 +1,66 @@
+classDiagram
+    class Transaction {
+        <<abstract>>
+        #double amount
+        #String description
+        #LocalDate date
+        #List~String~ tags
+        #int indexNum
+        +getAmount()
+        +getDescription()
+        +getDate()
+        +getTags()
+        +getIndexNum()
+        +toString()*
+    }
+
+    class Expense {
+        -Category category
+        +getCategory()
+        +toString()
+    }
+
+    class Income {
+        +toString()
+    }
+
+    class Category {
+        <<enumeration>>
+        FOOD
+        TRANSPORT
+        SHOPPING
+        BILLS
+        ENTERTAINMENT
+        OTHERS
+        +fromString(String)
+        +fromIndex(int)
+    }
+
+    class TransactionManager {
+        -List~Transaction~ transactions
+        -Map~YearMonth, Double~ budgets
+        -Map~YearMonth, Double~ savingsGoals
+        +addTransaction()
+        +deleteTransaction()
+        +updateTransaction()
+        +listTransactions()
+        +searchTransactions()
+        +getFilteredTransactions()
+        +getBalance()
+        +getTotalIncome()
+        +getTotalExpenses()
+        +setBudget()
+        +getBudget()
+        +getAllBudgets()
+        +setSavingsGoal()
+        +getSavingsGoal()
+        +getAllSavingsGoals()
+        +getMonthlyTotalIncome()
+        +getMonthlyTotalExpense()
+        +getMonthlyCategorisedExpenses()
+    }
+
+    Transaction <|-- Expense : extends
+    Transaction <|-- Income : extends
+    Expense *-- Category : has
+    TransactionManager o-- Transaction : manages

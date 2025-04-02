@@ -1,0 +1,99 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 60
+skinparam ranksep 80
+
+interface Command {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class IncomeCommand {
+  -amount: double
+  -description: String
+  -date: LocalDate
+  -tags: List<String>
+  +IncomeCommand(amount: double, description: String, date: LocalDate, tags: List<String>)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ExpenseCommand {
+  -amount: double
+  -description: String
+  -date: LocalDate
+  -category: Category
+  -tags: List<String>
+  +ExpenseCommand(amount: double, description: String, date: LocalDate, category: Category, tags: List<String>)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ListCommand {
+  -limit: int
+  -date: LocalDate
+  +ListCommand(limit: int, date: LocalDate)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class DeleteCommand {
+  -index: int
+  +DeleteCommand(index: int)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class FilterCommand {
+  -startDate: LocalDate
+  -endDate: LocalDate
+  +FilterCommand(startDate: LocalDate, endDate: LocalDate)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SummaryCommand {
+  -month: int
+  -year: int
+  +SummaryCommand(month: int, year: int)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SearchCommand {
+  -keyword: String
+  +SearchCommand(keyword: String)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class BalanceCommand {
+  -date: LocalDate
+  +BalanceCommand(date: LocalDate)
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ExitCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class HelpCommand {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+Command <|.. IncomeCommand : implements
+Command <|.. ExpenseCommand : implements
+Command <|.. ListCommand : implements
+Command <|.. DeleteCommand : implements
+Command <|.. FilterCommand : implements
+Command <|.. SummaryCommand : implements
+Command <|.. SearchCommand : implements
+Command <|.. BalanceCommand : implements
+Command <|.. ExitCommand : implements
+Command <|.. HelpCommand : implements
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+abstract class Transaction {
+  #amount: double
+  #description: String
+  #date: LocalDate
+  #tags: List<String>
+  +getAmount(): double
+  +getDescription(): String
+  +getDate(): LocalDate
+  +getTags(): List<String>
+  {abstract} +toString(): String
+}
+
+class Income {
+  +Income(amount: double, description: String, date: LocalDate, tags: List<String>)
+  +toString(): String
+}
+
+class Expense {
+  -category: Category
+  +Expense(amount: double, description: String, date: LocalDate, category: Category, tags: List<String>)
+  +getCategory(): Category
+  +toString(): String
+}
+
+enum Category {
+  FOOD
+  TRANSPORTATION
+  ENTERTAINMENT
+  UTILITIES
+  SHOPPING
+  HEALTHCARE
+  EDUCATION
+  OTHER
+  +fromString(str: String): Category
+  +toString(): String
+}
+
+Transaction <|-- Income : extends
+Transaction <|-- Expense : extends
+Expense --> Category : has
+
+@enduml
