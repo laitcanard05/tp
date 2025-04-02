@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
@@ -132,10 +133,8 @@ public class LoggingConfig {
 
             @Override
             public String format(LogRecord record) {
-                LocalDate date = LocalDate.ofEpochDay(record.getMillis() / 86400000);
-                String formattedDate = dateTimeFormatter.format(
-                        date.atStartOfDay().plusNanos(record.getMillis() % 86400000 * 1000000)
-                );
+                Instant instant = Instant.ofEpochMilli(record.getMillis());
+                String formattedDate = dateTimeFormatter.format(instant.atZone(ZoneId.systemDefault()));
 
                 return String.format("%s %s [%s] - %s%s%n",
                         formattedDate,
