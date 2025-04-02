@@ -271,7 +271,35 @@ classDiagram
 ```
 
 ```mermaid
-paste in content of ui-detail-class.mermaid
+classDiagram
+   class Ui {
+      -Scanner scanner
+      +showWelcome()
+      +showGoodbye()
+      +showMessage(String)
+      +showError(String)
+      +readCommand()
+      +readConfirmation(String)
+      +readIndex()
+      +readIndexRange()
+      +readDouble()
+      +readString()
+      +readDate()
+      +readDescription()
+      +readCategory()
+      +readTags()
+      +displayTransactions(List~Transaction~)
+      +displayBalance(double)
+      +displaySummary(Map, double, double)
+      +displayBudgetTracker(double, double)
+      +displaySavingsGoalTracker(double, double)
+   }
+
+   class Transaction {
+      <<abstract>>
+   }
+
+   Ui ..> Transaction : displays
 ```
 
 ### Logic Component
@@ -311,7 +339,63 @@ paste in content of command-detail-class.mermaid
 ```
 
 ```mermaid
-paste in content of command-budget-class.mermaid
+classDiagram
+   class Command {
+      <<interface>>
+      +execute(TransactionManager, Ui, Storage)
+      +isExit()
+   }
+
+   class SetBudgetCommand {
+      -double amount
+      -YearMonth month
+      +execute()
+      +isExit()
+   }
+
+   class TrackBudgetCommand {
+      -YearMonth month
+      +execute()
+      +isExit()
+   }
+
+   class SetSavingsGoalCommand {
+      -double amount
+      -YearMonth month
+      +execute()
+      +isExit()
+   }
+
+   class TrackSavingsGoalCommand {
+      -YearMonth month
+      +execute()
+      +isExit()
+   }
+
+   class BalanceCommand {
+      +execute()
+      +isExit()
+   }
+
+   class ClearCommand {
+      +execute()
+      +isExit()
+   }
+
+   class ExportCommand {
+      -String format
+      -String path
+      +execute()
+      +isExit()
+   }
+
+   Command <|.. SetBudgetCommand : implements
+   Command <|.. TrackBudgetCommand : implements
+   Command <|.. SetSavingsGoalCommand : implements
+   Command <|.. TrackSavingsGoalCommand : implements
+   Command <|.. BalanceCommand : implements
+   Command <|.. ClearCommand : implements
+   Command <|.. ExportCommand : implements
 ```
 
 ### Exceptions Component
@@ -903,7 +987,53 @@ paste in content of sequence-search.puml
 This sequence diagram illustrates the process of filtering transactions based on a date range:
 
 ```puml
-paste in content of sequence-filter.puml
+@startuml
+!theme plain
+title Filter Command Sequence
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":FilterCommand" as FilterCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "filter d/2023-01-01 to/2023-12-31"
+
+Parser -> FilterCommand : new FilterCommand(startDate, endDate)
+activate FilterCommand
+FilterCommand --> Parser : command
+deactivate FilterCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> FilterCommand : execute(transactionManager, ui, storage)
+activate FilterCommand
+
+FilterCommand -> TransactionMgr : getFilteredTransactions(startDate, endDate)
+activate TransactionMgr
+TransactionMgr --> FilterCommand : filteredTransactions
+deactivate TransactionMgr
+
+FilterCommand --> FinBro : result message (list of filtered transactions)
+deactivate FilterCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Obtaining a Monthly Financial Summary
@@ -911,7 +1041,67 @@ paste in content of sequence-filter.puml
 This sequence diagram illustrates the process of obtaining a monthly financial summary:
 
 ```puml
-paste in content of sequence-summary.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":SummaryCommand" as SummaryCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "summary m/2 y/2025"
+
+Parser -> SummaryCommand : new SummaryCommand(month, year)
+activate SummaryCommand
+SummaryCommand --> Parser : command
+deactivate SummaryCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> SummaryCommand : execute(transactionManager, ui, storage)
+activate SummaryCommand
+
+SummaryCommand -> TransactionMgr : getMonthlyTotalIncome(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : totalIncome
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyTotalExpenses(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : totalExpenses
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyCategorisedExpenses(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : categorisedExpenses
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyTaggedTransactions(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : taggedTransactions
+deactivate TransactionMgr
+
+SummaryCommand --> FinBro : result message
+deactivate SummaryCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Obtaining the Current List of Transactions
