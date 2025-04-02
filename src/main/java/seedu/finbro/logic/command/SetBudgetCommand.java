@@ -3,8 +3,6 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
-//TODO: WRITE JUNIT TESTS FOR THIS COMMAND WHEN IT IS IMPLEMENTED
-
 public class SetBudgetCommand implements Command {
     private final double budget;
     private final int month;

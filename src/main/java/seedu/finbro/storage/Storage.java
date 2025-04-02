@@ -24,8 +24,6 @@ import seedu.finbro.model.Income;
 import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
 
-//TODO: UPDATE CSV EXPORT TO INCLUDE BUDGETS
-
 /**
  * Handles saving and loading of data.
  */
