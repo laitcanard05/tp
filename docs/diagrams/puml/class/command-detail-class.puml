@@ -1,0 +1,71 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+interface Command {
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class ExpenseCommand {
+  -amount: double
+  -description: String
+  -date: LocalDate
+  -tags: List<String>
+  -category: Category
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class IncomeCommand {
+  -amount: double
+  -description: String
+  -date: LocalDate
+  -tags: List<String>
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class DeleteCommand {
+  -index: int
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class EditCommand {
+  -index: int
+  -fieldsToUpdate: Map<String, Object>
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class FilterCommand {
+  -startDate: LocalDate
+  -endDate: LocalDate
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SearchCommand {
+  -keyword: String
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+class SummaryCommand {
+  -month: YearMonth
+  +execute(manager: TransactionManager, ui: Ui, storage: Storage): String
+  +isExit(): boolean
+}
+
+Command <|.. ExpenseCommand : implements
+Command <|.. IncomeCommand : implements
+Command <|.. DeleteCommand : implements
+Command <|.. EditCommand : implements
+Command <|.. FilterCommand : implements
+Command <|.. SearchCommand : implements
+Command <|.. SummaryCommand : implements
+
+@enduml

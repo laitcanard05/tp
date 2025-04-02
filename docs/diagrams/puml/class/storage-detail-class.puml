@@ -1,0 +1,40 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+class Storage {
+  -dataFilePath: String
+  -exportDirectoryPath: String
+  +createDirectories(): void
+  +loadTransactions(): List<Transaction>
+  +saveTransactions(manager: TransactionManager): void
+  +parseTransaction(line: String): Transaction
+  +formatTransaction(transaction: Transaction): String
+  +exportToCsv(transactions: List<Transaction>, path: String): void
+  +exportToTxt(transactions: List<Transaction>, path: String): void
+  +saveBudgets(budgets: Map<YearMonth, Double>): void
+  +loadBudgets(): Map<YearMonth, Double>
+  +saveSavingsGoals(goals: Map<YearMonth, Double>): void
+  +loadSavingsGoals(): Map<YearMonth, Double>
+}
+
+abstract class Transaction {
+}
+
+class Income {
+}
+
+class Expense {
+}
+
+class TransactionManager {
+}
+
+Storage ..> Transaction : creates
+Storage ..> Income : creates
+Storage ..> Expense : creates
+Storage --> TransactionManager : persists
+
+@enduml

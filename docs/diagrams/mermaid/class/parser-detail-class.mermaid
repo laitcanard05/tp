@@ -1,0 +1,51 @@
+classDiagram
+    class Parser {
+        -Pattern AMOUNT_PATTERN
+        -DateTimeFormatter DATE_FORMATTER
+        -boolean clearCommandPending
+        +parseCommandWord(String, Ui)
+        +parseIncomeCommand(String, Ui)
+        +parseExpenseCommand(String, Ui)
+        +parseDeleteCommand(String, Ui)
+        +parseEditCommand(String, Ui)
+        +parseListCommand(String)
+        +parseFilterCommand(String, Ui)
+        +parseSearchCommand(String, Ui)
+        +parseSummaryCommand(String, Ui)
+        +parseSetBudgetCommand(String, Ui)
+        +parseTrackBudgetCommand(String, Ui)
+        +parseSetSavingsGoalCommand(String, Ui)
+        +parseTrackSavingsGoalCommand(String, Ui)
+        +parseExportCommand(String, Ui)
+        -parseParameters(String)
+        -parseAmount(String)
+        -parseTags(Ui)
+        -parseCategory(Ui)
+    }
+    
+    class Command {
+        <<interface>>
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+    
+    Parser ..> Command : creates
+    Parser ..> ExpenseCommand : creates
+    Parser ..> IncomeCommand : creates
+    Parser ..> DeleteCommand : creates
+    Parser ..> EditCommand : creates
+    Parser ..> ListCommand : creates
+    Parser ..> FilterCommand : creates
+    Parser ..> SearchCommand : creates
+    Parser ..> SummaryCommand : creates
+    Parser ..> SetBudgetCommand : creates
+    Parser ..> TrackBudgetCommand : creates
+    Parser ..> SetSavingsGoalCommand : creates
+    Parser ..> TrackSavingsGoalCommand : creates
+    Parser ..> ExportCommand : creates
+    Parser ..> BalanceCommand : creates
+    Parser ..> ClearCommand : creates
+    Parser ..> ExitCommand : creates
+    Parser ..> HelpCommand : creates
+    Parser ..> InvalidCommand : creates
+    Parser ..> UnknownCommand : creates

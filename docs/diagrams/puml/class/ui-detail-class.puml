@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+class Ui {
+  -scanner: Scanner
+  +showWelcome(): void
+  +showGoodbye(): void
+  +showMessage(message: String): void
+  +showError(message: String): void
+  +readCommand(): String
+  +readConfirmation(prompt: String): boolean
+  +readIndex(): int
+  +readIndexRange(): int[]
+  +readDouble(prompt: String): double
+  +readString(prompt: String): String
+  +readDate(prompt: String): LocalDate
+  +readDescription(prompt: String): String
+  +readCategory(prompt: String): Category
+  +readTags(prompt: String): List<String>
+  +displayTransactions(transactions: List<Transaction>): void
+  +displayBalance(balance: double): void
+  +displaySummary(categorizedExpenses: Map<Category, Double>, totalIncome: double, totalExpense: double): void
+  +displayBudgetTracker(budget: double, expenses: double): void
+  +displaySavingsGoalTracker(goal: double, saved: double): void
+}
+
+abstract class Transaction {
+}
+
+Ui ..> Transaction : displays
+
+@enduml

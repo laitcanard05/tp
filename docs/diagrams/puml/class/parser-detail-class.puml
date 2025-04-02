@@ -1,0 +1,112 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+class Parser {
+  -AMOUNT_PATTERN: Pattern
+  -DATE_FORMATTER: DateTimeFormatter
+  -clearCommandPending: boolean
+  +parseCommandWord(input: String, ui: Ui): Command
+  +parseIncomeCommand(args: String, ui: Ui): Command
+  +parseExpenseCommand(args: String, ui: Ui): Command
+  +parseDeleteCommand(args: String, ui: Ui): Command
+  +parseEditCommand(args: String, ui: Ui): Command
+  +parseListCommand(args: String): Command
+  +parseFilterCommand(args: String, ui: Ui): Command
+  +parseSearchCommand(args: String, ui: Ui): Command
+  +parseSummaryCommand(args: String, ui: Ui): Command
+  +parseSetBudgetCommand(args: String, ui: Ui): Command
+  +parseTrackBudgetCommand(args: String, ui: Ui): Command
+  +parseSetSavingsGoalCommand(args: String, ui: Ui): Command
+  +parseTrackSavingsGoalCommand(args: String, ui: Ui): Command
+  +parseExportCommand(args: String, ui: Ui): Command
+  -parseParameters(input: String): Map<String, String>
+  -parseAmount(amountStr: String): double
+  -parseTags(ui: Ui): List<String>
+  -parseCategory(ui: Ui): Category
+}
+
+interface Command {
+}
+
+class ExpenseCommand {
+}
+
+class IncomeCommand {
+}
+
+class DeleteCommand {
+}
+
+class EditCommand {
+}
+
+class ListCommand {
+}
+
+class FilterCommand {
+}
+
+class SearchCommand {
+}
+
+class SummaryCommand {
+}
+
+class SetBudgetCommand {
+}
+
+class TrackBudgetCommand {
+}
+
+class SetSavingsGoalCommand {
+}
+
+class TrackSavingsGoalCommand {
+}
+
+class ExportCommand {
+}
+
+class BalanceCommand {
+}
+
+class ClearCommand {
+}
+
+class ExitCommand {
+}
+
+class HelpCommand {
+}
+
+class InvalidCommand {
+}
+
+class UnknownCommand {
+}
+
+Parser ..> Command : creates
+Parser ..> ExpenseCommand : creates
+Parser ..> IncomeCommand : creates
+Parser ..> DeleteCommand : creates
+Parser ..> EditCommand : creates
+Parser ..> ListCommand : creates
+Parser ..> FilterCommand : creates
+Parser ..> SearchCommand : creates
+Parser ..> SummaryCommand : creates
+Parser ..> SetBudgetCommand : creates
+Parser ..> TrackBudgetCommand : creates
+Parser ..> SetSavingsGoalCommand : creates
+Parser ..> TrackSavingsGoalCommand : creates
+Parser ..> ExportCommand : creates
+Parser ..> BalanceCommand : creates
+Parser ..> ClearCommand : creates
+Parser ..> ExitCommand : creates
+Parser ..> HelpCommand : creates
+Parser ..> InvalidCommand : creates
+Parser ..> UnknownCommand : creates
+
+@enduml
