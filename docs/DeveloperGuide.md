@@ -1433,15 +1433,182 @@ deactivate FinBro
 This sequence diagram illustrates the process of viewing the current balance:
 
 ```puml
-paste in content of sequence-balance.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "User" as User
+participant "UI" as UI
+participant "FinBro" as FinBro
+participant "Parser" as Parser
+participant "BalanceCommand" as BalanceCommand
+participant "TransactionManager" as TransactionMgr
+participant "Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "balance" or "balance d/2023-01-01"
+
+alt date parameter provided
+    Parser -> Parser : Extract date parameter
+    Parser -> BalanceCommand : new BalanceCommand(date)
+else no date parameter
+    Parser -> BalanceCommand : new BalanceCommand(null)
+end
+
+activate BalanceCommand
+BalanceCommand --> Parser : command
+deactivate BalanceCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> BalanceCommand : execute(transactionManager, ui, storage)
+activate BalanceCommand
+
+alt date specified
+    BalanceCommand -> TransactionMgr : getTotalIncomeFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalIncome
+    deactivate TransactionMgr
+
+    BalanceCommand -> TransactionMgr : getTotalExpensesFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalExpenses
+    deactivate TransactionMgr
+else no date
+    BalanceCommand -> TransactionMgr : getTotalIncome()
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalIncome
+    deactivate TransactionMgr
+
+    BalanceCommand -> TransactionMgr : getTotalExpenses()
+    activate TransactionMgr
+    TransactionMgr --> BalanceCommand : totalExpenses
+    deactivate TransactionMgr
+end
+
+BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+BalanceCommand --> FinBro : formatted balance message
+deactivate BalanceCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display balance information
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Editing a Transaction
 
 This sequence diagram illustrates the process of editing a transaction:
-
 ```puml
-paste in content of sequence-edit.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":EditCommand" as EditCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Storage" as Storage
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+
+note right: Parse "edit 1 a/200.0 d/Updated Description"
+
+Parser -> UI : readIndex("Enter the index of transaction to edit")
+activate UI
+UI --> Parser : index
+deactivate UI
+
+Parser -> UI : readConfirmation("Do you want to edit transaction at index 1?")
+activate UI
+UI --> Parser : confirmed (boolean)
+deactivate UI
+
+alt user confirms
+    Parser -> UI : readAmount("Enter new amount (press Enter to skip)")
+    activate UI
+    UI --> Parser : amountStr
+    deactivate UI
+
+    Parser -> UI : readDescription("Enter new description (press Enter to skip)")
+    activate UI
+    UI --> Parser : descriptionStr
+    deactivate UI
+
+    note right of Parser: Additional UI interactions for other parameters
+
+    Parser -> EditCommand : new EditCommand(index, parameters)
+    activate EditCommand
+    EditCommand --> Parser : command
+    deactivate EditCommand
+else user cancels
+    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
+    activate EditCommand
+    EditCommand --> Parser : command
+    deactivate EditCommand
+end
+
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> EditCommand : execute(transactionManager, ui, storage)
+activate EditCommand
+
+alt valid index
+    EditCommand -> TransactionMgr : getTransaction(index - 1)
+    activate TransactionMgr
+    TransactionMgr --> EditCommand : originalTransaction
+    deactivate TransactionMgr
+
+    EditCommand -> EditCommand : createUpdatedTransaction(originalTransaction, parameters)
+
+    alt valid updated transaction
+        EditCommand -> TransactionMgr : updateTransactionAt(index - 1, updatedTransaction)
+        activate TransactionMgr
+        TransactionMgr --> EditCommand : success
+        deactivate TransactionMgr
+
+        EditCommand -> Storage : saveTransactions(transactionManager)
+        activate Storage
+        Storage --> EditCommand : success
+        deactivate Storage
+
+        EditCommand --> FinBro : "Transaction at index X successfully updated"
+    else invalid update parameters
+        EditCommand --> FinBro : "Failed to update transaction"
+    end
+else invalid index
+    EditCommand --> FinBro : "Invalid index. Please provide a valid transaction index."
+end
+
+deactivate EditCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ## Testing
