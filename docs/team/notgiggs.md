@@ -57,11 +57,9 @@ Our team developed a personal finance tracker application that helps users manag
 * Wrote and integrated the following sections:
     * Parser logic for `list`, `delete`, `setbudget`
     * Execution flow of `ListCommand` and budget storage handling
-    * Sequence diagrams for `ListCommand` execution (two versions provided for clarity)
 * Added and updated the following diagrams:
-    * `ListCommand` Sequence Diagram
-    * Transaction listing interactions with UI and TransactionManager
-    * Budget loading and setting descriptions for `Storage` and `TransactionManager`
+    * `Parser`, `TransactionManager`, `Storage` and `Exceptions` Class Diagrams
+    * `ListCommand` and `SearchCommand` Sequence Diagram
 
 ---
 

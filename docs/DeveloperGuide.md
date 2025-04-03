@@ -395,13 +395,107 @@ classDiagram
 ### Model Component
 
 ```mermaid
-paste in content of model-class.mermaid
+classDiagram
+   class Transaction {
+      <<abstract>>
+      #double amount
+      #String description
+      #LocalDate date
+      #List~String~ tags
+      #int indexNum
+      +getAmount()
+      +getDescription()
+      +getDate()
+      +getTags()
+      +getIndexNum()
+      +toString()*
+   }
+
+   class Expense {
+      -Category category
+      +getCategory()
+      +toString()
+   }
+
+   class Income {
+      +toString()
+   }
+
+   class Category {
+      <<enumeration>>
+      FOOD
+      TRANSPORT
+      SHOPPING
+      BILLS
+      ENTERTAINMENT
+      OTHERS
+      +fromString(String)
+      +fromIndex(int)
+   }
+
+   class TransactionManager {
+      -List~Transaction~ transactions
+      -Map~YearMonth, Double~ budgets
+      -Map~YearMonth, Double~ savingsGoals
+      +addTransaction()
+      +deleteTransaction()
+      +updateTransaction()
+      +listTransactions()
+      +searchTransactions()
+      +getFilteredTransactions()
+      +getBalance()
+      +getTotalIncome()
+      +getTotalExpenses()
+      +setBudget()
+      +getBudget()
+      +getAllBudgets()
+      +setSavingsGoal()
+      +getSavingsGoal()
+      +getAllSavingsGoals()
+      +getMonthlyTotalIncome()
+      +getMonthlyTotalExpense()
+      +getMonthlyCategorisedExpenses()
+   }
+
+   Transaction <|-- Expense : extends
+   Transaction <|-- Income : extends
+   Expense *-- Category : has
+   TransactionManager o-- Transaction : manages
 ```
 
 ### Storage Component
 
 ```mermaid
-paste in content of storage-class.mermaid
+classDiagram
+   class Storage {
+      -filePath: String
+      -logger: Logger
+      +Storage(filePath)
+      +loadTransactions(): List~Transaction~
+      +saveTransactions(transactionManager): void
+      +exportToCsv(transactions, filePath): void
+      +exportToTxt(transactions, filePath): void
+      -parseTransaction(line): Transaction
+      -writeTransaction(transaction): String
+   }
+
+   class TransactionManager {
+      -transactions: List~Transaction~
+      +addTransaction(transaction): void
+      +deleteTransaction(index): void
+      +listTransactions(): List~Transaction~
+      +listTransactions(limit): List~Transaction~
+      +getTransaction(index): Transaction
+      +getTransactionCount(): int
+   }
+
+   class Transaction {
+      <<abstract>>
+   }
+
+   Storage --> TransactionManager : saves/loads
+   TransactionManager --> Transaction : manages
+   TransactionManager --> Transaction : manages
 ```
 
 ```mermaid
@@ -481,7 +575,41 @@ classDiagram
 ### Exceptions Component
 
 ```mermaid
-paste in content of exceptions-class.mermaid
+classDiagram
+   class Exception {
+<<java.lang>>
+}
+
+class RuntimeException {
+<<java.lang>>
+}
+
+class DecimalPointException {
++DecimalPointException(String)
+}
+
+class EmptyInputException {
++EmptyInputException(String)
+}
+
+class ExceedCharCountException {
++ExceedCharCountException(String)
+}
+
+class IndexExceedLimitException {
++IndexExceedLimitException(String)
+}
+
+class NegativeNumberException {
++NegativeNumberException(String)
+}
+
+Exception <|-- RuntimeException : extends
+RuntimeException <|-- DecimalPointException : extends
+RuntimeException <|-- EmptyInputException : extends
+RuntimeException <|-- ExceedCharCountException : extends
+RuntimeException <|-- IndexExceedLimitException : extends
+RuntimeException <|-- NegativeNumberException : extends
 ```
 
 ## Class Structure
@@ -1059,7 +1187,52 @@ deactivate FinBro
 This sequence diagram illustrates the process of searching for transactions:
 
 ```puml
-paste in content of sequence-search.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":SearchCommand" as SearchCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "search lunch"
+
+Parser -> SearchCommand : new SearchCommand(keyword)
+activate SearchCommand
+SearchCommand --> Parser : command
+deactivate SearchCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> SearchCommand : execute(transactionManager, ui, storage)
+activate SearchCommand
+
+SearchCommand -> TransactionMgr : getTransactionsContainingKeyword(keyword)
+activate TransactionMgr
+TransactionMgr --> SearchCommand : matchingTransactions
+deactivate TransactionMgr
+
+SearchCommand --> FinBro : result message (list of matches)
+deactivate SearchCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Filtering Transactions
@@ -1189,7 +1362,70 @@ deactivate FinBro
 This sequence diagram illustrates the process of obtaining the current list of transactions:
 
 ```puml
-paste in content of sequence-list.puml
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":ListCommand" as ListCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "list n/5 d/2025-03-01"
+
+Parser -> ListCommand : new ListCommand(limit, date)
+activate ListCommand
+ListCommand --> Parser : command
+deactivate ListCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> ListCommand : execute(transactionManager, ui, storage)
+activate ListCommand
+
+alt date provided
+    ListCommand -> TransactionMgr : listTransactionsFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> ListCommand : filteredTransactions
+    deactivate TransactionMgr
+
+    alt limit provided
+        note right of ListCommand: Apply limit to filtered list
+    end
+else no date
+    alt limit provided
+        ListCommand -> TransactionMgr : listTransactions(limit)
+        activate TransactionMgr
+        TransactionMgr --> ListCommand : limitedTransactions
+        deactivate TransactionMgr
+    else no limit
+        ListCommand -> TransactionMgr : listTransactions()
+        activate TransactionMgr
+        TransactionMgr --> ListCommand : allTransactions
+        deactivate TransactionMgr
+    end
+end
+
+ListCommand --> FinBro : result message
+deactivate ListCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml
 ```
 
 ### Viewing Balance
