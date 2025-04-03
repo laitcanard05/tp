@@ -499,17 +499,206 @@ classDiagram
 ```
 
 ```mermaid
-paste in content of storage-detail-class.mermaid
+classDiagram
+   class Storage {
+      -String dataFilePath
+      -String exportDirectoryPath
+      +createDirectories()
+      +loadTransactions()
+      +saveTransactions()
+      +parseTransaction(String)
+      +formatTransaction(Transaction)
+      +exportToCsv()
+      +exportToTxt()
+      +saveBudgets()
+      +loadBudgets()
+      +saveSavingsGoals()
+      +loadSavingsGoals()
+   }
+
+   class Transaction {
+      <<abstract>>
+   }
+
+   class Income {
+   }
+
+   class Expense {
+   }
+
+   class TransactionManager {
+   }
+
+   Storage ..> Transaction : creates
+   Storage ..> Income : creates
+   Storage ..> Expense : creates
+   Storage --> TransactionManager : persists
 ```
 
 ### Command Classes
 
 ```mermaid
-paste in content of command-class.mermaid
+classDiagram
+   class Command {
+      <<interface>>
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class IncomeCommand {
+      -amount: double
+      -description: String
+      -date: LocalDate
+      -tags: List~String~
+      +IncomeCommand(amount, description, date, tags)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class ExpenseCommand {
+      -amount: double
+      -description: String
+      -date: LocalDate
+      -category: Category
+      -tags: List~String~
+      +ExpenseCommand(amount, description, date, category, tags)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class ListCommand {
+      -limit: int
+      -date: LocalDate
+      +ListCommand(limit, date)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class DeleteCommand {
+      -index: int
+      +DeleteCommand(index)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class FilterCommand {
+      -startDate: LocalDate
+      -endDate: LocalDate
+      +FilterCommand(startDate, endDate)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class SummaryCommand {
+      -month: int
+      -year: int
+      +SummaryCommand(month, year)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class SearchCommand {
+      -keyword: String
+      +SearchCommand(keyword)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class BalanceCommand {
+      -date: LocalDate
+      +BalanceCommand(date)
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class ExitCommand {
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   class HelpCommand {
+      +execute(transactionManager, ui, storage): String
+      +isExit(): boolean
+   }
+
+   Command <|.. IncomeCommand : implements
+   Command <|.. ExpenseCommand : implements
+   Command <|.. ListCommand : implements
+   Command <|.. DeleteCommand : implements
+   Command <|.. FilterCommand : implements
+   Command <|.. SummaryCommand : implements
+   Command <|.. SearchCommand : implements
+   Command <|.. BalanceCommand : implements
+   Command <|.. ExitCommand : implements
+   Command <|.. HelpCommand : implements
 ```
 
 ```mermaid
-paste in content of command-detail-class.mermaid
+classDiagram
+   class Command {
+      <<interface>>
+      +execute(TransactionManager, Ui, Storage)
+      +isExit()
+   }
+
+   class ExpenseCommand {
+      -double amount
+      -String description
+      -LocalDate date
+      -List~String~ tags
+      -Category category
+      +execute()
+      +isExit()
+   }
+
+   class IncomeCommand {
+      -double amount
+      -String description
+      -LocalDate date
+      -List~String~ tags
+      +execute()
+      +isExit()
+   }
+
+   class DeleteCommand {
+      -int index
+      +execute()
+      +isExit()
+   }
+
+   class EditCommand {
+      -int index
+      -Map~String, Object~ fieldsToUpdate
+      +execute()
+      +isExit()
+   }
+
+   class FilterCommand {
+      -LocalDate startDate
+      -LocalDate endDate
+      +execute()
+      +isExit()
+   }
+
+   class SearchCommand {
+      -String keyword
+      +execute()
+      +isExit()
+   }
+
+   class SummaryCommand {
+      -YearMonth month
+      +execute()
+      +isExit()
+   }
+
+   Command <|.. ExpenseCommand : implements
+   Command <|.. IncomeCommand : implements
+   Command <|.. DeleteCommand : implements
+   Command <|.. EditCommand : implements
+   Command <|.. FilterCommand : implements
+   Command <|.. SearchCommand : implements
+   Command <|.. SummaryCommand : implements
 ```
 
 ```mermaid
