@@ -1,0 +1,71 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+abstract class Transaction {
+  #amount: double
+  #description: String
+  #date: LocalDate
+  #tags: List<String>
+  #indexNum: int
+  +getAmount(): double
+  +getDescription(): String
+  +getDate(): LocalDate
+  +getTags(): List<String>
+  +getIndexNum(): int
+  +{abstract} toString(): String
+}
+
+class Expense {
+  -category: Category
+  +getCategory(): Category
+  +toString(): String
+}
+
+class Income {
+  +toString(): String
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  SHOPPING
+  BILLS
+  ENTERTAINMENT
+  OTHERS
+  +fromString(String): Category
+  +fromIndex(int): Category
+}
+
+class TransactionManager {
+  -transactions: List<Transaction>
+  -budgets: Map<YearMonth, Double>
+  -savingsGoals: Map<YearMonth, Double>
+  +addTransaction(transaction: Transaction): void
+  +deleteTransaction(index: int): void
+  +updateTransaction(index: int, updates: Map<String, Object>): void
+  +listTransactions(): List<Transaction>
+  +searchTransactions(keyword: String): List<Transaction>
+  +getFilteredTransactions(startDate: LocalDate, endDate: LocalDate): List<Transaction>
+  +getBalance(): double
+  +getTotalIncome(): double
+  +getTotalExpenses(): double
+  +setBudget(month: YearMonth, amount: double): void
+  +getBudget(month: YearMonth): double
+  +getAllBudgets(): Map<YearMonth, Double>
+  +setSavingsGoal(month: YearMonth, amount: double): void
+  +getSavingsGoal(month: YearMonth): double
+  +getAllSavingsGoals(): Map<YearMonth, Double>
+  +getMonthlyTotalIncome(month: YearMonth): double
+  +getMonthlyTotalExpense(month: YearMonth): double
+  +getMonthlyCategorisedExpenses(month: YearMonth): Map<Category, Double>
+}
+
+Transaction <|-- Expense : extends
+Transaction <|-- Income : extends
+Expense *-- Category : has
+TransactionManager o-- Transaction : manages
+
+@enduml

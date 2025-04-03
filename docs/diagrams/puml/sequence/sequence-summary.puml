@@ -1,0 +1,61 @@
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":SummaryCommand" as SummaryCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "summary m/2 y/2025"
+
+Parser -> SummaryCommand : new SummaryCommand(month, year)
+activate SummaryCommand
+SummaryCommand --> Parser : command
+deactivate SummaryCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> SummaryCommand : execute(transactionManager, ui, storage)
+activate SummaryCommand
+
+SummaryCommand -> TransactionMgr : getMonthlyTotalIncome(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : totalIncome
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyTotalExpenses(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : totalExpenses
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyCategorisedExpenses(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : categorisedExpenses
+deactivate TransactionMgr
+
+SummaryCommand -> TransactionMgr : getMonthlyTaggedTransactions(month, year)
+activate TransactionMgr
+TransactionMgr --> SummaryCommand : taggedTransactions
+deactivate TransactionMgr
+
+SummaryCommand --> FinBro : result message
+deactivate SummaryCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml

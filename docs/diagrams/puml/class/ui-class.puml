@@ -1,0 +1,38 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+class Ui {
+  -scanner: Scanner
+  -logger: Logger
+  +Ui()
+  +showWelcome(): void
+  +showGoodbye(): void
+  +showMessage(message: String): void
+  +showError(message: String): void
+  +readCommand(): String
+  +readIndex(prompt: String): int
+  +readAmount(prompt: String): String
+  +readDescription(prompt: String): String
+  +readDate(prompt: String): String
+  +readCategory(prompt: String): String
+  +readTags(prompt: String): String
+  +readConfirmation(prompt: String): boolean
+  +warnDuplicate(): boolean
+}
+
+class Scanner {
+  +next(): String
+  +nextLine(): String
+}
+
+class Logger {
+  +info(message: String): void
+  +warning(message: String): void
+  +severe(message: String): void
+}
+
+Ui --> Scanner : uses
+Ui --> Logger : uses
+
+@enduml

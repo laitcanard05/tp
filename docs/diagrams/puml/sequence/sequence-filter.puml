@@ -1,0 +1,47 @@
+@startuml
+!theme plain
+title Filter Command Sequence
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":FilterCommand" as FilterCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "filter d/2023-01-01 to/2023-12-31"
+
+Parser -> FilterCommand : new FilterCommand(startDate, endDate)
+activate FilterCommand
+FilterCommand --> Parser : command
+deactivate FilterCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> FilterCommand : execute(transactionManager, ui, storage)
+activate FilterCommand
+
+FilterCommand -> TransactionMgr : getFilteredTransactions(startDate, endDate)
+activate TransactionMgr
+TransactionMgr --> FilterCommand : filteredTransactions
+deactivate TransactionMgr
+
+FilterCommand --> FinBro : result message (list of filtered transactions)
+deactivate FilterCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml

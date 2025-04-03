@@ -1,0 +1,29 @@
+classDiagram
+    class Ui {
+        -Scanner scanner
+        +showWelcome()
+        +showGoodbye()
+        +showMessage(String)
+        +showError(String)
+        +readCommand()
+        +readConfirmation(String)
+        +readIndex()
+        +readIndexRange()
+        +readDouble()
+        +readString()
+        +readDate()
+        +readDescription()
+        +readCategory()
+        +readTags()
+        +displayTransactions(List~Transaction~)
+        +displayBalance(double)
+        +displaySummary(Map, double, double)
+        +displayBudgetTracker(double, double)
+        +displaySavingsGoalTracker(double, double)
+    }
+    
+    class Transaction {
+        <<abstract>>
+    }
+    
+    Ui ..> Transaction : displays

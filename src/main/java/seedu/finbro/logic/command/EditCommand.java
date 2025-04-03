@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a command to edit a transaction.
+ * Represents a command to edit a transaction
  */
 public class EditCommand implements Command {
     private static final Logger logger = Logger.getLogger(EditCommand.class.getName());

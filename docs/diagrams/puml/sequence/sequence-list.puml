@@ -1,0 +1,64 @@
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":ListCommand" as ListCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "list n/5 d/2025-03-01"
+
+Parser -> ListCommand : new ListCommand(limit, date)
+activate ListCommand
+ListCommand --> Parser : command
+deactivate ListCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> ListCommand : execute(transactionManager, ui, storage)
+activate ListCommand
+
+alt date provided
+    ListCommand -> TransactionMgr : listTransactionsFromDate(date)
+    activate TransactionMgr
+    TransactionMgr --> ListCommand : filteredTransactions
+    deactivate TransactionMgr
+
+    alt limit provided
+        note right of ListCommand: Apply limit to filtered list
+    end
+else no date
+    alt limit provided
+        ListCommand -> TransactionMgr : listTransactions(limit)
+        activate TransactionMgr
+        TransactionMgr --> ListCommand : limitedTransactions
+        deactivate TransactionMgr
+    else no limit
+        ListCommand -> TransactionMgr : listTransactions()
+        activate TransactionMgr
+        TransactionMgr --> ListCommand : allTransactions
+        deactivate TransactionMgr
+    end
+end
+
+ListCommand --> FinBro : result message
+deactivate ListCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml

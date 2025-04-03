@@ -1,0 +1,42 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 80
+skinparam ranksep 100
+
+class Exception {
+  <<java.lang>>
+}
+
+class RuntimeException {
+  <<java.lang>>
+}
+
+class DecimalPointException {
+  +DecimalPointException(message: String)
+}
+
+class EmptyInputException {
+  +EmptyInputException(message: String)
+}
+
+class ExceedCharCountException {
+  +ExceedCharCountException(message: String)
+}
+
+class IndexExceedLimitException {
+  +IndexExceedLimitException(message: String)
+}
+
+class NegativeNumberException {
+  +NegativeNumberException(message: String)
+}
+
+Exception <|-- RuntimeException : extends
+RuntimeException <|-- DecimalPointException : extends
+RuntimeException <|-- EmptyInputException : extends
+RuntimeException <|-- ExceedCharCountException : extends
+RuntimeException <|-- IndexExceedLimitException : extends
+RuntimeException <|-- NegativeNumberException : extends
+
+@enduml

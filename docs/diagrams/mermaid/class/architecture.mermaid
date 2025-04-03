@@ -1,0 +1,36 @@
+flowchart TB
+    User([User]) <--> UI
+
+    subgraph FinBro
+        UI[UI Component]
+        Logic[Logic Component]
+        Model[Model Component]
+        Storage[Storage Component]
+
+        UI <--> Logic
+        Logic <--> Model
+        Logic <--> Storage
+        Model <--> Storage
+    end
+
+    Storage <--> FileSystem[(File System)]
+
+    subgraph "Logic Component"
+        Parser[Parser]
+        CommandClasses[Command Classes]
+
+        Parser --> CommandClasses
+    end
+
+    subgraph "Model Component"
+        TransactionClasses[Transaction Classes]
+        TransactionMgr[TransactionManager]
+
+        TransactionMgr --> TransactionClasses
+    end
+
+    classDef component fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef subcomponent fill:#bbf,stroke:#333,stroke-width:1px;
+
+    class UI,Logic,Model,Storage component;
+    class Parser,CommandClasses,TransactionClasses,TransactionMgr subcomponent;

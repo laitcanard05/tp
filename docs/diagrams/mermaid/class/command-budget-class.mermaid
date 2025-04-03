@@ -1,0 +1,57 @@
+classDiagram
+    class Command {
+        <<interface>>
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+
+    class SetBudgetCommand {
+        -double amount
+        -YearMonth month
+        +execute()
+        +isExit()
+    }
+
+    class TrackBudgetCommand {
+        -YearMonth month
+        +execute()
+        +isExit()
+    }
+
+    class SetSavingsGoalCommand {
+        -double amount
+        -YearMonth month
+        +execute()
+        +isExit()
+    }
+
+    class TrackSavingsGoalCommand {
+        -YearMonth month
+        +execute()
+        +isExit()
+    }
+
+    class BalanceCommand {
+        +execute()
+        +isExit()
+    }
+
+    class ClearCommand {
+        +execute()
+        +isExit()
+    }
+
+    class ExportCommand {
+        -String format
+        -String path
+        +execute()
+        +isExit()
+    }
+
+    Command <|.. SetBudgetCommand : implements
+    Command <|.. TrackBudgetCommand : implements
+    Command <|.. SetSavingsGoalCommand : implements
+    Command <|.. TrackSavingsGoalCommand : implements
+    Command <|.. BalanceCommand : implements
+    Command <|.. ClearCommand : implements
+    Command <|.. ExportCommand : implements

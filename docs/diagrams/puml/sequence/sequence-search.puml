@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor ":User" as User
+participant ":Ui" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":SearchCommand" as SearchCommand
+participant ":TransactionManager" as TransactionMgr
+
+User -> UI : input command
+activate UI
+
+UI -> FinBro : readCommand()
+activate FinBro
+
+FinBro -> Parser : parseCommand(userInput)
+activate Parser
+note right: Parse "search lunch"
+
+Parser -> SearchCommand : new SearchCommand(keyword)
+activate SearchCommand
+SearchCommand --> Parser : command
+deactivate SearchCommand
+Parser --> FinBro : command
+deactivate Parser
+
+FinBro -> SearchCommand : execute(transactionManager, ui, storage)
+activate SearchCommand
+
+SearchCommand -> TransactionMgr : getTransactionsContainingKeyword(keyword)
+activate TransactionMgr
+TransactionMgr --> SearchCommand : matchingTransactions
+deactivate TransactionMgr
+
+SearchCommand --> FinBro : result message (list of matches)
+deactivate SearchCommand
+
+FinBro -> UI : showMessage(result)
+UI --> User : display result
+deactivate UI
+deactivate FinBro
+
+@enduml

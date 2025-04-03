@@ -1,0 +1,34 @@
+classDiagram
+    class Storage {
+        -String dataFilePath
+        -String exportDirectoryPath
+        +createDirectories()
+        +loadTransactions()
+        +saveTransactions()
+        +parseTransaction(String)
+        +formatTransaction(Transaction)
+        +exportToCsv()
+        +exportToTxt()
+        +saveBudgets()
+        +loadBudgets()
+        +saveSavingsGoals()
+        +loadSavingsGoals()
+    }
+    
+    class Transaction {
+        <<abstract>>
+    }
+    
+    class Income {
+    }
+    
+    class Expense {
+    }
+    
+    class TransactionManager {
+    }
+    
+    Storage ..> Transaction : creates
+    Storage ..> Income : creates
+    Storage ..> Expense : creates
+    Storage --> TransactionManager : persists

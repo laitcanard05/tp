@@ -1,0 +1,33 @@
+classDiagram
+    class UI {
+        -scanner: Scanner
+        -logger: Logger
+        +UI()
+        +showWelcome(): void
+        +showGoodbye(): void
+        +showMessage(message): void
+        +showError(message): void
+        +readCommand(): String
+        +readIndex(prompt): int
+        +readAmount(prompt): String
+        +readDescription(prompt): String
+        +readDate(prompt): String
+        +readCategory(prompt): String
+        +readTags(prompt): String
+        +readConfirmation(prompt): boolean
+        +warnDuplicate(): boolean
+    }
+
+    class Scanner {
+        +next(): String
+        +nextLine(): String
+    }
+
+    class Logger {
+        +info(message): void
+        +warning(message): void
+        +severe(message): void
+    }
+
+    UI --> Scanner : uses
+    UI --> Logger : uses

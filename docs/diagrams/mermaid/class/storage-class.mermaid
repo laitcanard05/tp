@@ -1,0 +1,30 @@
+classDiagram
+    class Storage {
+        -filePath: String
+        -logger: Logger
+        +Storage(filePath)
+        +loadTransactions(): List~Transaction~
+        +saveTransactions(transactionManager): void
+        +exportToCsv(transactions, filePath): void
+        +exportToTxt(transactions, filePath): void
+        -parseTransaction(line): Transaction
+        -writeTransaction(transaction): String
+    }
+
+    class TransactionManager {
+        -transactions: List~Transaction~
+        +addTransaction(transaction): void
+        +deleteTransaction(index): void
+        +listTransactions(): List~Transaction~
+        +listTransactions(limit): List~Transaction~
+        +getTransaction(index): Transaction
+        +getTransactionCount(): int
+    }
+
+    class Transaction {
+        <<abstract>>
+    }
+
+    Storage --> TransactionManager : saves/loads
+    TransactionManager --> Transaction : manages
+    TransactionManager --> Transaction : manages

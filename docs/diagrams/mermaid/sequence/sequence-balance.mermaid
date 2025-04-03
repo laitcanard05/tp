@@ -1,0 +1,47 @@
+sequenceDiagram
+    actor User as User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant BalanceCommand as BalanceCommand
+    participant TransactionMgr as TransactionManager
+    participant Storage as Storage
+
+    User->>+UI: input command
+    UI->>+FinBro: readCommand()
+    FinBro->>+Parser: parseCommand(userInput)
+
+    Note right of Parser: Parse "balance" or "balance d/2023-01-01"
+
+    alt date parameter provided
+        Parser->>Parser: Extract date parameter
+        Parser->>+BalanceCommand: new BalanceCommand(date)
+    else no date parameter
+        Parser->>+BalanceCommand: new BalanceCommand(null)
+    end
+
+    BalanceCommand-->>-Parser: command
+    Parser-->>-FinBro: command
+
+    FinBro->>+BalanceCommand: execute(transactionManager, ui, storage)
+
+    alt date specified
+        BalanceCommand->>+TransactionMgr: getTotalIncomeFromDate(date)
+        TransactionMgr-->>-BalanceCommand: totalIncome
+
+        BalanceCommand->>+TransactionMgr: getTotalExpensesFromDate(date)
+        TransactionMgr-->>-BalanceCommand: totalExpenses
+    else no date
+        BalanceCommand->>+TransactionMgr: getTotalIncome()
+        TransactionMgr-->>-BalanceCommand: totalIncome
+
+        BalanceCommand->>+TransactionMgr: getTotalExpenses()
+        TransactionMgr-->>-BalanceCommand: totalExpenses
+    end
+
+    BalanceCommand->>BalanceCommand: formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+    BalanceCommand-->>-FinBro: formatted balance message
+
+    FinBro->>UI: showMessage(result)
+    UI-->>-User: display balance information
+    deactivate FinBro

@@ -1,0 +1,49 @@
+sequenceDiagram
+    actor User as User
+    participant UI as Ui
+    participant FinBro as FinBro
+    participant Parser as Parser
+    participant IncomeCommand as IncomeCommand
+    participant TransactionMgr as TransactionManager
+    participant Income as Income
+    participant Storage as Storage
+
+    User->>+UI: input command
+    UI->>+FinBro: readCommand()
+    FinBro->>+Parser: parseCommand(userInput)
+
+    Note right of Parser: Parse "income 3000 d/Monthly salary t/work"
+    Parser->>+IncomeCommand: new IncomeCommand(amount, description, tags)
+    IncomeCommand-->>-Parser: command
+    Parser-->>-FinBro: command
+
+    FinBro->>+IncomeCommand: execute(transactionManager, ui, storage)
+
+    IncomeCommand->>+TransactionMgr: getTransactionDuplicates(amount, description)
+    TransactionMgr-->>-IncomeCommand: duplicates
+
+    Note right of IncomeCommand: Check for duplicates
+
+    alt duplicates found
+        IncomeCommand->>+UI: warnDuplicate()
+        UI-->>-IncomeCommand: confirmResult
+
+        alt user cancels transaction
+            IncomeCommand-->>FinBro: "Transaction cancelled by user"
+        end
+    end
+
+    IncomeCommand->>+Income: new Income(amount, description, tags)
+    Income-->>-IncomeCommand: income
+
+    IncomeCommand->>+TransactionMgr: addTransaction(income)
+TransactionMgr-->>-IncomeCommand: "Transaction added"
+
+IncomeCommand->>+Storage: saveTransactions(transactionManager)
+Storage-->>-IncomeCommand: "Transactions saved"
+
+IncomeCommand-->>-FinBro: result message
+
+FinBro->>UI: showMessage(result)
+UI-->>-User: display result
+deactivate FinBro
