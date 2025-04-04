@@ -1,5 +1,6 @@
 package seedu.finbro.logic.parser;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -443,12 +444,63 @@ public class Parser {
     }
 
     /**
+     * Validates a date string to ensure it represents a real, valid date.
+     *
+     * @param dateStr The date string in yyyy-MM-dd format
+     * @return True if the date is valid, false otherwise
+     */
+    private boolean isValidDate(String dateStr) {
+        try {
+            // First, check basic format compliance
+            if (!dateStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                logger.warning("Date format does not match yyyy-MM-dd pattern: " + dateStr);
+                return false;
+            }
+
+            // Parse the date parts
+            String[] parts = dateStr.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int day = Integer.parseInt(parts[2]);
+
+            // Perform range checks
+            if (year < 1 || year > 9999) {
+                logger.warning("Invalid year in date: " + year);
+                return false;
+            }
+
+            if (month < 1 || month > 12) {
+                logger.warning("Invalid month in date: " + month);
+                return false;
+            }
+
+            // Let LocalDate validate the day based on month/year
+            // This handles leap years and different days in each month
+            LocalDate.of(year, month, day);
+
+            // Simple sanity check for future dates
+            if (LocalDate.of(year, month, day).isAfter(LocalDate.now().plusYears(100))) {
+                logger.warning("Date is more than 100 years in the future: " + dateStr);
+                return false;
+            }
+
+            return true;
+        } catch (DateTimeException e) {
+            // This catches issues like February 30th
+            logger.warning("Invalid date components: " + dateStr + " - " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            logger.warning("Error validating date: " + dateStr + " - " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Parses dates read from the UI into a FilterCommand.
      *
      * @param ui The UI to interact with the user
-     * @return The FilterCommand
+     * @return The FilterCommand or an InvalidCommand
      */
-    //method for parsing filter command for friendly CLI
     private Command parseFilterCommand(Ui ui) {
         logger.fine("Parsing filter command");
         try {
@@ -460,9 +512,13 @@ public class Parser {
                 return new InvalidCommand("Start date must be specified for filter command.");
             }
 
+            if (!isValidDate(filterDates[0])) {
+                return new InvalidCommand("Invalid start date. Please use format YYYY-MM-DD with valid date values.");
+            }
+
             LocalDate startDate = LocalDate.parse(
-                filterDates[0].trim(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    filterDates[0].trim(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
             );
 
             LocalDate endDate;
@@ -470,9 +526,13 @@ public class Parser {
                 logger.fine("No end date specified, using current date");
                 endDate = LocalDate.now();
             } else {
+                if (!isValidDate(filterDates[1])) {
+                    return new InvalidCommand("Invalid end date. Please use format YYYY-MM-DD with valid date values.");
+                }
+
                 endDate = LocalDate.parse(
-                    filterDates[1].trim(),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        filterDates[1].trim(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 );
             }
 
@@ -482,11 +542,11 @@ public class Parser {
             }
 
             logger.fine("Creating FilterCommand with startDate=" + startDate +
-                ", endDate=" + endDate);
+                    ", endDate=" + endDate);
             return new FilterCommand(startDate, endDate);
         } catch (DateTimeParseException e) {
             logger.log(Level.WARNING, "Date format error in filter command", e);
-            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
+            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD with valid values.");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing filter command", e);
             return new InvalidCommand("Invalid filter command: " + e.getMessage());
@@ -503,6 +563,7 @@ public class Parser {
     private Command parseSummaryCommand(Ui ui) {
         logger.fine("Parsing summary command");
         try {
+            // This will now throw exceptions immediately on invalid input
             Integer[] monthYear = ui.readMonthYear();
             Integer month = monthYear[0];
             Integer year = monthYear[1];
@@ -510,19 +571,16 @@ public class Parser {
             if (month == null) {
                 logger.info("No month input, using current month");
                 month = LocalDate.now().getMonthValue();
-            } else if (month < 1 || month > 12) {
-                logger.warning("Invalid month input: " + month);
-                return new InvalidCommand("Month input must be between 1 and 12.");
             }
+
             if (year == null) {
                 logger.info("No year input, using current year");
                 year = LocalDate.now().getYear();
-            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
-                logger.warning("Invalid year input: " + year);
-                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
             }
+
             return new SummaryCommand(month, year);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            logger.log(Level.WARNING, "Error parsing summary command", e);
             return new InvalidCommand("Invalid summary command: " + e.getMessage());
         }
     }
@@ -793,11 +851,12 @@ public class Parser {
      * Parses arguments into a SetBudgetCommand.
      *
      * @param ui The inputs read from the UI.
-     * @return The setBudgetCommand
+     * @return The setBudgetCommand or an InvalidCommand
      */
     private Command parseSetBudgetCommand(Ui ui) {
         logger.fine("Parsing set budget command");
         try {
+            // This will now throw exceptions immediately on invalid input
             Integer[] monthYear = ui.readMonthYear();
             Integer month = monthYear[0];
             Integer year = monthYear[1];
@@ -805,26 +864,25 @@ public class Parser {
             if (month == null) {
                 logger.info("No month input, using current month");
                 month = LocalDate.now().getMonthValue();
-            } else if (month < 1 || month > 12) {
-                logger.warning("Invalid month input: " + month);
-                return new InvalidCommand("Month input must be between 1 and 12.");
             }
+
             if (year == null) {
                 logger.info("No year input, using current year");
                 year = LocalDate.now().getYear();
-            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
-                logger.warning("Invalid year input: " + year);
-                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
             }
-            double budget = ui.readDouble("Enter your budget:\n> ");
-            if (budget <= 0) {
-                return new InvalidCommand("Budget must be a positive number.");
+
+            double budget;
+            try {
+                budget = ui.readDouble("Enter your budget:\n> ");
+                if (budget <= 0) {
+                    return new InvalidCommand("Budget must be a positive number.");
+                }
+            } catch (RuntimeException e) {
+                return new InvalidCommand("Invalid budget format. Please provide a valid number.");
             }
+
             return new SetBudgetCommand(budget, month, year);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid number format for budget", e);
-            return new InvalidCommand("Invalid budget format. Please provide a valid number.");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error parsing set budget command", e);
             return new InvalidCommand("Invalid set budget command: " + e.getMessage());
         }
@@ -839,6 +897,7 @@ public class Parser {
     private Command parseTrackBudgetCommand(Ui ui) {
         logger.fine("Parsing track budget command");
         try {
+            // This will now throw exceptions immediately on invalid input
             Integer[] monthYear = ui.readMonthYear();
             Integer month = monthYear[0];
             Integer year = monthYear[1];
@@ -846,19 +905,15 @@ public class Parser {
             if (month == null) {
                 logger.info("No month input, using current month");
                 month = LocalDate.now().getMonthValue();
-            } else if (month < 1 || month > 12) {
-                logger.warning("Invalid month input: " + month);
-                return new InvalidCommand("Month input must be between 1 and 12.");
             }
+
             if (year == null) {
                 logger.info("No year input, using current year");
                 year = LocalDate.now().getYear();
-            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
-                logger.warning("Invalid year input: " + year);
-                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
             }
+
             return new TrackBudgetCommand(month, year);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error parsing track budget command", e);
             return new InvalidCommand("Invalid track budget command: " + e.getMessage());
         }
@@ -871,8 +926,9 @@ public class Parser {
      * @return The setSavingsCommand
      */
     private Command parseSetSavingsGoalCommand(Ui ui) {
-        logger.fine("Parsing set savings command");
+        logger.fine("Parsing set savings goal command");
         try {
+            // This will now throw exceptions immediately on invalid input
             Integer[] monthYear = ui.readMonthYear();
             Integer month = monthYear[0];
             Integer year = monthYear[1];
@@ -880,27 +936,25 @@ public class Parser {
             if (month == null) {
                 logger.info("No month input, using current month");
                 month = LocalDate.now().getMonthValue();
-            } else if (month < 1 || month > 12) {
-                logger.warning("Invalid month input: " + month);
-                return new InvalidCommand("Month input must be between 1 and 12.");
             }
+
             if (year == null) {
                 logger.info("No year input, using current year");
                 year = LocalDate.now().getYear();
-            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
-                logger.warning("Invalid year input: " + year);
-                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
             }
 
-            double savingsGoal = ui.readDouble("Enter your savings goal:\n> ");
-            if (savingsGoal <= 0) {
-                return new InvalidCommand("Savings goal must be a positive value.");
+            double savingsGoal;
+            try {
+                savingsGoal = ui.readDouble("Enter your savings goal:\n> ");
+                if (savingsGoal <= 0) {
+                    return new InvalidCommand("Savings goal must be a positive value.");
+                }
+            } catch (RuntimeException e) {
+                return new InvalidCommand("Invalid savings goal format. Please provide a valid number.");
             }
+
             return new SetSavingsGoalCommand(savingsGoal, month, year);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid number format for savings goal", e);
-            return new InvalidCommand("Invalid savings goal format. Please provide a valid number.");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error parsing set savings goal command", e);
             return new InvalidCommand("Invalid set savings goal command: " + e.getMessage());
         }
@@ -915,6 +969,7 @@ public class Parser {
     private Command parseTrackSavingsGoalCommand(Ui ui) {
         logger.fine("Parsing track savings goal command");
         try {
+            // This will now throw exceptions immediately on invalid input
             Integer[] monthYear = ui.readMonthYear();
             Integer month = monthYear[0];
             Integer year = monthYear[1];
@@ -922,19 +977,15 @@ public class Parser {
             if (month == null) {
                 logger.info("No month input, using current month");
                 month = LocalDate.now().getMonthValue();
-            } else if (month < 1 || month > 12) {
-                logger.warning("Invalid month input: " + month);
-                return new InvalidCommand("Month input must be between 1 and 12.");
             }
+
             if (year == null) {
                 logger.info("No year input, using current year");
                 year = LocalDate.now().getYear();
-            } else if (year < 1000 || year > 9999 || year > LocalDate.now().getYear()) {
-                logger.warning("Invalid year input: " + year);
-                return new InvalidCommand("Year input must be a 4-digit number and cannot be after the current year.");
             }
+
             return new TrackSavingsGoalCommand(month, year);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error parsing track savings goal command", e);
             return new InvalidCommand("Invalid track savings goal command: " + e.getMessage());
         }
