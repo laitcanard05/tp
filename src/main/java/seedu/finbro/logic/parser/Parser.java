@@ -17,7 +17,6 @@ import seedu.finbro.logic.command.BalanceCommand;
 import seedu.finbro.logic.command.ClearCommand;
 import seedu.finbro.logic.command.Command;
 import seedu.finbro.logic.command.DeleteCommand;
-import seedu.finbro.logic.command.EditCommand;
 import seedu.finbro.logic.command.ExportCommand;
 import seedu.finbro.logic.command.ExpenseCommand;
 import seedu.finbro.logic.command.FilterCommand;
@@ -35,7 +34,9 @@ import seedu.finbro.logic.command.SetSavingsGoalCommand;
 import seedu.finbro.logic.command.TrackSavingsGoalCommand;
 import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.IndexExceedLimitException;
+import seedu.finbro.model.Income;
 import seedu.finbro.model.Expense;
+import seedu.finbro.model.Transaction;
 import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
@@ -164,7 +165,13 @@ public class Parser {
             // Keyword is required - cannot be skipped
             int index = ui.readIndex("Enter the index of transaction to edit:\n> ");
 
-            // Add confirmation step
+            // Immediate validation for obviously invalid indexes
+            if (index <= 0) {
+                logger.warning("Invalid index: " + index + " (must be positive)");
+                return new InvalidCommand("Invalid index. Index must be a positive number.");
+            }
+            
+            // Check for confirmation
             boolean confirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
             if (!confirmed) {
                 logger.fine("User cancelled edit operation");
@@ -181,78 +188,195 @@ public class Parser {
                 };
             }
 
-            Map<String, String> parameters = new HashMap<>();
-
-            String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
-            if (!amountStr.isEmpty()) {
-                try {
-                    double amount = Double.parseDouble(amountStr);
-                    if (amount <= 0) {
-                        return new InvalidCommand("Amount must be positive.");
+            // Create a preliminary command to check the index against actual data
+            return new Command() {
+                @Override
+                public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+                    // First validate if the index is within the range of available transactions
+                    List<Transaction> transactions = transactionManager.listTransactions();
+                    if (index > transactions.size()) {
+                        logger.warning("Invalid index: " + index + " (out of range)");
+                        return "Invalid index. Please provide an index between 1 and " + transactions.size() + ".";
                     }
-                    parameters.put("a", amountStr);
-                } catch (NumberFormatException e) {
-                    return new InvalidCommand("Invalid amount format.");
+
+                    // If valid, proceed with the actual edit workflow
+                    return processEditWorkflow(index, transactionManager, ui, storage);
                 }
-            }
 
-            String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
-            if (!description.isEmpty()) {
-                parameters.put("d", description);
-            }
-
-            String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
-            if (!dateStr.isEmpty()) {
-                try {
-                    LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    parameters.put("date", dateStr);
-                } catch (DateTimeParseException e) {
-                    return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
+                @Override
+                public boolean isExit() {
+                    return false;
                 }
-            }
-
-            String categoryInput = ui.readCategory("Enter new category " +
-                    "(press Enter to skip, 'y' to select from menu):\n> ");
-            if (!categoryInput.isEmpty()) {
-                if (categoryInput.toLowerCase().startsWith("y")) {
-                    Expense.Category category = parseCategory(ui);
-                    parameters.put("c", category.toString());
-                } else {
-                    try {
-                        Expense.Category category = Expense.Category.fromString(categoryInput);
-                        parameters.put("c", category.toString());
-                    } catch (IllegalArgumentException e) {
-                        return new InvalidCommand("Invalid category.");
-                    }
-                }
-            }
-
-            String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
-            if (!tagsInput.isEmpty()) {
-                if (tagsInput.toLowerCase().startsWith("y")) {
-                    List<String> tags = parseTags(ui);
-                    if (!tags.isEmpty()) {
-                        parameters.put("t", String.join(",", tags));
-                    }
-                } else {
-                    List<String> tags = Arrays.stream(tagsInput.split(","))
-                            .map(String::trim)
-                            .filter(tag -> !tag.isEmpty())
-                            .collect(Collectors.toList());
-                    if (!tags.isEmpty()) {
-                        parameters.put("t", String.join(",", tags));
-                    }
-                }
-            }
-
-            if (parameters.isEmpty()) {
-                return new InvalidCommand("Please specify at least one parameter to edit.");
-            }
-
-            return new EditCommand(index, parameters);
+            };
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing edit command", e);
             return new InvalidCommand("Invalid edit command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the interactive workflow for editing a transaction after index validation.
+     *
+     * @param index The validated transaction index
+     * @param transactionManager The transaction manager
+     * @param ui The user interface
+     * @param storage The storage
+     * @return Result message
+     */
+    private String processEditWorkflow(int index, TransactionManager transactionManager, Ui ui, Storage storage) {
+        List<Transaction> transactions = transactionManager.listTransactions();
+        Transaction originalTransaction = transactions.get(index - 1); // Adjust for 0-based indexing
+
+        Map<String, String> parameters = new HashMap<>();
+
+        String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
+        if (!amountStr.isEmpty()) {
+            try {
+                double amount = Double.parseDouble(amountStr);
+                if (amount <= 0) {
+                    return "Amount must be positive.";
+                }
+                parameters.put("a", amountStr);
+            } catch (NumberFormatException e) {
+                return "Invalid amount format.";
+            }
+        }
+
+        String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
+        if (!description.isEmpty()) {
+            parameters.put("d", description);
+        }
+
+        String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
+        if (!dateStr.isEmpty()) {
+            try {
+                LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                parameters.put("date", dateStr);
+            } catch (DateTimeParseException e) {
+                return "Invalid date format. Please use YYYY-MM-DD.";
+            }
+        }
+
+        String categoryInput = ui.readCategory(
+                "Enter new category (press Enter to skip, 'y' to select from menu):\n> "
+        );
+        if (!categoryInput.isEmpty()) {
+            if (categoryInput.toLowerCase().startsWith("y")) {
+                Expense.Category category = parseCategory(ui);
+                parameters.put("c", category.toString());
+            } else {
+                try {
+                    Expense.Category category = Expense.Category.fromString(categoryInput);
+                    parameters.put("c", category.toString());
+                } catch (IllegalArgumentException e) {
+                    return "Invalid category.";
+                }
+            }
+        }
+
+        String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
+        if (!tagsInput.isEmpty()) {
+            if (tagsInput.toLowerCase().startsWith("y")) {
+                List<String> tags = parseTags(ui);
+                if (!tags.isEmpty()) {
+                    parameters.put("t", String.join(",", tags));
+                }
+            } else {
+                List<String> tags = Arrays.stream(tagsInput.split(","))
+                        .map(String::trim)
+                        .filter(tag -> !tag.isEmpty())
+                        .collect(Collectors.toList());
+                if (!tags.isEmpty()) {
+                    parameters.put("t", String.join(",", tags));
+                }
+            }
+        }
+
+        if (parameters.isEmpty()) {
+            return "No changes were specified. Transaction remains unchanged.";
+        }
+
+        Transaction updatedTransaction = createUpdatedTransaction(originalTransaction, parameters);
+        if (updatedTransaction == null) {
+            return "Failed to update transaction.";
+        }
+
+        boolean success = transactionManager.updateTransaction(originalTransaction, updatedTransaction);
+        if (success) {
+            storage.saveTransactions(transactionManager);
+            return "Transaction updated successfully:\n" + updatedTransaction;
+        } else {
+            return "Failed to update transaction.";
+        }
+    }
+
+    /**
+     * Creates an updated transaction based on the original transaction and the parameters to update.
+     *
+     * @param original the original transaction to update
+     * @param parameters the parameters with field updates
+     * @return the updated transaction, or null if the update failed
+     */
+    private Transaction createUpdatedTransaction(Transaction original, Map<String, String> parameters) {
+        try {
+            // Default values from original transaction
+            double amount = original.getAmount();
+            String description = original.getDescription();
+            LocalDate date = original.getDate();
+            List<String> tags = new ArrayList<>(original.getTags());
+
+            // Update values based on parameters
+            if (parameters.containsKey("a")) {
+                amount = Double.parseDouble(parameters.get("a"));
+            }
+
+            if (parameters.containsKey("d")) {
+                description = parameters.get("d");
+            }
+
+            if (parameters.containsKey("date")) {
+                date = LocalDate.parse(parameters.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+
+            if (parameters.containsKey("t")) {
+                // Replace all tags if new ones are provided
+                tags.clear();
+                String[] tagArray = parameters.get("t").split(",");
+                for (String tag : tagArray) {
+                    String trimmed = tag.trim();
+                    if (!trimmed.isEmpty()) {
+                        tags.add(trimmed);
+                    }
+                }
+            }
+            // Note: If "t" parameter isn't present, we keep original tags
+            // If it's present but empty, we clear the tags (handled above)
+
+            // Create new transaction based on the type of the original
+            if (original instanceof Income) {
+                return new Income(amount, description, date, tags);
+            } else if (original instanceof Expense) {
+                Expense originalExpense = (Expense) original;
+                Expense.Category category = originalExpense.getCategory();
+
+                if (parameters.containsKey("c")) {
+                    category = Expense.Category.fromString(parameters.get("c"));
+                }
+
+                return new Expense(amount, description, date, category, tags);
+            }
+
+            logger.warning("Unknown transaction type encountered");
+            return null;
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Invalid amount format in edit command", e);
+            return null;
+        } catch (DateTimeParseException e) {
+            logger.log(Level.WARNING, "Invalid date format in edit command", e);
+            return null;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error creating updated transaction", e);
+            return null;
         }
     }
 
