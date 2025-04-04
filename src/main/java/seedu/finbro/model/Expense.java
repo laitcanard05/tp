@@ -124,8 +124,8 @@ public class Expense extends Transaction {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[Expense][").append(category).append("] $")
-                .append(String.format("%.2f", amount))
+        sb.append("[Expense][").append(category).append("] ")
+                .append(seedu.finbro.util.CurrencyFormatter.format(amount))
                 .append(" - ").append(description);
 
         if (!tags.isEmpty()) {

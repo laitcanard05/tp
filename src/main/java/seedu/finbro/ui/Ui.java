@@ -105,12 +105,12 @@ public class Ui {
         System.out.println(message + " (y/n)");
         System.out.print("> ");
         String input = scanner.nextLine().trim().toLowerCase();
-        boolean confirmed;
-        if(input.equals("y") || input.equals("yes")) {
+
+        if (input.equals("y") || input.equals("yes")) {
             logger.fine("User confirmation result: TRUE");
             return true;
         }
-        if(input.equals("n") || input.equals("no")) {
+        if (input.equals("n") || input.equals("no")) {
             logger.fine("User confirmation result: FALSE");
             return false;
         } else {
@@ -301,9 +301,10 @@ public class Ui {
 
 
     /**
-     * Reads the double input by user. Used to parse amount.
+     * Reads the double input by user. Used to parse amount with upper bound validation.
      *
-     * @return The double entered by the user, double >= 0, <=2dp, no empty input
+     * @param message The prompt message
+     * @return The double entered by the user, 0 < double <= MAX_AMOUNT, <=2dp, no empty input
      */
     public double readDouble(String message) {
         System.out.println(LINE);
@@ -317,6 +318,11 @@ public class Ui {
             double output = Double.parseDouble(input);
             if (output < 0) {
                 throw new NegativeNumberException();
+            }
+            if (output > seedu.finbro.util.CurrencyFormatter.MAX_AMOUNT) {
+                System.out.println("INVALID INPUT: Amount exceeds maximum limit of $1,000,000,000.00");
+                System.out.println("Please enter a smaller amount.");
+                return readDouble(message);
             }
             if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
                 throw new DecimalPointException();

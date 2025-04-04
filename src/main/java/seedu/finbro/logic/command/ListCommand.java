@@ -53,16 +53,25 @@ public class ListCommand implements Command {
         logger.info("Executing ListCommand");
 
         List<Transaction> transactionsToList;
+        int totalTransactionCount = transactionManager.getTransactionCount();
+        StringBuilder response = new StringBuilder();
+        boolean limitExceeded = false;
 
         if (date != null) {
             logger.fine("Filtering transactions from date: " + date);
             transactionsToList = transactionManager.listTransactionsFromDate(date);
+            if (limit != null && limit > transactionsToList.size()) {
+                limitExceeded = true;
+            }
             if (limit != null) {
                 logger.fine("Limiting to " + limit + " transactions after filtering by date");
                 transactionsToList = transactionsToList.subList(0, Math.min(limit, transactionsToList.size()));
             }
         } else if (limit != null) {
             logger.fine("Limiting to " + limit + " most recent transactions");
+            if (limit > totalTransactionCount) {
+                limitExceeded = true;
+            }
             transactionsToList = transactionManager.listTransactions(limit);
         } else {
             logger.fine("Listing all transactions");
@@ -74,7 +83,13 @@ public class ListCommand implements Command {
             return "No transactions found.";
         }
 
-        StringBuilder response = new StringBuilder("Here are your transactions:\n");
+        if (limitExceeded) {
+            response.append(
+                    "Note: Requested limit exceeds available transactions. Showing all available transactions.\n\n"
+            );
+        }
+
+        response.append("Here are your transactions:\n");
         for (int i = 0; i < transactionsToList.size(); i++) {
             Transaction t = transactionsToList.get(i);
             logger.finer("Listing transaction: " + t);

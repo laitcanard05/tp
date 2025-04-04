@@ -69,13 +69,14 @@ public class Parser {
 
         // Handle y/n responses if a clear confirmation is pending
         if (clearCommandPending) {
-            if (commandWord.equals("y") || commandWord.equals("yes")) {
+            String lowerCommandWord = commandWord.toLowerCase();
+            if (lowerCommandWord.equals("y") || lowerCommandWord.equals("yes")) {
                 clearCommandPending = false;
-                logger.fine("Clear command confirmed with 'y'");
+                logger.fine("Clear command confirmed with '" + commandWord + "'");
                 return new ClearCommand(true);
-            } else if (commandWord.equals("n") || commandWord.equals("no")) {
+            } else if (lowerCommandWord.equals("n") || lowerCommandWord.equals("no")) {
                 clearCommandPending = false;
-                logger.fine("Clear command cancelled with 'n'");
+                logger.fine("Clear command cancelled with '" + commandWord + "'");
                 return new Command() {
                     @Override
                     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {

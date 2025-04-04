@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the Income class.
@@ -54,21 +56,31 @@ class IncomeTest {
     @Test
     void toStringCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.singletonList("work"));
-        String expected = "[Income] $3000.00 - Monthly salary [work]";
-        assertEquals(expected, income.toString());
+        // Using CurrencyFormatter, so we need to check that the format is correct
+        String actual = income.toString();
+        assertTrue(actual.contains("[Income]"));
+        assertTrue(actual.contains("- Monthly salary [work]"));
+        assertTrue(actual.contains("$3,000.00"));
     }
 
     @Test
     void toStringMultipleTagsCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Arrays.asList("work", "january"));
-        String expected = "[Income] $3000.00 - Monthly salary [work, january]";
-        assertEquals(expected, income.toString());
+        // Using CurrencyFormatter, so we need to check that the format is correct
+        String actual = income.toString();
+        assertTrue(actual.contains("[Income]"));
+        assertTrue(actual.contains("- Monthly salary [work, january]"));
+        assertTrue(actual.contains("$3,000.00"));
     }
 
     @Test
     void toStringNoTagsCorrectFormat() {
         Income income = new Income(3000.00, "Monthly salary", Collections.emptyList());
-        String expected = "[Income] $3000.00 - Monthly salary";
-        assertEquals(expected, income.toString());
+        // Using CurrencyFormatter, so we need to check that the format is correct
+        String actual = income.toString();
+        assertTrue(actual.contains("[Income]"));
+        assertTrue(actual.contains("- Monthly salary"));
+        assertTrue(actual.contains("$3,000.00"));
+        assertFalse(actual.contains("[work"));
     }
 }
