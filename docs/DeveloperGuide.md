@@ -340,56 +340,89 @@ classDiagram
 
 ```mermaid
 classDiagram
-   class Parser {
-      -Pattern AMOUNT_PATTERN
-      -DateTimeFormatter DATE_FORMATTER
-      -boolean clearCommandPending
-      +parseCommandWord(String, Ui)
-      +parseIncomeCommand(String, Ui)
-      +parseExpenseCommand(String, Ui)
-      +parseDeleteCommand(String, Ui)
-      +parseEditCommand(String, Ui)
-      +parseListCommand(String)
-      +parseFilterCommand(String, Ui)
-      +parseSearchCommand(String, Ui)
-      +parseSummaryCommand(String, Ui)
-      +parseSetBudgetCommand(String, Ui)
-      +parseTrackBudgetCommand(String, Ui)
-      +parseSetSavingsGoalCommand(String, Ui)
-      +parseTrackSavingsGoalCommand(String, Ui)
-      +parseExportCommand(String, Ui)
-      -parseParameters(String)
-      -parseAmount(String)
-      -parseTags(Ui)
-      -parseCategory(Ui)
-   }
+    class Parser {
+        -Pattern AMOUNT_PATTERN
+        -DateTimeFormatter DATE_FORMATTER
+        -boolean clearCommandPending
+        +parseCommandWord(String, Ui)
+        -parseParameters(String)
+        -parseAmount(String)
+        -parseTags(Ui)
+        -parseCategory(Ui)
+    }
+    
+    class CommandParserMethods {
+        +parseIncomeCommand(String, Ui)
+        +parseExpenseCommand(String, Ui)
+        +parseDeleteCommand(String, Ui)
+        +parseEditCommand(String, Ui)
+        +parseListCommand(String)
+        +parseFilterCommand(String, Ui)
+        +parseSearchCommand(String, Ui)
+        +parseSummaryCommand(String, Ui)
+    }
+    
+    class FinancialParserMethods {
+        +parseSetBudgetCommand(String, Ui)
+        +parseTrackBudgetCommand(String, Ui)
+        +parseSetSavingsGoalCommand(String, Ui)
+        +parseTrackSavingsGoalCommand(String, Ui)
+        +parseExportCommand(String, Ui)
+    }
+    
+    Parser --|> CommandParserMethods : contains
+    Parser --|> FinancialParserMethods : contains
+```
 
-   class Command {
-      <<interface>>
-      +execute(TransactionManager, Ui, Storage)
-      +isExit()
-   }
+### Parser to Command Relationships
 
-   Parser ..> Command : creates
-   Parser ..> ExpenseCommand : creates
-   Parser ..> IncomeCommand : creates
-   Parser ..> DeleteCommand : creates
-   Parser ..> EditCommand : creates
-   Parser ..> ListCommand : creates
-   Parser ..> FilterCommand : creates
-   Parser ..> SearchCommand : creates
-   Parser ..> SummaryCommand : creates
-   Parser ..> SetBudgetCommand : creates
-   Parser ..> TrackBudgetCommand : creates
-   Parser ..> SetSavingsGoalCommand : creates
-   Parser ..> TrackSavingsGoalCommand : creates
-   Parser ..> ExportCommand : creates
-   Parser ..> BalanceCommand : creates
-   Parser ..> ClearCommand : creates
-   Parser ..> ExitCommand : creates
-   Parser ..> HelpCommand : creates
-   Parser ..> InvalidCommand : creates
-   Parser ..> UnknownCommand : creates
+```mermaid
+classDiagram
+    class Parser {
+        +parseCommandWord(String, Ui)
+    }
+    
+    class Command {
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+
+    class MainCommands {
+        IncomeCommand
+        ExpenseCommand
+        ListCommand
+        DeleteCommand
+        EditCommand
+        ExitCommand
+    }
+
+    class QueryCommands {
+        FilterCommand
+        SearchCommand
+        SummaryCommand
+        BalanceCommand
+    }
+
+    class FinancialCommands {
+        SetBudgetCommand
+        TrackBudgetCommand
+        SetSavingsGoalCommand
+        TrackSavingsGoalCommand
+        ExportCommand
+    }
+
+    class UtilityCommands {
+        ClearCommand
+        HelpCommand
+        InvalidCommand
+        UnknownCommand
+    }
+    
+    Parser ..> Command : creates
+    Command <|.. MainCommands : implements
+    Command <|.. QueryCommands : implements
+    Command <|.. FinancialCommands : implements
+    Command <|.. UtilityCommands : implements
 ```
 
 ### Model Component
