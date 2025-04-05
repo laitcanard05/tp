@@ -1350,6 +1350,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "income 3000 d/Monthly salary t/work"
 
+create IncomeCommand
 Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
@@ -1378,6 +1379,7 @@ alt duplicates found
     end
 end
 
+create Income
 IncomeCommand -> Income : new Income(amount, description, tags)
 activate Income
 Income --> IncomeCommand : income
@@ -1431,6 +1433,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "search lunch"
 
+create SearchCommand
 Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
@@ -1491,6 +1494,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "filter d/2023-01-01 to/2023-12-31"
 
+create FilterCommand
 Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
@@ -1550,6 +1554,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "summary m/2 y/2025"
 
+create SummaryCommand
 Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
@@ -1624,6 +1629,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "list n/5 d/2025-03-01"
 
+create ListCommand
 Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
@@ -1713,10 +1719,16 @@ alt date parameter provided
     Parser --> Parser : date
     deactivate Parser
     
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(date)
+    activate BalanceCommand
 else no date parameter
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(null)
+    activate BalanceCommand
 end
+
+BalanceCommand --> Parser : command
 
 activate BalanceCommand
 BalanceCommand --> Parser : command
@@ -1817,15 +1829,17 @@ alt user confirms
 
     note right of Parser: Additional UI interactions for other parameters
 
+    create EditCommand
     Parser -> EditCommand : new EditCommand(index, parameters)
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand
 else user cancels
-    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
-    activate EditCommand
-    EditCommand --> Parser : command
-    deactivate EditCommand
+    create "SimpleCommand"
+    Parser -> "SimpleCommand" : new SimpleCommand("Edit operation cancelled.")
+    activate "SimpleCommand"
+    "SimpleCommand" --> Parser : command
+    deactivate "SimpleCommand"
 end
 
 Parser --> FinBro : command
