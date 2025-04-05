@@ -12,7 +12,7 @@
         * [Recording Expenses](#recording-expenses)
         * [Viewing Transactions](#viewing-transactions)
         * [Editing Transactions](#editing-transactions)
-        * [Removing Transactions](#removing-transactions)
+        * [Deleting Transactions](#deleting-transactions)
     * [Finding and Filtering](#finding-and-filtering)
         * [Searching Transactions](#searching-transactions)
         * [Filtering by Date](#filtering-by-date)
@@ -155,8 +155,7 @@ Displays your transaction history.
 Enter command word:
 > list
 
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can 
-choose the number of transactions to show after this prompt.)
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
 > 
 
 Enter number of transactions to list. (Leave blank to show all transactions.)
@@ -164,9 +163,9 @@ Enter number of transactions to list. (Leave blank to show all transactions.)
 ```
 
 **Notes:**
-- Leaving the date field blank shows transactions from all dates
+- Leaving the date field blank shows from first transactions onwards
 - Leaving the number field blank shows all transactions
-- Transactions are displayed in reverse chronological order (newest first)
+- Transactions are displayed in chronological order (oldest first)
 - Each transaction is shown with its index, which is used for edit and delete operations
 
 ---
@@ -212,9 +211,9 @@ Enter new tags (comma separated, press Enter to skip, 'y' to select):
 
 ---
 
-#### Removing Transactions
+#### Deleting Transactions
 
-Removes a transaction from your records.
+Deletes a transaction from your records.
 
 **Command:** `delete`
 
@@ -229,7 +228,8 @@ Enter a number or range to delete. (e.g., '1' or '2-5')
 
 **Notes:**
 - You can delete a single transaction by specifying its index
-- You can delete a range of transactions by specifying a start and end index (e.g., "2-5")
+- You can delete a range of transactions by specifying a start and end index (e.g., "2-5", where start index <= end index)
+- Range of indices ignores leading and trailing spaces
 - Indices are based on the current listing order in the application
 - After deletion, the remaining transactions are re-indexed
 
@@ -575,25 +575,25 @@ Displays the list of available commands.
 
 ## Command Summary
 
-| Action             | Command Word     | Function                                        |
-|--------------------|------------------|--------------------------------------------------|
-| Add Income         | `income`         | Record money received with description and tags  |
-| Add Expense        | `expense`        | Record money spent with category and tags        |
+| Action             | Command Word     | Function                                          |
+|--------------------|------------------|---------------------------------------------------|
+| Add Income         | `income`         | Record money received with description and tags   |
+| Add Expense        | `expense`        | Record money spent with category and tags         |
 | List Transactions  | `list`           | Display transaction history with optional filters |
-| Edit Transaction   | `edit`           | Modify an existing transaction's details         |
-| Delete Transaction | `delete`         | Remove a transaction from your records           |
-| Search             | `search`         | Find transactions by keyword                     |
-| Filter             | `filter`         | Show transactions within a date range            |
-| Set Budget         | `setbudget`      | Set a spending limit for a specific month        |
-| Track Budget       | `trackbudget`    | Check progress against your budget               |
-| Set Savings Goal   | `setsavings`     | Set a savings target for a specific month        |
-| Track Savings      | `tracksavings`   | Check progress toward your savings goal          |
-| View Balance       | `balance`/`view` | See your current financial position              |
-| View Summary       | `summary`        | Get a financial overview for a specific month    |
-| Export Data        | `export`         | Save your financial records to a file            |
-| Clear Data         | `clear`          | Delete all your financial data                   |
-| Exit               | `exit`           | Close the application                            |
-| Help               | `help`           | Display available commands                       |
+| Edit Transaction   | `edit`           | Modify an existing transaction's details          |
+| Delete Transaction | `delete`         | Delete a transaction from your records            |
+| Search             | `search`         | Find transactions by keyword                      |
+| Filter             | `filter`         | Show transactions within a date range             |
+| Set Budget         | `setbudget`      | Set a spending limit for a specific month         |
+| Track Budget       | `trackbudget`    | Check progress against your budget                |
+| Set Savings Goal   | `setsavings`     | Set a savings target for a specific month         |
+| Track Savings      | `tracksavings`   | Check progress toward your savings goal           |
+| View Balance       | `balance`/`view` | See your current financial position               |
+| View Summary       | `summary`        | Get a financial overview for a specific month     |
+| Export Data        | `export`         | Save your financial records to a file             |
+| Clear Data         | `clear`          | Delete all your financial data                    |
+| Exit               | `exit`           | Close the application                             |
+| Help               | `help`           | Display available commands                        |
 
 ## FAQ
 

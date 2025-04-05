@@ -4,6 +4,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -395,7 +396,13 @@ public class Parser {
 
             LocalDate date = null;
             if (startDateInput != null && !startDateInput.isEmpty()) {
-                date = LocalDate.parse(startDateInput.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                DateTimeFormatter strictFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd")
+                        .withResolverStyle(ResolverStyle.STRICT);
+                date = LocalDate.parse(startDateInput.trim(), strictFormatter);
+            }
+
+            if (date != null && (date.isBefore(LocalDate.of(0, 1, 1)) || date.isAfter(LocalDate.of(9999, 12, 31)))) {
+                return new InvalidCommand("Please enter a date between year 0000 and year 9999.");
             }
 
             Integer limit = ui.readLimit();
@@ -409,7 +416,7 @@ public class Parser {
 
         } catch (DateTimeParseException e) {
             logger.log(Level.WARNING, "Date format error in list command", e);
-            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD.");
+            return new InvalidCommand("Date is invalid. Please use format YYYY-MM-DD, and ensure date exists.");
         } catch (NumberFormatException e) {
             logger.log(Level.WARNING, "Invalid number format for list limit", e);
             return new InvalidCommand("Limit must be a valid number.");
@@ -432,7 +439,7 @@ public class Parser {
             int start = index[0];
             int end = index[1];
             if (start == -1 && end == -1) {
-                throw new EmptyInputException();
+                throw new EmptyInputException();            //?????
             }
             logger.fine("Creating DeleteCommand with start=" + start + ", end=" + end);
             return new DeleteCommand(start, end);
