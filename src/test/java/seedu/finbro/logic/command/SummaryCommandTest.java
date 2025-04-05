@@ -161,10 +161,10 @@ class SummaryCommandTest {
         assertTrue(result.contains("3. Entertainment:"));
         
         // Check for tag names in order
-        assertTrue(result.contains("1. monthly:"));
-        assertTrue(result.contains("2. work:"));
-        assertTrue(result.contains("3. home:"));
-        assertTrue(result.contains("4. weekend:"));
+        assertTrue(result.contains("1. work:"));
+        assertTrue(result.contains("2. monthly:"));
+        assertTrue(result.contains("3. weekend:"));
+        assertTrue(result.contains("4. home:"));
         
         // Check for formatted currency values (more flexible check)
         assertTrue(result.contains("$3,000") || result.contains("$3000"));
@@ -174,10 +174,10 @@ class SummaryCommandTest {
         assertTrue(result.contains("$45"));
         
         // Tag values
-        assertTrue(result.contains("monthly:") && (result.contains("$3,150") || result.contains("$3150")));
-        assertTrue(result.contains("work:") && (result.contains("$3,025") || result.contains("$3025")));
-        assertTrue(result.contains("home:") && (result.contains("$150")));
-        assertTrue(result.contains("weekend:") && (result.contains("$45")));
+        assertTrue(result.contains("monthly:") && (result.contains("$2,849") || result.contains("$2849")));
+        assertTrue(result.contains("work:") && (result.contains("$2,974") || result.contains("$2974")));
+        assertTrue(result.contains("home:") && (result.contains("-$150.20")));
+        assertTrue(result.contains("weekend:") && (result.contains("-$45.99")));
     }
 
     /**

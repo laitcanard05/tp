@@ -243,17 +243,17 @@ Top Expense Categories:
 3. Shopping: $75.00
 
 Tags Summary:
-1. Work: $3,025.50
-2. Primary: $3,000.00
-3. Annual: $1,200.00
-4. Design: $500.50
-5. Side-hustle: $500.50
-6. Monthly-utilities: $150.20
-7. Essential: $120.00
-8. Clothing: $75.00
-9. Weekend-leisure: $45.99
-10. Commute: $10.80
-11. Transport: $10.80
+1. Primary: $3,000.00 (Income: $3,000.00)
+2. Work: $2,974.50 (Income: $3,000.00, Expense: $25.50)
+3. Annual: $1,200.00 (Income: $1,200.00)
+4. Design: $500.50 (Income: $500.50)
+5. Side-hustle: $500.50 (Income: $500.50)
+6. Commute: -$10.80 (Expense: $10.80)
+7. Transport: -$10.80 (Expense: $10.80)
+8. Weekend-leisure: -$45.99 (Expense: $45.99)
+9. Clothing: -$75.00 (Expense: $75.00)
+10. Essential: -$120.00 (Expense: $120.00)
+11. Monthly-utilities: -$150.20 (Expense: $150.20)
 
 ____________________________________________________________
 Enter command word:
@@ -276,17 +276,17 @@ Top Expense Categories:
 3. Shopping: $75.00
 
 Tags Summary:
-1. Work: $3,025.50
-2. Primary: $3,000.00
-3. Annual: $1,200.00
-4. Design: $500.50
-5. Side-hustle: $500.50
-6. Monthly-utilities: $150.20
-7. Essential: $120.00
-8. Clothing: $75.00
-9. Weekend-leisure: $45.99
-10. Commute: $10.80
-11. Transport: $10.80
+1. Primary: $3,000.00 (Income: $3,000.00)
+2. Work: $2,974.50 (Income: $3,000.00, Expense: $25.50)
+3. Annual: $1,200.00 (Income: $1,200.00)
+4. Design: $500.50 (Income: $500.50)
+5. Side-hustle: $500.50 (Income: $500.50)
+6. Commute: -$10.80 (Expense: $10.80)
+7. Transport: -$10.80 (Expense: $10.80)
+8. Weekend-leisure: -$45.99 (Expense: $45.99)
+9. Clothing: -$75.00 (Expense: $75.00)
+10. Essential: -$120.00 (Expense: $120.00)
+11. Monthly-utilities: -$150.20 (Expense: $150.20)
 
 ____________________________________________________________
 Enter command word:
@@ -464,8 +464,8 @@ Top Expense Categories:
 1. Food: $30.00
 
 Tags Summary:
-1. work: $2,000.00
-2. Dining-out: $30.00
+1. work: $2,000.00 (Income: $2,000.00)
+2. Dining-out: -$30.00 (Expense: $30.00)
 
 ____________________________________________________________
 Enter command word:

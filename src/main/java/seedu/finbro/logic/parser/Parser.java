@@ -595,14 +595,17 @@ public class Parser {
         logger.fine("Parsing export command interactively");
         try {
             String format = ui.readString("Enter export format (csv/txt) or press Enter for default (csv):\n> ");
-            format = format.trim().isEmpty() ? "csv" : format.toLowerCase();
 
-            if (!format.equals("csv") && !format.equals("txt")) {
+            // If format is not "csv" or "txt" (case-insensitive), show error
+            if (!format.trim().isEmpty() &&
+                    !format.trim().equalsIgnoreCase("csv") &&
+                    !format.trim().equalsIgnoreCase("txt")) {
                 logger.warning("Invalid export format: " + format);
                 return new InvalidCommand("Export format must be either 'csv' or 'txt'.");
             }
 
-            logger.fine("Creating ExportCommand with format=" + format);
+            // Empty format will be handled in ExportCommand constructor
+            logger.fine("Creating ExportCommand with format=" + (format.isEmpty() ? "default (csv)" : format));
             return new ExportCommand(format);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing export command", e);

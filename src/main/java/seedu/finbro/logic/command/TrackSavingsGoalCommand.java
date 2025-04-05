@@ -4,11 +4,11 @@ import seedu.finbro.model.TransactionManager;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class TrackSavingsGoalCommand implements Command {
     private static final Logger logger = Logger.getLogger(TrackSavingsGoalCommand.class.getName());
-    private static final double DEFAULT_SAVINGS_GOAL = -1.0;
     private final int month;
     private final int year;
 
@@ -27,6 +27,8 @@ public class TrackSavingsGoalCommand implements Command {
      * Executes the command to track a savings goal for a specific month and year.
      *
      * @param transactionManager The transaction manager to execute the command on
+     * @param ui                The UI to interact with the user
+     * @param storage           The storage to save data
      * @return A string indicating whether the savings goal was successfully tracked or not
      */
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
@@ -37,33 +39,39 @@ public class TrackSavingsGoalCommand implements Command {
         assert year > 0 : "Year should be positive";
 
         logger.info("Executing track savings goal command");
-        double savingsGoal = transactionManager.getSavingsGoal(month, year);
-        String result = "";
-        if (savingsGoal == DEFAULT_SAVINGS_GOAL) {
-            result += String.format("No savings goal set for %d/%d", month, year);
+
+        // Get savings goal as an Optional to better represent possibly missing value
+        Optional<Double> savingsGoal = transactionManager.getSavingsGoalOptional(month, year);
+        StringBuilder result = new StringBuilder();
+
+        if (!savingsGoal.isPresent()) {
+            return String.format("No savings goal set for %d/%d. Please set a savings goal first.", month, year);
         }
-        result += String.format("Savings Goal for %d/%d: $%.2f\n", month, year, savingsGoal);
+
+        result.append(String.format("Savings Goal for %d/%d: $%.2f\n", month, year, savingsGoal.get()));
 
         double totalIncome = transactionManager.getMonthlyTotalIncome(month, year);
         double totalExpense = transactionManager.getMonthlyTotalExpense(month, year);
         double savings = totalIncome - totalExpense;
 
-        result += String.format("Total Income: $%.2f\n", totalIncome);
-        result += String.format("Total Expenses: $%.2f\n", totalExpense);
+        result.append(String.format("Total Income: $%.2f\n", totalIncome));
+        result.append(String.format("Total Expenses: $%.2f\n", totalExpense));
 
         if (savings >= 0) {
-            result += String.format("Total Savings: $%.2f\n", savings);
-            if (savings >= savingsGoal) {
-                result += "Congratulations! You have met your savings goal!";
+            result.append(String.format("Total Savings: $%.2f\n", savings));
+            if (savings >= savingsGoal.get()) {
+                result.append("Congratulations! You have met your savings goal!");
             } else {
-                result += "You are short of your savings goal by $" + (savingsGoal - savings);
+                result.append(String.format("You are short of your savings goal by $%.2f",
+                        (savingsGoal.get() - savings)));
             }
         } else {
-            result += String.format("Net Spending: $%.2f\n", Math.abs(savings));
-            result += "You are short of your savings goal by $" + (savingsGoal - savings);
+            result.append(String.format("Net Spending: $%.2f\n", Math.abs(savings)));
+            result.append(String.format("You are short of your savings goal by $%.2f",
+                    (savingsGoal.get() - savings)));
         }
 
-        return result;
+        return result.toString();
     }
 
     /**
