@@ -65,49 +65,49 @@ FinBro is a personal finance management application that operates through a Comm
 
 FinBro follows a layered architecture pattern with clear separation of concerns:
 
-![High-Level Architecture Diagram](img/mermaid/architecture.png)
+<img src="img/mermaid/architecture.png" alt="High-Level Architecture Diagram" style="max-width: 400px; width: 100%; height: auto;"/>
 
 ## Component Details
 
 ### Main Component
 
-![Main Component Diagram](img/mermaid/main-class.png)
+<img src="img/mermaid/main-class.png" alt="Main Component Diagram" style="max-width: 400px; width: 100%; height: auto;"/>
 
 ### UI Component
 
-![UI Component Diagram](img/mermaid/ui-class.png)
+<img src="img/mermaid/ui-class.png" alt="UI Component Diagram" style="max-width: 400px; width: 50%; height: auto;"/>
 
-![UI Component Class Diagram](img/mermaid/ui-detail-class.png)
+<img src="img/mermaid/ui-detail-class.png" alt="UI Component Class Diagram" style="max-width: 400px; width: 50%; height: auto;"/>
 
 ### Logic Component
 
-![Logic Component Diagram](img/mermaid/parser-class.png)
+<img src="img/mermaid/parser-class.png" alt="Logic Component Diagram" style="max-width: 400px; width: 100%; height: auto;"/>
 
-![Logic Component Class Diagram](img/mermaid/parser-detail-class.png)
+<img src="img/mermaid/parser-detail-class.png" alt="Logic Component Class Diagram" style="max-width: 400px; width: 100%; height: auto;"/>
 
 ### Parser to Command Relationships
 
-![Parser to Command Relationships Diagram](img/mermaid/parser-to-command.png)
+<img src="img/mermaid/parser-to-command.png" alt="Parser to Command Relationships Diagram" style="max-width: 400px; width: 100%; height: auto;"/>
 
 ### Model Component
 
-![Model Component Diagram](img/mermaid/model-class.png)
+<img src="img/mermaid/model-class.png" alt="Model Component Diagram" style="max-width: 200px; width: 50%; height: 50%;"/>
 
 ### Storage Component
 
-![Storage Component Diagram](img/mermaid/storage-class.png)
+<img src="img/mermaid/storage-class.png" alt="Storage Component Diagram" style="max-width: 400px; width: 50%; height: auto;"/>
 
-![Storage Component Class Diagram](img/mermaid/storage-detail-class.png)
+<img src="img/mermaid/storage-detail-class.png" alt="Storage Component Class Diagram" style="max-width: 600px; width: 100%; height: auto;"/>
 
 ### Command Classes
 
-![Command v1 Diagram](img/mermaid/command-v1.png)
+<img src="img/mermaid/command-v1.png" alt="Command V1 Diagram" style="max-width: 600px; width: 100%; height: auto;"/>
 
-![Command v2 Diagram](img/mermaid/command-v2.png)
+<img src="img/mermaid/command-v2.png" alt="Command V2 Diagram" style="max-width: 600px; width: 100%; height: auto;"/>
 
 ### Exceptions Component
 
-![Exceptions Component Diagram](img/mermaid/exceptions-class.png)
+<img src="img/mermaid/exceptions-class.png" alt="Exceptions Component Diagram" style="max-width: 600px; width: 100%; height: auto;"/>
 
 ## Class Structure
 
