@@ -1628,12 +1628,12 @@ skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 
 actor "User" as User
-participant "UI" as UI
-participant "FinBro" as FinBro
-participant "Parser" as Parser
-participant "BalanceCommand" as BalanceCommand
-participant "TransactionManager" as TransactionMgr
-participant "Storage" as Storage
+participant ":UI" as UI
+participant ":FinBro" as FinBro
+participant ":Parser" as Parser
+participant ":BalanceCommand" as BalanceCommand
+participant ":TransactionManager" as TransactionMgr
+participant ":Storage" as Storage
 
 User -> UI : input command
 activate UI
