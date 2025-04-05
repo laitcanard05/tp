@@ -1,13 +1,17 @@
 package seedu.finbro.logic.command;
 
+import seedu.finbro.model.Income;
 import seedu.finbro.model.Expense;
 import seedu.finbro.model.TransactionManager;
+import seedu.finbro.model.Transaction;
 import seedu.finbro.storage.Storage;
 import seedu.finbro.ui.Ui;
 
 import java.util.logging.Logger;
 import java.text.DateFormatSymbols;
+import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
@@ -118,39 +122,76 @@ public class SummaryCommand implements Command {
             }
         }
 
+        // Get tagged transactions with detailed breakdown
+        List<Transaction> monthlyTransactions = transactionManager.getMonthlyTransactions(month, year);
 
-        logger.info(String.format("Calculating total expenses for each tag for %s %d",
-                monthString, year));
-        Map<String, Double> sortedTaggedTransactions =
-            transactionManager.getMonthlyTaggedTransactions(month, year)
-            .entrySet()
-            .stream()
-            .sorted(Map.Entry.<String, Double> comparingByValue().reversed())
-            .collect(Collectors.toMap(
-                 Map.Entry::getKey,
-                 Map.Entry::getValue,
-                 (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        // Separate maps for income and expense per tag
+        Map<String, Double> taggedIncome = new HashMap<>();
+        Map<String, Double> taggedExpenses = new HashMap<>();
+        Map<String, Double> taggedNet = new HashMap<>();
 
-        if (sortedTaggedTransactions.isEmpty()) {
-            return summaryDisplay;
+        // Process each transaction
+        for (Transaction transaction : monthlyTransactions) {
+            List<String> tags = transaction.getTags();
+            double amount = transaction.getAmount();
+
+            for (String tag : tags) {
+                // Process income transactions
+                if (transaction instanceof Income) {
+                    taggedIncome.put(tag, taggedIncome.getOrDefault(tag, 0.0) + amount);
+                }
+                // Process expense transactions
+                else if (transaction instanceof Expense) {
+                    taggedExpenses.put(tag, taggedExpenses.getOrDefault(tag, 0.0) + amount);
+                }
+
+                // Update the net amount (income - expenses) for each tag
+                if (transaction instanceof Income) {
+                    taggedNet.put(tag, taggedNet.getOrDefault(tag, 0.0) + amount);
+                } else if (transaction instanceof Expense) {
+                    taggedNet.put(tag, taggedNet.getOrDefault(tag, 0.0) - amount);
+                }
+            }
         }
 
-        summaryDisplay += "\nTags Summary:\n";
-        int tagCount = 0;
-        for (Map.Entry<String, Double> expenseInTag : sortedTaggedTransactions.entrySet()) {
-            tagCount++;
-            assert expenseInTag.getKey() != null: "Tag cannot be null";
-            assert expenseInTag.getValue() <=
-                transactionManager.getMonthlyTotalExpense(month, year) +
-                transactionManager.getMonthlyTotalIncome(month, year):
-                "Total transaction amount in one tag cannot be greater " +
-                "than total transaction amount for the month";
-            if (expenseInTag.getValue() == 0) {
-                break;
+        // Sort tags by the absolute value of combined income/expense amounts
+        Map<String, Double> sortedTaggedNet = taggedNet.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+        if (!sortedTaggedNet.isEmpty()) {
+            summaryDisplay += "\nTags Summary:\n";
+            int tagCount = 0;
+            for (Map.Entry<String, Double> tagEntry : sortedTaggedNet.entrySet()) {
+                tagCount++;
+                String tag = tagEntry.getKey();
+                double netAmount = tagEntry.getValue();
+                double incomeAmount = taggedIncome.getOrDefault(tag, 0.0);
+                double expenseAmount = taggedExpenses.getOrDefault(tag, 0.0);
+
+                // Create a detailed breakdown for each tag
+                summaryDisplay += String.format("%d. %s: %s (",
+                        tagCount, tag, seedu.finbro.util.CurrencyFormatter.format(netAmount));
+
+                if (incomeAmount > 0) {
+                    summaryDisplay += String.format("Income: %s",
+                            seedu.finbro.util.CurrencyFormatter.format(incomeAmount));
+
+                    if (expenseAmount > 0) {
+                        summaryDisplay += String.format(", Expense: %s",
+                                seedu.finbro.util.CurrencyFormatter.format(expenseAmount));
+                    }
+                } else if (expenseAmount > 0) {
+                    summaryDisplay += String.format("Expense: %s",
+                            seedu.finbro.util.CurrencyFormatter.format(expenseAmount));
+                }
+
+                summaryDisplay += ")\n";
             }
-            summaryDisplay += String.format("%d. %s: %s\n", tagCount,
-                expenseInTag.getKey(),
-                seedu.finbro.util.CurrencyFormatter.format(expenseInTag.getValue()));
         }
 
         return summaryDisplay;

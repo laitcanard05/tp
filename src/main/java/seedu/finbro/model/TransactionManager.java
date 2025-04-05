@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -456,5 +457,34 @@ public class TransactionManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Retrieves the savings goal for a specific month and year as an Optional.
+     *
+     * @param month The month for which to retrieve the savings goal (1-12)
+     * @param year The year for which to retrieve the savings goal
+     * @return An Optional containing the savings goal amount if set, or empty if not set
+     */
+    public Optional<Double> getSavingsGoalOptional(int month, int year) {
+        String savingsKey = year + "-" + month;
+        Double value = savingsGoals.get(savingsKey);
+        return Optional.ofNullable(value); // Returns empty Optional if value is null
+    }
+
+    /**
+     * Returns all transactions for a specified month and year.
+     *
+     * @param month the month for which to get transactions (1-12)
+     * @param year the year for which to get transactions
+     * @return a list of all transactions in the specified month and year
+     */
+    public List<Transaction> getMonthlyTransactions(int month, int year) {
+        assert month >= 1 && month <= 12 : "Month must be between 1 and 12";
+        assert year > 0 : "Year must be positive";
+
+        return transactions.stream()
+                .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
+                .collect(Collectors.toList());
     }
 }

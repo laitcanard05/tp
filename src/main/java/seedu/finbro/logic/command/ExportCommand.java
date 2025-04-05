@@ -16,7 +16,8 @@ public class ExportCommand implements Command {
      * @param format The format to export data in (csv or txt)
      */
     public ExportCommand(String format) {
-        this.format = format != null ? format.toLowerCase() : "csv";
+        // If format is null or empty, default to "csv"
+        this.format = (format == null || format.trim().isEmpty()) ? "csv" : format.toLowerCase();
         assert this.format.equals("csv") || this.format.equals("txt") : "Export format must be either 'csv' or 'txt'";
     }
 
@@ -34,7 +35,7 @@ public class ExportCommand implements Command {
         assert storage != null : "Storage cannot be null";
         assert format != null : "Export format cannot be null";
         assert format.equals("csv") || format.equals("txt") : "Export format must be either 'csv' or 'txt'";
-        
+
         String filePath;
         try {
             if ("txt".equals(format)) {
