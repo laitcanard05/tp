@@ -1330,6 +1330,7 @@ This sequence diagram illustrates the process when a user adds a new transaction
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1350,6 +1351,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "income 3000 d/Monthly salary t/work"
 
+create IncomeCommand
 Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
@@ -1378,6 +1380,7 @@ alt duplicates found
     end
 end
 
+create Income
 IncomeCommand -> Income : new Income(amount, description, tags)
 activate Income
 Income --> IncomeCommand : income
@@ -1397,7 +1400,9 @@ IncomeCommand --> FinBro : result message
 deactivate IncomeCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1413,6 +1418,7 @@ This sequence diagram illustrates the process of searching for transactions:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1431,6 +1437,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "search lunch"
 
+create SearchCommand
 Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
@@ -1456,7 +1463,9 @@ SearchCommand --> FinBro : result message (list of matches)
 deactivate SearchCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1473,6 +1482,7 @@ This sequence diagram illustrates the process of filtering transactions based on
 title Filter Command Sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1491,6 +1501,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "filter d/2023-01-01 to/2023-12-31"
 
+create FilterCommand
 Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
@@ -1516,7 +1527,9 @@ FilterCommand --> FinBro : result message (list of filtered transactions)
 deactivate FilterCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1532,6 +1545,7 @@ This sequence diagram illustrates the process of obtaining a monthly financial s
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1550,6 +1564,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "summary m/2 y/2025"
 
+create SummaryCommand
 Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
@@ -1590,7 +1605,9 @@ SummaryCommand --> FinBro : result message
 deactivate SummaryCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1606,6 +1623,7 @@ This sequence diagram illustrates the process of obtaining the current list of t
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1624,6 +1642,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "list n/5 d/2025-03-01"
 
+create ListCommand
 Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
@@ -1671,7 +1690,9 @@ ListCommand --> FinBro : result message
 deactivate ListCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1687,6 +1708,7 @@ This sequence diagram illustrates the process of viewing the current balance:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor "User" as User
 participant "UI" as UI
@@ -1713,10 +1735,16 @@ alt date parameter provided
     Parser --> Parser : date
     deactivate Parser
     
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(date)
+    activate BalanceCommand
 else no date parameter
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(null)
+    activate BalanceCommand
 end
+
+BalanceCommand --> Parser : command
 
 activate BalanceCommand
 BalanceCommand --> Parser : command
@@ -1759,7 +1787,9 @@ BalanceCommand --> FinBro : formatted balance message
 deactivate BalanceCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display balance information
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1774,6 +1804,7 @@ This sequence diagram illustrates the process of editing a transaction:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1817,15 +1848,17 @@ alt user confirms
 
     note right of Parser: Additional UI interactions for other parameters
 
+    create EditCommand
     Parser -> EditCommand : new EditCommand(index, parameters)
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand
 else user cancels
-    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
-    activate EditCommand
-    EditCommand --> Parser : command
-    deactivate EditCommand
+    create "SimpleCommand"
+    Parser -> "SimpleCommand" : new SimpleCommand("Edit operation cancelled.")
+    activate "SimpleCommand"
+    "SimpleCommand" --> Parser : command
+    deactivate "SimpleCommand"
 end
 
 Parser --> FinBro : command
@@ -1868,7 +1901,9 @@ end
 deactivate EditCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
