@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor "User" as User
 participant "UI" as UI
@@ -23,10 +24,21 @@ note right: Parse "balance" or "balance d/2023-01-01"
 
 alt date parameter provided
     Parser -> Parser : Extract date parameter
+    activate Parser
+    note right: Self-call to extract date
+    Parser --> Parser : date
+    deactivate Parser
+
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(date)
+    activate BalanceCommand
 else no date parameter
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(null)
+    activate BalanceCommand
 end
+
+BalanceCommand --> Parser : command
 
 activate BalanceCommand
 BalanceCommand --> Parser : command
@@ -60,11 +72,18 @@ else no date
 end
 
 BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+activate BalanceCommand
+note right: Self-call to format message
+BalanceCommand --> BalanceCommand : formattedMessage
+deactivate BalanceCommand
+
 BalanceCommand --> FinBro : formatted balance message
 deactivate BalanceCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display balance information
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

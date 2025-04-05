@@ -1,0 +1,46 @@
+classDiagram
+    class Parser {
+        +parseCommandWord(String, Ui)
+    }
+
+    class Command {
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+
+    class MainCommands {
+        IncomeCommand
+        ExpenseCommand
+        ListCommand
+        DeleteCommand
+        EditCommand
+        ExitCommand
+    }
+
+    class QueryCommands {
+        FilterCommand
+        SearchCommand
+        SummaryCommand
+        BalanceCommand
+    }
+
+    class FinancialCommands {
+        SetBudgetCommand
+        TrackBudgetCommand
+        SetSavingsGoalCommand
+        TrackSavingsGoalCommand
+        ExportCommand
+    }
+
+    class UtilityCommands {
+        ClearCommand
+        HelpCommand
+        InvalidCommand
+        UnknownCommand
+    }
+
+    Parser ..> Command : creates
+    Command <|.. MainCommands : implements
+    Command <|.. QueryCommands : implements
+    Command <|.. FinancialCommands : implements
+    Command <|.. UtilityCommands : implements

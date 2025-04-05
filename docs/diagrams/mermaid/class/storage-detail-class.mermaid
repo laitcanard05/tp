@@ -14,20 +14,20 @@ classDiagram
         +saveSavingsGoals()
         +loadSavingsGoals()
     }
-    
+
     class Transaction {
         <<abstract>>
     }
-    
+
     class Income {
     }
-    
+
     class Expense {
     }
-    
+
     class TransactionManager {
     }
-    
+
     Storage ..> Transaction : creates
     Storage ..> Income : creates
     Storage ..> Expense : creates

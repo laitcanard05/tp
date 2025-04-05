@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -20,6 +21,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "summary m/2 y/2025"
 
+create SummaryCommand
 Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
@@ -50,11 +52,19 @@ activate TransactionMgr
 TransactionMgr --> SummaryCommand : taggedTransactions
 deactivate TransactionMgr
 
+SummaryCommand -> SummaryCommand : formatSummaryReport(totalIncome, totalExpenses, categorisedExpenses, taggedTransactions)
+activate SummaryCommand
+note right: Self-call to format summary report
+SummaryCommand --> SummaryCommand : formattedReport
+deactivate SummaryCommand
+
 SummaryCommand --> FinBro : result message
 deactivate SummaryCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -45,15 +46,17 @@ alt user confirms
 
     note right of Parser: Additional UI interactions for other parameters
 
+    create EditCommand
     Parser -> EditCommand : new EditCommand(index, parameters)
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand
 else user cancels
-    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
-    activate EditCommand
-    EditCommand --> Parser : command
-    deactivate EditCommand
+    create "SimpleCommand"
+    Parser -> "SimpleCommand" : new SimpleCommand("Edit operation cancelled.")
+    activate "SimpleCommand"
+    "SimpleCommand" --> Parser : command
+    deactivate "SimpleCommand"
 end
 
 Parser --> FinBro : command
@@ -69,6 +72,10 @@ alt valid index
     deactivate TransactionMgr
 
     EditCommand -> EditCommand : createUpdatedTransaction(originalTransaction, parameters)
+    activate EditCommand
+    note right: Self-call to create updated transaction
+    EditCommand --> EditCommand : updatedTransaction
+    deactivate EditCommand
 
     alt valid updated transaction
         EditCommand -> TransactionMgr : updateTransactionAt(index - 1, updatedTransaction)
@@ -92,7 +99,9 @@ end
 deactivate EditCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

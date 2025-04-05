@@ -3,6 +3,7 @@
 title Filter Command Sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -21,6 +22,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "filter d/2023-01-01 to/2023-12-31"
 
+create FilterCommand
 Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
@@ -36,11 +38,19 @@ activate TransactionMgr
 TransactionMgr --> FilterCommand : filteredTransactions
 deactivate TransactionMgr
 
+FilterCommand -> FilterCommand : formatFilterResults(filteredTransactions)
+activate FilterCommand
+note right: Self-call to format results
+FilterCommand --> FilterCommand : formattedResults
+deactivate FilterCommand
+
 FilterCommand --> FinBro : result message (list of filtered transactions)
 deactivate FilterCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

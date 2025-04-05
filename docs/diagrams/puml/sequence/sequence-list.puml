@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -20,6 +21,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "list n/5 d/2025-03-01"
 
+create ListCommand
 Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
@@ -37,7 +39,11 @@ alt date provided
     deactivate TransactionMgr
 
     alt limit provided
-        note right of ListCommand: Apply limit to filtered list
+        ListCommand -> ListCommand : applyLimit(filteredTransactions, limit)
+        activate ListCommand
+        note right: Self-call to apply limit
+        ListCommand --> ListCommand : limitedTransactions
+        deactivate ListCommand
     end
 else no date
     alt limit provided
@@ -53,11 +59,19 @@ else no date
     end
 end
 
+ListCommand -> ListCommand : formatTransactionList(transactions)
+activate ListCommand
+note right: Self-call to format list
+ListCommand --> ListCommand : formattedList
+deactivate ListCommand
+
 ListCommand --> FinBro : result message
 deactivate ListCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
