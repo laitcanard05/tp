@@ -235,7 +235,8 @@ Financial Summary for April 2025:
 Total Income: $4,700.50
 Total Expenses: $427.49
 
-No budget set for April 2025
+Budget for April 2025: $1,500.00
+Remaining budget: $1,072.51
 
 Top Expense Categories:
 1. Bills: $150.20
@@ -268,7 +269,8 @@ Financial Summary for April 2025:
 Total Income: $4,700.50
 Total Expenses: $427.49
 
-No budget set for April 2025
+Budget for April 2025: $1,500.00
+Remaining budget: $1,072.51
 
 Top Expense Categories:
 1. Bills: $150.20
