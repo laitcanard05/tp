@@ -487,4 +487,15 @@ public class TransactionManager {
                 .filter(t -> (t.getDate().getYear() == year && t.getDate().getMonthValue() == month))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Clears all budgets and savings goals.
+     */
+    public void clearBudgetsAndSavingsGoals() {
+        int budgetCount = budgets.size();
+        int savingsGoalCount = savingsGoals.size();
+        budgets.clear();
+        savingsGoals.clear();
+        logger.info("Cleared " + budgetCount + " budgets and " + savingsGoalCount + " savings goals");
+    }
 }
