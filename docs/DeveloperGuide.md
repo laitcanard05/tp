@@ -1413,6 +1413,12 @@ activate TransactionMgr
 TransactionMgr --> SearchCommand : matchingTransactions
 deactivate TransactionMgr
 
+SearchCommand -> SearchCommand : formatSearchResults(matchingTransactions)
+activate SearchCommand
+note right: Self-call to format search results
+SearchCommand --> SearchCommand : formattedResults
+deactivate SearchCommand
+
 SearchCommand --> FinBro : result message (list of matches)
 deactivate SearchCommand
 
@@ -1466,6 +1472,12 @@ FilterCommand -> TransactionMgr : getFilteredTransactions(startDate, endDate)
 activate TransactionMgr
 TransactionMgr --> FilterCommand : filteredTransactions
 deactivate TransactionMgr
+
+FilterCommand -> FilterCommand : formatFilterResults(filteredTransactions)
+activate FilterCommand
+note right: Self-call to format results
+FilterCommand --> FilterCommand : formattedResults
+deactivate FilterCommand
 
 FilterCommand --> FinBro : result message (list of filtered transactions)
 deactivate FilterCommand
@@ -1535,6 +1547,12 @@ activate TransactionMgr
 TransactionMgr --> SummaryCommand : taggedTransactions
 deactivate TransactionMgr
 
+SummaryCommand -> SummaryCommand : formatSummaryReport(totalIncome, totalExpenses, categorisedExpenses, taggedTransactions)
+activate SummaryCommand
+note right: Self-call to format summary report
+SummaryCommand --> SummaryCommand : formattedReport
+deactivate SummaryCommand
+
 SummaryCommand --> FinBro : result message
 deactivate SummaryCommand
 
@@ -1590,7 +1608,11 @@ alt date provided
     deactivate TransactionMgr
 
     alt limit provided
-        note right of ListCommand: Apply limit to filtered list
+        ListCommand -> ListCommand : applyLimit(filteredTransactions, limit)
+        activate ListCommand
+        note right: Self-call to apply limit
+        ListCommand --> ListCommand : limitedTransactions
+        deactivate ListCommand
     end
 else no date
     alt limit provided
@@ -1605,6 +1627,12 @@ else no date
         deactivate TransactionMgr
     end
 end
+
+ListCommand -> ListCommand : formatTransactionList(transactions)
+activate ListCommand
+note right: Self-call to format list
+ListCommand --> ListCommand : formattedList
+deactivate ListCommand
 
 ListCommand --> FinBro : result message
 deactivate ListCommand
@@ -1628,12 +1656,12 @@ skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 
 actor "User" as User
-participant ":UI" as UI
-participant ":FinBro" as FinBro
-participant ":Parser" as Parser
-participant ":BalanceCommand" as BalanceCommand
-participant ":TransactionManager" as TransactionMgr
-participant ":Storage" as Storage
+participant "UI" as UI
+participant "FinBro" as FinBro
+participant "Parser" as Parser
+participant "BalanceCommand" as BalanceCommand
+participant "TransactionManager" as TransactionMgr
+participant "Storage" as Storage
 
 User -> UI : input command
 activate UI
@@ -1647,6 +1675,11 @@ note right: Parse "balance" or "balance d/2023-01-01"
 
 alt date parameter provided
     Parser -> Parser : Extract date parameter
+    activate Parser
+    note right: Self-call to extract date
+    Parser --> Parser : date
+    deactivate Parser
+    
     Parser -> BalanceCommand : new BalanceCommand(date)
 else no date parameter
     Parser -> BalanceCommand : new BalanceCommand(null)
@@ -1684,6 +1717,11 @@ else no date
 end
 
 BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+activate BalanceCommand
+note right: Self-call to format message
+BalanceCommand --> BalanceCommand : formattedMessage
+deactivate BalanceCommand
+
 BalanceCommand --> FinBro : formatted balance message
 deactivate BalanceCommand
 
@@ -1770,6 +1808,10 @@ alt valid index
     deactivate TransactionMgr
 
     EditCommand -> EditCommand : createUpdatedTransaction(originalTransaction, parameters)
+    activate EditCommand
+    note right: Self-call to create updated transaction
+    EditCommand --> EditCommand : updatedTransaction
+    deactivate EditCommand
 
     alt valid updated transaction
         EditCommand -> TransactionMgr : updateTransactionAt(index - 1, updatedTransaction)
