@@ -35,7 +35,10 @@ public class ClearCommand implements Command {
         }
 
         transactionManager.clearTransactions();
+        transactionManager.clearBudgetsAndSavingsGoals(); // Add this line
         storage.saveTransactions(transactionManager);
+        storage.saveBudgets(transactionManager); // Save the cleared budgets
+        storage.saveSavingsGoals(transactionManager); // Save the cleared savings goals
         return "All data has been cleared.";
     }
 

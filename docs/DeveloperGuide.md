@@ -240,19 +240,19 @@ classDiagram
         -scanner: Scanner
         -logger: Logger
         +UI()
-        +showWelcome(): void
-        +showGoodbye(): void
-        +showMessage(message): void
-        +showError(message): void
-        +readCommand(): String
-        +readIndex(prompt): int
-        +readAmount(prompt): String
-        +readDescription(prompt): String
-        +readDate(prompt): String
-        +readCategory(prompt): String
-        +readTags(prompt): String
-        +readConfirmation(prompt): boolean
-        +warnDuplicate(): boolean
+        +showWelcome() void
+        +showGoodbye() void
+        +showMessage(message) void
+        +showError(message) void
+        +readCommand() String
+        +readIndex(prompt) int
+        +readAmount(prompt) String
+        +readDescription(prompt) String
+        +readDate(prompt) String
+        +readCategory(prompt) String
+        +readTags(prompt) String
+        +readConfirmation(prompt) boolean
+        +warnDuplicate() boolean
     }
 
     class Scanner {
@@ -309,24 +309,24 @@ classDiagram
    class Parser {
       -logger: Logger
       +Parser()
-      +parseCommand(userInput): Command
-      -parseIncomeCommand(arguments): Command
-      -parseExpenseCommand(arguments): Command
-      -parseListCommand(arguments): Command
-      -parseDeleteCommand(arguments): Command
-      -parseFilterCommand(arguments): Command
-      -parseSummaryCommand(arguments): Command
-      -parseSearchCommand(arguments): Command
-      -parseBalanceCommand(arguments): Command
-      -parseEditCommand(ui): Command
-      -parseExportCommand(arguments): Command
-      -parseHelpCommand(): Command
-      -parseExitCommand(): Command
-      -extractAmount(arguments): double
-      -extractDescription(arguments): String
-      -extractDate(arguments): LocalDate
-      -extractCategory(arguments): Expense.Category
-      -extractTags(arguments): List~String~
+      +parseCommand(userInput) Command
+      -parseIncomeCommand(arguments) Command
+      -parseExpenseCommand(arguments) Command
+      -parseListCommand(arguments) Command
+      -parseDeleteCommand(arguments) Command
+      -parseFilterCommand(arguments) Command
+      -parseSummaryCommand(arguments) Command
+      -parseSearchCommand(arguments) Command
+      -parseBalanceCommand(arguments) Command
+      -parseEditCommand(ui) Command
+      -parseExportCommand(arguments) Command
+      -parseHelpCommand() Command
+      -parseExitCommand() Command
+      -extractAmount(arguments) double
+      -extractDescription(arguments) String
+      -extractDate(arguments) LocalDate
+      -extractCategory(arguments) Expense.Category
+      -extractTags(arguments) List~String~
    }
 
    class Command {
@@ -340,56 +340,89 @@ classDiagram
 
 ```mermaid
 classDiagram
-   class Parser {
-      -Pattern AMOUNT_PATTERN
-      -DateTimeFormatter DATE_FORMATTER
-      -boolean clearCommandPending
-      +parseCommandWord(String, Ui)
-      +parseIncomeCommand(String, Ui)
-      +parseExpenseCommand(String, Ui)
-      +parseDeleteCommand(String, Ui)
-      +parseEditCommand(String, Ui)
-      +parseListCommand(String)
-      +parseFilterCommand(String, Ui)
-      +parseSearchCommand(String, Ui)
-      +parseSummaryCommand(String, Ui)
-      +parseSetBudgetCommand(String, Ui)
-      +parseTrackBudgetCommand(String, Ui)
-      +parseSetSavingsGoalCommand(String, Ui)
-      +parseTrackSavingsGoalCommand(String, Ui)
-      +parseExportCommand(String, Ui)
-      -parseParameters(String)
-      -parseAmount(String)
-      -parseTags(Ui)
-      -parseCategory(Ui)
-   }
+    class Parser {
+        -Pattern AMOUNT_PATTERN
+        -DateTimeFormatter DATE_FORMATTER
+        -boolean clearCommandPending
+        +parseCommandWord(String, Ui)
+        -parseParameters(String)
+        -parseAmount(String)
+        -parseTags(Ui)
+        -parseCategory(Ui)
+    }
+    
+    class CommandParserMethods {
+        +parseIncomeCommand(String, Ui)
+        +parseExpenseCommand(String, Ui)
+        +parseDeleteCommand(String, Ui)
+        +parseEditCommand(String, Ui)
+        +parseListCommand(String)
+        +parseFilterCommand(String, Ui)
+        +parseSearchCommand(String, Ui)
+        +parseSummaryCommand(String, Ui)
+    }
+    
+    class FinancialParserMethods {
+        +parseSetBudgetCommand(String, Ui)
+        +parseTrackBudgetCommand(String, Ui)
+        +parseSetSavingsGoalCommand(String, Ui)
+        +parseTrackSavingsGoalCommand(String, Ui)
+        +parseExportCommand(String, Ui)
+    }
+    
+    Parser --|> CommandParserMethods : contains
+    Parser --|> FinancialParserMethods : contains
+```
 
-   class Command {
-      <<interface>>
-      +execute(TransactionManager, Ui, Storage)
-      +isExit()
-   }
+### Parser to Command Relationships
 
-   Parser ..> Command : creates
-   Parser ..> ExpenseCommand : creates
-   Parser ..> IncomeCommand : creates
-   Parser ..> DeleteCommand : creates
-   Parser ..> EditCommand : creates
-   Parser ..> ListCommand : creates
-   Parser ..> FilterCommand : creates
-   Parser ..> SearchCommand : creates
-   Parser ..> SummaryCommand : creates
-   Parser ..> SetBudgetCommand : creates
-   Parser ..> TrackBudgetCommand : creates
-   Parser ..> SetSavingsGoalCommand : creates
-   Parser ..> TrackSavingsGoalCommand : creates
-   Parser ..> ExportCommand : creates
-   Parser ..> BalanceCommand : creates
-   Parser ..> ClearCommand : creates
-   Parser ..> ExitCommand : creates
-   Parser ..> HelpCommand : creates
-   Parser ..> InvalidCommand : creates
-   Parser ..> UnknownCommand : creates
+```mermaid
+classDiagram
+    class Parser {
+        +parseCommandWord(String, Ui)
+    }
+    
+    class Command {
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+
+    class MainCommands {
+        IncomeCommand
+        ExpenseCommand
+        ListCommand
+        DeleteCommand
+        EditCommand
+        ExitCommand
+    }
+
+    class QueryCommands {
+        FilterCommand
+        SearchCommand
+        SummaryCommand
+        BalanceCommand
+    }
+
+    class FinancialCommands {
+        SetBudgetCommand
+        TrackBudgetCommand
+        SetSavingsGoalCommand
+        TrackSavingsGoalCommand
+        ExportCommand
+    }
+
+    class UtilityCommands {
+        ClearCommand
+        HelpCommand
+        InvalidCommand
+        UnknownCommand
+    }
+    
+    Parser ..> Command : creates
+    Command <|.. MainCommands : implements
+    Command <|.. QueryCommands : implements
+    Command <|.. FinancialCommands : implements
+    Command <|.. UtilityCommands : implements
 ```
 
 ### Model Component
@@ -471,22 +504,22 @@ classDiagram
       -filePath: String
       -logger: Logger
       +Storage(filePath)
-      +loadTransactions(): List~Transaction~
-      +saveTransactions(transactionManager): void
-      +exportToCsv(transactions, filePath): void
-      +exportToTxt(transactions, filePath): void
-      -parseTransaction(line): Transaction
-      -writeTransaction(transaction): String
+      +loadTransactions() List~Transaction~
+      +saveTransactions(transactionManager) void
+      +exportToCsv(transactions, filePath) void
+      +exportToTxt(transactions, filePath) void
+      -parseTransaction(line) Transaction
+      -writeTransaction(transaction) String
    }
 
    class TransactionManager {
       -transactions: List~Transaction~
-      +addTransaction(transaction): void
-      +deleteTransaction(index): void
-      +listTransactions(): List~Transaction~
-      +listTransactions(limit): List~Transaction~
-      +getTransaction(index): Transaction
-      +getTransactionCount(): int
+      +addTransaction(transaction) void
+      +deleteTransaction(index) void
+      +listTransactions() List~Transaction~
+      +listTransactions(limit) List~Transaction~
+      +getTransaction(index) Transaction
+      +getTransactionCount() int
    }
 
    class Transaction {
@@ -541,84 +574,84 @@ classDiagram
 classDiagram
    class Command {
       <<interface>>
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class IncomeCommand {
-      -amount: double
-      -description: String
-      -date: LocalDate
-      -tags: List~String~
+      -amount double
+      -description String
+      -date LocalDate
+      -tags List~String~
       +IncomeCommand(amount, description, date, tags)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ExpenseCommand {
-      -amount: double
-      -description: String
-      -date: LocalDate
-      -category: Category
-      -tags: List~String~
+      -amount double
+      -description String
+      -date LocalDate
+      -category Category
+      -tags List~String~
       +ExpenseCommand(amount, description, date, category, tags)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ListCommand {
-      -limit: int
-      -date: LocalDate
+      -limit int
+      -date LocalDate
       +ListCommand(limit, date)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class DeleteCommand {
-      -index: int
+      -index int
       +DeleteCommand(index)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class FilterCommand {
-      -startDate: LocalDate
-      -endDate: LocalDate
+      -startDate LocalDate
+      -endDate LocalDate
       +FilterCommand(startDate, endDate)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class SummaryCommand {
-      -month: int
-      -year: int
+      -month int
+      -year int
       +SummaryCommand(month, year)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class SearchCommand {
-      -keyword: String
+      -keyword String
       +SearchCommand(keyword)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class BalanceCommand {
-      -date: LocalDate
+      -date LocalDate
       +BalanceCommand(date)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ExitCommand {
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class HelpCommand {
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    Command <|.. IncomeCommand : implements
@@ -1297,6 +1330,7 @@ This sequence diagram illustrates the process when a user adds a new transaction
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1317,6 +1351,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "income 3000 d/Monthly salary t/work"
 
+create IncomeCommand
 Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
@@ -1345,6 +1380,7 @@ alt duplicates found
     end
 end
 
+create Income
 IncomeCommand -> Income : new Income(amount, description, tags)
 activate Income
 Income --> IncomeCommand : income
@@ -1364,7 +1400,9 @@ IncomeCommand --> FinBro : result message
 deactivate IncomeCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1380,6 +1418,7 @@ This sequence diagram illustrates the process of searching for transactions:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1398,6 +1437,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "search lunch"
 
+create SearchCommand
 Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
@@ -1413,11 +1453,19 @@ activate TransactionMgr
 TransactionMgr --> SearchCommand : matchingTransactions
 deactivate TransactionMgr
 
+SearchCommand -> SearchCommand : formatSearchResults(matchingTransactions)
+activate SearchCommand
+note right: Self-call to format search results
+SearchCommand --> SearchCommand : formattedResults
+deactivate SearchCommand
+
 SearchCommand --> FinBro : result message (list of matches)
 deactivate SearchCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1434,6 +1482,7 @@ This sequence diagram illustrates the process of filtering transactions based on
 title Filter Command Sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1452,6 +1501,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "filter d/2023-01-01 to/2023-12-31"
 
+create FilterCommand
 Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
@@ -1467,11 +1517,19 @@ activate TransactionMgr
 TransactionMgr --> FilterCommand : filteredTransactions
 deactivate TransactionMgr
 
+FilterCommand -> FilterCommand : formatFilterResults(filteredTransactions)
+activate FilterCommand
+note right: Self-call to format results
+FilterCommand --> FilterCommand : formattedResults
+deactivate FilterCommand
+
 FilterCommand --> FinBro : result message (list of filtered transactions)
 deactivate FilterCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1487,6 +1545,7 @@ This sequence diagram illustrates the process of obtaining a monthly financial s
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1505,6 +1564,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "summary m/2 y/2025"
 
+create SummaryCommand
 Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
@@ -1535,11 +1595,19 @@ activate TransactionMgr
 TransactionMgr --> SummaryCommand : taggedTransactions
 deactivate TransactionMgr
 
+SummaryCommand -> SummaryCommand : formatSummaryReport(totalIncome, totalExpenses, categorisedExpenses, taggedTransactions)
+activate SummaryCommand
+note right: Self-call to format summary report
+SummaryCommand --> SummaryCommand : formattedReport
+deactivate SummaryCommand
+
 SummaryCommand --> FinBro : result message
 deactivate SummaryCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1555,6 +1623,7 @@ This sequence diagram illustrates the process of obtaining the current list of t
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1573,6 +1642,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "list n/5 d/2025-03-01"
 
+create ListCommand
 Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
@@ -1590,7 +1660,11 @@ alt date provided
     deactivate TransactionMgr
 
     alt limit provided
-        note right of ListCommand: Apply limit to filtered list
+        ListCommand -> ListCommand : applyLimit(filteredTransactions, limit)
+        activate ListCommand
+        note right: Self-call to apply limit
+        ListCommand --> ListCommand : limitedTransactions
+        deactivate ListCommand
     end
 else no date
     alt limit provided
@@ -1606,11 +1680,19 @@ else no date
     end
 end
 
+ListCommand -> ListCommand : formatTransactionList(transactions)
+activate ListCommand
+note right: Self-call to format list
+ListCommand --> ListCommand : formattedList
+deactivate ListCommand
+
 ListCommand --> FinBro : result message
 deactivate ListCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1626,6 +1708,7 @@ This sequence diagram illustrates the process of viewing the current balance:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor "User" as User
 participant "UI" as UI
@@ -1647,10 +1730,21 @@ note right: Parse "balance" or "balance d/2023-01-01"
 
 alt date parameter provided
     Parser -> Parser : Extract date parameter
+    activate Parser
+    note right: Self-call to extract date
+    Parser --> Parser : date
+    deactivate Parser
+    
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(date)
+    activate BalanceCommand
 else no date parameter
+    create BalanceCommand
     Parser -> BalanceCommand : new BalanceCommand(null)
+    activate BalanceCommand
 end
+
+BalanceCommand --> Parser : command
 
 activate BalanceCommand
 BalanceCommand --> Parser : command
@@ -1684,11 +1778,18 @@ else no date
 end
 
 BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
+activate BalanceCommand
+note right: Self-call to format message
+BalanceCommand --> BalanceCommand : formattedMessage
+deactivate BalanceCommand
+
 BalanceCommand --> FinBro : formatted balance message
 deactivate BalanceCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display balance information
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1703,6 +1804,7 @@ This sequence diagram illustrates the process of editing a transaction:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1746,15 +1848,17 @@ alt user confirms
 
     note right of Parser: Additional UI interactions for other parameters
 
+    create EditCommand
     Parser -> EditCommand : new EditCommand(index, parameters)
     activate EditCommand
     EditCommand --> Parser : command
     deactivate EditCommand
 else user cancels
-    Parser -> EditCommand : new SimpleCommand("Edit operation cancelled.")
-    activate EditCommand
-    EditCommand --> Parser : command
-    deactivate EditCommand
+    create "SimpleCommand"
+    Parser -> "SimpleCommand" : new SimpleCommand("Edit operation cancelled.")
+    activate "SimpleCommand"
+    "SimpleCommand" --> Parser : command
+    deactivate "SimpleCommand"
 end
 
 Parser --> FinBro : command
@@ -1770,6 +1874,10 @@ alt valid index
     deactivate TransactionMgr
 
     EditCommand -> EditCommand : createUpdatedTransaction(originalTransaction, parameters)
+    activate EditCommand
+    note right: Self-call to create updated transaction
+    EditCommand --> EditCommand : updatedTransaction
+    deactivate EditCommand
 
     alt valid updated transaction
         EditCommand -> TransactionMgr : updateTransactionAt(index - 1, updatedTransaction)
@@ -1793,7 +1901,9 @@ end
 deactivate EditCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

@@ -511,13 +511,13 @@ Exports your financial records to a file.
 Enter command word:
 > export
 
-Enter export format (csv/txt) or press Enter for default (csv):
+Enter export format (csv/txt):
 > txt
 ```
 
 **Notes:**
 - Exports all your transactions to a file for backup or analysis
-- Supported formats: CSV (default) and TXT
+- Supported formats: CSV and TXT
 - CSV format is suitable for importing into spreadsheet applications
 - TXT format provides a human-readable report
 - Exported files are saved in the "exports" directory with a timestamp

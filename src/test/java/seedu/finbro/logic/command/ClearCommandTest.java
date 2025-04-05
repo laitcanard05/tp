@@ -66,6 +66,31 @@ class ClearCommandTest {
         assertEquals(0, transactionManager.getTotalExpenses());
     }
 
+    @Test
+    void execute_confirmed_clearsAllDataAndReturnsSuccessMessage() {
+        // Create a transaction to test clearing
+        List<String> tags = new ArrayList<>();
+        tags.add("Test");
+        Transaction testTransaction = new Expense(100.0, "Test expense", Expense.Category.fromString(""), tags);
+        transactionManager.addTransaction(testTransaction);
+
+        // Set a test budget and savings goal
+        transactionManager.setBudget(4, 2025, 1500.0);
+        transactionManager.setSavingsGoal(4, 2025, 500.0);
+
+        ClearCommand command = new ClearCommand(true);
+        String result = command.execute(transactionManager, ui, storage);
+
+        assertEquals("All data has been cleared.", result);
+
+        // Verify transactions were cleared
+        assertEquals(0, transactionManager.getTotalExpenses());
+
+        // Verify budgets and savings goals were cleared
+        assertEquals(-1.0, transactionManager.getBudget(4, 2025)); // Default value is -1.0
+        assertEquals(-1.0, transactionManager.getSavingsGoal(4, 2025)); // Default value is -1.0
+    }
+
     /**
      * Tests that isExit returns false.
      */
