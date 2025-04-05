@@ -240,19 +240,19 @@ classDiagram
         -scanner: Scanner
         -logger: Logger
         +UI()
-        +showWelcome(): void
-        +showGoodbye(): void
-        +showMessage(message): void
-        +showError(message): void
-        +readCommand(): String
-        +readIndex(prompt): int
-        +readAmount(prompt): String
-        +readDescription(prompt): String
-        +readDate(prompt): String
-        +readCategory(prompt): String
-        +readTags(prompt): String
-        +readConfirmation(prompt): boolean
-        +warnDuplicate(): boolean
+        +showWelcome() void
+        +showGoodbye() void
+        +showMessage(message) void
+        +showError(message) void
+        +readCommand() String
+        +readIndex(prompt) int
+        +readAmount(prompt) String
+        +readDescription(prompt) String
+        +readDate(prompt) String
+        +readCategory(prompt) String
+        +readTags(prompt) String
+        +readConfirmation(prompt) boolean
+        +warnDuplicate() boolean
     }
 
     class Scanner {
@@ -309,24 +309,24 @@ classDiagram
    class Parser {
       -logger: Logger
       +Parser()
-      +parseCommand(userInput): Command
-      -parseIncomeCommand(arguments): Command
-      -parseExpenseCommand(arguments): Command
-      -parseListCommand(arguments): Command
-      -parseDeleteCommand(arguments): Command
-      -parseFilterCommand(arguments): Command
-      -parseSummaryCommand(arguments): Command
-      -parseSearchCommand(arguments): Command
-      -parseBalanceCommand(arguments): Command
-      -parseEditCommand(ui): Command
-      -parseExportCommand(arguments): Command
-      -parseHelpCommand(): Command
-      -parseExitCommand(): Command
-      -extractAmount(arguments): double
-      -extractDescription(arguments): String
-      -extractDate(arguments): LocalDate
-      -extractCategory(arguments): Expense.Category
-      -extractTags(arguments): List~String~
+      +parseCommand(userInput) Command
+      -parseIncomeCommand(arguments) Command
+      -parseExpenseCommand(arguments) Command
+      -parseListCommand(arguments) Command
+      -parseDeleteCommand(arguments) Command
+      -parseFilterCommand(arguments) Command
+      -parseSummaryCommand(arguments) Command
+      -parseSearchCommand(arguments) Command
+      -parseBalanceCommand(arguments) Command
+      -parseEditCommand(ui) Command
+      -parseExportCommand(arguments) Command
+      -parseHelpCommand() Command
+      -parseExitCommand() Command
+      -extractAmount(arguments) double
+      -extractDescription(arguments) String
+      -extractDate(arguments) LocalDate
+      -extractCategory(arguments) Expense.Category
+      -extractTags(arguments) List~String~
    }
 
    class Command {
@@ -471,22 +471,22 @@ classDiagram
       -filePath: String
       -logger: Logger
       +Storage(filePath)
-      +loadTransactions(): List~Transaction~
-      +saveTransactions(transactionManager): void
-      +exportToCsv(transactions, filePath): void
-      +exportToTxt(transactions, filePath): void
-      -parseTransaction(line): Transaction
-      -writeTransaction(transaction): String
+      +loadTransactions() List~Transaction~
+      +saveTransactions(transactionManager) void
+      +exportToCsv(transactions, filePath) void
+      +exportToTxt(transactions, filePath) void
+      -parseTransaction(line) Transaction
+      -writeTransaction(transaction) String
    }
 
    class TransactionManager {
       -transactions: List~Transaction~
-      +addTransaction(transaction): void
-      +deleteTransaction(index): void
-      +listTransactions(): List~Transaction~
-      +listTransactions(limit): List~Transaction~
-      +getTransaction(index): Transaction
-      +getTransactionCount(): int
+      +addTransaction(transaction) void
+      +deleteTransaction(index) void
+      +listTransactions() List~Transaction~
+      +listTransactions(limit) List~Transaction~
+      +getTransaction(index) Transaction
+      +getTransactionCount() int
    }
 
    class Transaction {
@@ -541,84 +541,84 @@ classDiagram
 classDiagram
    class Command {
       <<interface>>
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class IncomeCommand {
-      -amount: double
-      -description: String
-      -date: LocalDate
-      -tags: List~String~
+      -amount double
+      -description String
+      -date LocalDate
+      -tags List~String~
       +IncomeCommand(amount, description, date, tags)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ExpenseCommand {
-      -amount: double
-      -description: String
-      -date: LocalDate
-      -category: Category
-      -tags: List~String~
+      -amount double
+      -description String
+      -date LocalDate
+      -category Category
+      -tags List~String~
       +ExpenseCommand(amount, description, date, category, tags)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ListCommand {
-      -limit: int
-      -date: LocalDate
+      -limit int
+      -date LocalDate
       +ListCommand(limit, date)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class DeleteCommand {
-      -index: int
+      -index int
       +DeleteCommand(index)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class FilterCommand {
-      -startDate: LocalDate
-      -endDate: LocalDate
+      -startDate LocalDate
+      -endDate LocalDate
       +FilterCommand(startDate, endDate)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class SummaryCommand {
-      -month: int
-      -year: int
+      -month int
+      -year int
       +SummaryCommand(month, year)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class SearchCommand {
-      -keyword: String
+      -keyword String
       +SearchCommand(keyword)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class BalanceCommand {
-      -date: LocalDate
+      -date LocalDate
       +BalanceCommand(date)
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class ExitCommand {
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    class HelpCommand {
-      +execute(transactionManager, ui, storage): String
-      +isExit(): boolean
+      +execute(transactionManager, ui, storage) String
+      +isExit() boolean
    }
 
    Command <|.. IncomeCommand : implements
