@@ -139,9 +139,7 @@ public class SummaryCommand implements Command {
                 // Process income transactions
                 if (transaction instanceof Income) {
                     taggedIncome.put(tag, taggedIncome.getOrDefault(tag, 0.0) + amount);
-                }
-                // Process expense transactions
-                else if (transaction instanceof Expense) {
+                } else if (transaction instanceof Expense) {
                     taggedExpenses.put(tag, taggedExpenses.getOrDefault(tag, 0.0) + amount);
                 }
 
