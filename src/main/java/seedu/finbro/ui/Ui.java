@@ -4,6 +4,7 @@ import seedu.finbro.logic.exceptions.DecimalPointException;
 import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.NegativeNumberException;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,12 +106,12 @@ public class Ui {
         System.out.println(message + " (y/n)");
         System.out.print("> ");
         String input = scanner.nextLine().trim().toLowerCase();
-        boolean confirmed;
-        if(input.equals("y") || input.equals("yes")) {
+
+        if (input.equals("y") || input.equals("yes")) {
             logger.fine("User confirmation result: TRUE");
             return true;
         }
-        if(input.equals("n") || input.equals("no")) {
+        if (input.equals("n") || input.equals("no")) {
             logger.fine("User confirmation result: FALSE");
             return false;
         } else {
@@ -171,34 +172,101 @@ public class Ui {
         return date;
     }
 
-    //TODO: consider splitting this up so we can recursively ask for month and year each time a wrong input is given
+    /**
+     * Reads and validates a month input from the user.
+     * Returns null if the input is empty (to use current month).
+     * Throws an exception if the input is invalid.
+     *
+     * @param message The prompt message
+     * @return The validated month (1-12) or null if input was empty
+     * @throws IllegalArgumentException if the input is not a valid month number
+     */
+    public Integer readMonthInput(String message) {
+        System.out.println(LINE);
+        System.out.println(message);
+        System.out.print("> ");
+        String input = scanner.nextLine().trim();
+
+        // If empty, return null to use current month
+        if (input.isEmpty()) {
+            logger.fine("Empty month input, will use current month");
+            return null;
+        }
+
+        try {
+            int month = Integer.parseInt(input);
+
+            // Immediate validation
+            if (month < 1 || month > 12) {
+                System.out.println("INVALID INPUT: Month must be between 1 and 12.");
+                logger.warning("Invalid month input: " + month);
+                throw new IllegalArgumentException("Month must be between 1 and 12");
+            }
+
+            return month;
+        } catch (NumberFormatException e) {
+            System.out.println("INVALID INPUT: Month must be a number between 1 and 12.");
+            logger.warning("Non-numeric month input: " + input);
+            throw new IllegalArgumentException("Month must be a number");
+        }
+    }
+
+    /**
+     * Reads user input for month and year with immediate validation.
+     * If validation fails, appropriate exceptions are thrown immediately.
+     *
+     * @return Integer array with [month, year]
+     */
     public Integer[] readMonthYear() {
         Integer[] monthYear = new Integer[2];
-        logger.fine("Requesting user input for month and year");
-        System.out.println(LINE);
-        System.out.println("Please enter the month (1-12). (Leave blank for current month)");
-        System.out.print("> ");
-        String input = scanner.nextLine();
-        Integer month;
-        if (input.isEmpty()) {
-            month = null;
-        } else {
-            month = Integer.parseInt(input);
+
+        try {
+            // Read and validate month first
+            Integer month = readMonthInput("Please enter the month (1-12). (Leave blank for current month)");
+            monthYear[0] = month;
+
+            // Only proceed to year if month is valid or empty
+            System.out.println(LINE);
+            System.out.println("Please enter the year. (Leave blank for current year)");
+            System.out.print("> ");
+            String input = scanner.nextLine();
+            Integer year;
+
+            if (input.isEmpty()) {
+                year = null;
+            } else {
+                try {
+                    year = Integer.parseInt(input);
+
+                    // Immediate validation
+                    if (year < 1000 || year > 9999) {
+                        System.out.println("INVALID INPUT: Year must be a 4-digit number.");
+                        logger.warning("Invalid year input (not a 4-digit number): " + year);
+                        throw new IllegalArgumentException("Year must be a 4-digit number");
+                    }
+
+                    if (year > LocalDate.now().getYear() + 10) {
+                        System.out.println("INVALID INPUT: Year cannot be more than 10 years in the future.");
+                        logger.warning("Invalid year input (too far in future): " + year);
+                        throw new IllegalArgumentException("Year cannot be more than 10 years in the future");
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("INVALID INPUT: Year must be a valid number.");
+                    logger.warning("Non-numeric year input: " + input);
+                    throw new IllegalArgumentException("Year must be a valid number");
+                }
+            }
+
+            monthYear[1] = year;
+            System.out.println(LINE);
+            logger.fine("User input for month and year received: " + month + " " + year);
+
+        } catch (IllegalArgumentException e) {
+            // Re-throw as a runtime exception to be caught by the command parser
+            throw new RuntimeException("Invalid month or year: " + e.getMessage());
         }
-        monthYear[0] = month;
-        System.out.println(LINE);
-        System.out.println("Please enter the year. (Leave blank for current year)");
-        System.out.print("> ");
-        input = scanner.nextLine();
-        Integer year;
-        if (input.isEmpty()) {
-            year = null;
-        } else {
-            year = Integer.parseInt(input);
-        }
-        monthYear[1] = year;
-        System.out.println(LINE);
-        logger.fine("User input for month and year received: " + month + " " + year);
+
         return monthYear;
     }
 
@@ -301,9 +369,10 @@ public class Ui {
 
 
     /**
-     * Reads the double input by user. Used to parse amount.
+     * Reads the double input by user. Used to parse amount with upper bound validation.
      *
-     * @return The double entered by the user, double >= 0, <=2dp, no empty input
+     * @param message The prompt message
+     * @return The double entered by the user, 0 < double <= MAX_AMOUNT, <=2dp, no empty input
      */
     public double readDouble(String message) {
         System.out.println(LINE);
@@ -317,6 +386,11 @@ public class Ui {
             double output = Double.parseDouble(input);
             if (output < 0) {
                 throw new NegativeNumberException();
+            }
+            if (output > seedu.finbro.util.CurrencyFormatter.MAX_AMOUNT) {
+                System.out.println("INVALID INPUT: Amount exceeds maximum limit of $1,000,000,000.00");
+                System.out.println("Please enter a smaller amount.");
+                return readDouble(message);
             }
             if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
                 throw new DecimalPointException();

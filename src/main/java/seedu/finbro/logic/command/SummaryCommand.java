@@ -50,70 +50,50 @@ public class SummaryCommand implements Command {
 
         logger.info("Executing summary command");
 
-
         String monthString = new DateFormatSymbols().getMonths()[month-MONTH_OFFSET];
         double totalIncome = transactionManager.getMonthlyTotalIncome(month, year);
         double totalExpense = transactionManager.getMonthlyTotalExpense(month, year);
         logger.info(String.format("Calculating total income and total expenses for %s %d",
-            monthString, year));
+                monthString, year));
         String summaryDisplay = String.format("Financial Summary for %s %d:\n\n",  monthString, year);
-        summaryDisplay += String.format("Total Income: $%.2f\n", totalIncome);
-        summaryDisplay += String.format("Total Expenses: $%.2f\n", totalExpense);
+        summaryDisplay += String.format(
+                "Total Income: %s\n", seedu.finbro.util.CurrencyFormatter.format(totalIncome)
+        );
+        summaryDisplay += String.format(
+                "Total Expenses: %s\n", seedu.finbro.util.CurrencyFormatter.format(totalExpense)
+        );
 
-        //uncomment this to test set budget and set savings goal
-        /*
         if (transactionManager.getBudget(month, year) == DEFAULT_BUDGET) {
             logger.info(("No budget found in hashmap"));
             summaryDisplay += String.format("\nNo budget set for %s %d\n", monthString, year);
         } else {
             double budget = transactionManager.getBudget(month, year);
-            logger.info(String.format("Budget found in hashmap: $%.2f", budget));
-            summaryDisplay += String.format("\nBudget for %s %d: $%.2f\n",
-                monthString,
-                year,
-                budget);
+            logger.info(String.format("Budget found in hashmap: %.2f", budget));
+            summaryDisplay += String.format("\nBudget for %s %d: %s\n",
+                    monthString,
+                    year,
+                    seedu.finbro.util.CurrencyFormatter.format(budget));
             double remainingBudget = budget - totalExpense;
             if (remainingBudget < 0) {
-                summaryDisplay += String.format("Budget exceeded by: $%.2f\n",
-                   Math.abs(remainingBudget));
+                summaryDisplay += String.format("Budget exceeded by: %s\n",
+                        seedu.finbro.util.CurrencyFormatter.format(Math.abs(remainingBudget)));
             } else {
-                summaryDisplay += String.format("Remaining budget: $.2f\n",
-                    remainingBudget);
+                summaryDisplay += String.format("Remaining budget: %s\n",
+                        seedu.finbro.util.CurrencyFormatter.format(remainingBudget));
             }
         }
-        if (transactionManager.getSavingsGoal(month, year) == DEFAULT_BUDGET) {
-            logger.info(("No savings goal found in hashmap"));
-            summaryDisplay += String.format("\nNo savings goal set for %s %d\n", monthString, year);
-        } else {
-            double savingsGoal = transactionManager.getSavingsGoal(month, year);
-            logger.info(String.format("Savings goal found in hashmap: $%.2f", savingsGoal));
-            summaryDisplay += String.format("\nSavings Goal for %s %d: $%.2f\n",
-                monthString,
-                year,
-                savingsGoal);
-            double savings = totalIncome - totalExpense;
-            if (savings > 0) {
-                summaryDisplay += String.format("Total Savings: $%.2f\n", savings);
-                if (savings >= savingsGoal) {
-                    summaryDisplay += String.format("Savings goal reached\n");
-                }
-            } else {
-                summaryDisplay += String.format("Net spending: $%.2f\n", Math.abs(savings));
-            }
-        }
-        */
 
         logger.info(String.format("Calculating total expenses for top categories for %s %d",
                 monthString, year));
         Map<Expense.Category, Double> sortedCategorisedExpenses =
-            transactionManager.getMonthlyCategorisedExpenses(month, year)
-            .entrySet()
-            .stream()
-            .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+                transactionManager.getMonthlyCategorisedExpenses(month, year)
+                        .entrySet()
+                        .stream()
+                        .sorted(Map.Entry.<Expense.Category, Double> comparingByValue().reversed())
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
         if (!sortedCategorisedExpenses.isEmpty()) {
             summaryDisplay += "\nTop Expense Categories:\n";
@@ -129,9 +109,9 @@ public class SummaryCommand implements Command {
                 if (expenseInCategory.getValue() == 0) {
                     break;
                 }
-                summaryDisplay += String.format("%d. %s: $%.2f\n", categoryCount,
+                summaryDisplay += String.format("%d. %s: %s\n", categoryCount,
                         expenseInCategory.getKey().toString(),
-                        expenseInCategory.getValue());
+                        seedu.finbro.util.CurrencyFormatter.format(expenseInCategory.getValue()));
                 if (categoryCount >= MAXIMUM_CATEGORIES_TO_DISPLAY) {
                     break;
                 }
@@ -168,9 +148,9 @@ public class SummaryCommand implements Command {
             if (expenseInTag.getValue() == 0) {
                 break;
             }
-            summaryDisplay += String.format("%d. %s: $%.2f\n", tagCount,
+            summaryDisplay += String.format("%d. %s: %s\n", tagCount,
                 expenseInTag.getKey(),
-                expenseInTag.getValue());
+                seedu.finbro.util.CurrencyFormatter.format(expenseInTag.getValue()));
         }
 
         return summaryDisplay;

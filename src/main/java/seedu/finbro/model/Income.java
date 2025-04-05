@@ -44,7 +44,7 @@ public class Income extends Transaction {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[Income] $").append(String.format("%.2f", amount))
+        sb.append("[Income] ").append(seedu.finbro.util.CurrencyFormatter.format(amount))
                 .append(" - ").append(description);
 
         if (!tags.isEmpty()) {

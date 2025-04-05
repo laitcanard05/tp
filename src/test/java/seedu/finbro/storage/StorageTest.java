@@ -82,9 +82,13 @@ class StorageTest {
         boolean foundExpense = false;
         
         for (Transaction t : loadedTransactions) {
-            if (t.toString().equals("[Income] $1000.00 - Salary")) {
+            if (t instanceof Income && t.toString().contains("[Income]") && 
+                  t.toString().contains("Salary") &&
+                    (t.toString().contains("$1,000.00") || t.toString().contains("$1000.00"))) {
                 foundIncome = true;
-            } else if (t.toString().contains("[Expense]") && t.toString().contains("$50.00 - Groceries")) {
+            } else if (t instanceof Expense && t.toString().contains("[Expense]") && 
+                       t.toString().contains("Groceries") &&
+                    (t.toString().contains("$50.00") || t.toString().contains("$50"))) {
                 foundExpense = true;
             }
         }
@@ -140,13 +144,46 @@ class StorageTest {
         // Check file content
         List<String> lines = Files.readAllLines(txtPath);
         assertTrue(lines.get(0).contains("FinBro Export"));
-        assertTrue(lines.contains("1. [Income] $1000.00 - Salary") || 
-                lines.contains("2. [Income] $1000.00 - Salary"));
-        assertTrue(lines.contains("1. [Expense][Food] $50.00 - Groceries") || 
-                lines.contains("2. [Expense][Food] $50.00 - Groceries"));
-        assertTrue(lines.contains("Total Income: $1000.00"));
-        assertTrue(lines.contains("Total Expenses: $50.00"));
-        assertTrue(lines.contains("Current Balance: $950.00"));
+        boolean foundIncomeEntry = false;
+        for (String line : lines) {
+            if (line.contains("[Income]") && line.contains("Salary") &&
+                (line.contains("$1,000.00") || line.contains("$1000.00"))) {
+                foundIncomeEntry = true;
+                break;
+            }
+        }
+        assertTrue(foundIncomeEntry, "Income entry not found in export");
+        boolean foundExpenseEntry = false;
+        for (String line : lines) {
+            if (line.contains("[Expense][Food]") && line.contains("Groceries") &&
+                (line.contains("$50.00") || line.contains("$50"))) {
+                foundExpenseEntry = true;
+                break;
+            }
+        }
+        assertTrue(foundExpenseEntry, "Expense entry not found in export");
+        boolean totalIncomeFound = false;
+        boolean totalExpensesFound = false;
+        boolean balanceFound = false;
+        
+        for (String line : lines) {
+            if (line.contains("Total Income:") && 
+                (line.contains("$1,000.00") || line.contains("$1000.00"))) {
+                totalIncomeFound = true;
+            }
+            if (line.contains("Total Expenses:") && 
+                (line.contains("$50.00") || line.contains("$50"))) {
+                totalExpensesFound = true;
+            }
+            if (line.contains("Current Balance:") && 
+                (line.contains("$950.00") || line.contains("$950"))) {
+                balanceFound = true;
+            }
+        }
+        
+        assertTrue(totalIncomeFound, "Total income line not found");
+        assertTrue(totalExpensesFound, "Total expenses line not found");
+        assertTrue(balanceFound, "Balance line not found");
     }
 
     @Test

@@ -41,9 +41,9 @@ public class BalanceCommand implements Command {
         assert Math.abs((totalIncome - totalExpenses) - balance) < 0.001 :
                 "Balance calculation error: " + balance + " != " + totalIncome + " - " + totalExpenses;
 
-        String formattedBalance = CURRENCY_FORMAT.format(balance);
-        String formattedIncome = CURRENCY_FORMAT.format(totalIncome);
-        String formattedExpenses = CURRENCY_FORMAT.format(totalExpenses);
+        String formattedBalance = seedu.finbro.util.CurrencyFormatter.format(balance);
+        String formattedIncome = seedu.finbro.util.CurrencyFormatter.format(totalIncome);
+        String formattedExpenses = seedu.finbro.util.CurrencyFormatter.format(totalExpenses);
 
         return "Current Balance: " + formattedBalance + "\n" +
                 "Total Income: " + formattedIncome + "\n" +

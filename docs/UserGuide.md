@@ -155,7 +155,8 @@ Displays your transaction history.
 Enter command word:
 > list
 
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can choose the number of transactions to show after this prompt.)
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show all transactions. You can 
+choose the number of transactions to show after this prompt.)
 > 
 
 Enter number of transactions to list. (Leave blank to show all transactions.)
