@@ -1330,6 +1330,7 @@ This sequence diagram illustrates the process when a user adds a new transaction
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1399,7 +1400,9 @@ IncomeCommand --> FinBro : result message
 deactivate IncomeCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1415,6 +1418,7 @@ This sequence diagram illustrates the process of searching for transactions:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1459,7 +1463,9 @@ SearchCommand --> FinBro : result message (list of matches)
 deactivate SearchCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1476,6 +1482,7 @@ This sequence diagram illustrates the process of filtering transactions based on
 title Filter Command Sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1520,7 +1527,9 @@ FilterCommand --> FinBro : result message (list of filtered transactions)
 deactivate FilterCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1536,6 +1545,7 @@ This sequence diagram illustrates the process of obtaining a monthly financial s
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1595,7 +1605,9 @@ SummaryCommand --> FinBro : result message
 deactivate SummaryCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1611,6 +1623,7 @@ This sequence diagram illustrates the process of obtaining the current list of t
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1677,7 +1690,9 @@ ListCommand --> FinBro : result message
 deactivate ListCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1693,6 +1708,7 @@ This sequence diagram illustrates the process of viewing the current balance:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor "User" as User
 participant "UI" as UI
@@ -1771,7 +1787,9 @@ BalanceCommand --> FinBro : formatted balance message
 deactivate BalanceCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display balance information
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
@@ -1786,6 +1804,7 @@ This sequence diagram illustrates the process of editing a transaction:
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid  
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -1882,7 +1901,9 @@ end
 deactivate EditCommand
 
 FinBro -> UI : showMessage(result)
+activate UI 
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
