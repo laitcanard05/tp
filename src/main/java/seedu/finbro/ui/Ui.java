@@ -163,8 +163,7 @@ public class Ui {
         logger.fine("Requesting user input for start date");
         System.out.println(LINE);
         System.out.println("Please enter the start date in the format yyyy-mm-dd. " +
-                           "(Leave blank to show all transactions. " +
-                           "You can choose the number of transactions to show after this prompt.)");
+                           "(Leave blank to show from first transaction onwards)");
         System.out.print("> ");
         String date = scanner.nextLine();
         System.out.println(LINE);
@@ -339,10 +338,10 @@ public class Ui {
                     throw new EmptyInputException();
                 }
 
-                if (input.contains("-")) {
+                if (input.matches("\\d+\\s*-\\s*\\d+")) {
                     String[] parts = input.split("-");
                     if (parts.length != 2) {
-                        throw new NumberFormatException("Invalid range format.");
+                        throw new NumberFormatException();
                     }
 
                     int start = Integer.parseInt(parts[0].trim());
@@ -360,11 +359,27 @@ public class Ui {
                     }
                     return new int[]{index, index};
                 }
+
+            } catch (NumberFormatException e) {
+                System.out.println(LINE);
+                System.out.println("Invalid input. Please enter a number or a valid range (e.g., '1' or '2-5')");
+                logger.log(Level.WARNING, "Invalid delete index input", e);
+            } catch (IllegalArgumentException e) {
+                System.out.println(LINE);
+                System.out.println(e.getMessage());
+                logger.log(Level.WARNING, "Invalid delete index input", e);
+            } catch (EmptyInputException e) {
+                System.out.println(LINE);
+                System.out.println("Input cannot be empty. Please enter a number or range.");
+                logger.log(Level.WARNING, "Invalid delete index input", e);
             } catch (Exception e) {
-                System.out.println("Invalid input. Enter a number or range (e.g., '1' or '2-5')");
+                System.out.println(LINE);
+                System.out.println("Unexpected error: " + e.getMessage());
                 logger.log(Level.WARNING, "Invalid delete index input", e);
             }
+            System.out.print("> ");
         }
+
     }
 
 
