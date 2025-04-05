@@ -1,0 +1,65 @@
+classDiagram
+    class Command {
+        <<interface>>
+        +execute(TransactionManager, Ui, Storage)
+        +isExit()
+    }
+
+    class ExpenseCommand {
+        -double amount
+        -String description
+        -LocalDate date
+        -List~String~ tags
+        -Category category
+        +execute()
+        +isExit()
+    }
+
+    class IncomeCommand {
+        -double amount
+        -String description
+        -LocalDate date
+        -List~String~ tags
+        +execute()
+        +isExit()
+    }
+
+    class DeleteCommand {
+        -int index
+        +execute()
+        +isExit()
+    }
+
+    class EditCommand {
+        -int index
+        -Map~String, Object~ fieldsToUpdate
+        +execute()
+        +isExit()
+    }
+
+    class FilterCommand {
+        -LocalDate startDate
+        -LocalDate endDate
+        +execute()
+        +isExit()
+    }
+
+    class SearchCommand {
+        -String keyword
+        +execute()
+        +isExit()
+    }
+
+    class SummaryCommand {
+        -YearMonth month
+        +execute()
+        +isExit()
+    }
+
+    Command <|.. ExpenseCommand : implements
+    Command <|.. IncomeCommand : implements
+    Command <|.. DeleteCommand : implements
+    Command <|.. EditCommand : implements
+    Command <|.. FilterCommand : implements
+    Command <|.. SearchCommand : implements
+    Command <|.. SummaryCommand : implements

@@ -3,22 +3,22 @@ classDiagram
         -filePath: String
         -logger: Logger
         +Storage(filePath)
-        +loadTransactions(): List~Transaction~
-        +saveTransactions(transactionManager): void
-        +exportToCsv(transactions, filePath): void
-        +exportToTxt(transactions, filePath): void
-        -parseTransaction(line): Transaction
-        -writeTransaction(transaction): String
+        +loadTransactions() List~Transaction~
+        +saveTransactions(transactionManager) void
+        +exportToCsv(transactions, filePath) void
+        +exportToTxt(transactions, filePath) void
+        -parseTransaction(line) Transaction
+        -writeTransaction(transaction) String
     }
 
     class TransactionManager {
         -transactions: List~Transaction~
-        +addTransaction(transaction): void
-        +deleteTransaction(index): void
-        +listTransactions(): List~Transaction~
-        +listTransactions(limit): List~Transaction~
-        +getTransaction(index): Transaction
-        +getTransactionCount(): int
+        +addTransaction(transaction) void
+        +deleteTransaction(index) void
+        +listTransactions() List~Transaction~
+        +listTransactions(limit) List~Transaction~
+        +getTransaction(index) Transaction
+        +getTransactionCount() int
     }
 
     class Transaction {

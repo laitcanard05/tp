@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -20,6 +21,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "search lunch"
 
+create SearchCommand
 Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
@@ -35,11 +37,19 @@ activate TransactionMgr
 TransactionMgr --> SearchCommand : matchingTransactions
 deactivate TransactionMgr
 
+SearchCommand -> SearchCommand : formatSearchResults(matchingTransactions)
+activate SearchCommand
+note right: Self-call to format search results
+SearchCommand --> SearchCommand : formattedResults
+deactivate SearchCommand
+
 SearchCommand --> FinBro : result message (list of matches)
 deactivate SearchCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 

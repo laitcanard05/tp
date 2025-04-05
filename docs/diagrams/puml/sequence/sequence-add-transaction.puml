@@ -2,6 +2,7 @@
 !theme plain
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam lifelineStrategy nosolid
 
 actor ":User" as User
 participant ":Ui" as UI
@@ -22,6 +23,7 @@ FinBro -> Parser : parseCommand(userInput)
 activate Parser
 note right: Parse "income 3000 d/Monthly salary t/work"
 
+create IncomeCommand
 Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
@@ -50,6 +52,7 @@ alt duplicates found
     end
 end
 
+create Income
 IncomeCommand -> Income : new Income(amount, description, tags)
 activate Income
 Income --> IncomeCommand : income
@@ -69,7 +72,9 @@ IncomeCommand --> FinBro : result message
 deactivate IncomeCommand
 
 FinBro -> UI : showMessage(result)
+activate UI
 UI --> User : display result
+UI --> FinBro
 deactivate UI
 deactivate FinBro
 
