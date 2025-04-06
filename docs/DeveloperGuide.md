@@ -358,124 +358,137 @@ Editing a transaction also follows a similar component interaction pattern:
 
 **Index-Based Transaction Selection**
 
+We check for a valid index by these 2 checks:
 ```java
-public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-   // Check if index is valid (1-based indexing for user interface)
-   if (index < 1 || index > transactionManager.getTransactionCount()) {
-      return "Invalid index. Please provide a valid transaction index.";
-   }
+if (index <= 0) {
+        logger.warning("Invalid index: " + index + " (must be positive)");
+                return new InvalidCommand("Invalid index. Index must be a positive number.");
+            }
+```
 
-   try {
-      // Get original transaction (accounting for INDEX_OFFSET)
-      Transaction originalTransaction = transactionManager.getTransaction(index - 1);
-
-      // Create updated transaction based on parameters
-      Transaction updatedTransaction = createUpdatedTransaction(originalTransaction, parameters);
-
-      if (updatedTransaction != null) {
-         // Replace transaction at index
-         transactionManager.updateTransactionAt(index - 1, updatedTransaction);
-         storage.saveTransactions(transactionManager);
-         return "Transaction at index " + index + " successfully updated:\n" + updatedTransaction;
-      }
-      return "Failed to update transaction.";
-   } catch (Exception e) {
-      logger.log(Level.WARNING, "Error updating transaction", e);
-      return "Failed to update transaction: " + e.getMessage();
-   }
+```java
+if (index > transactions.size()) {
+    logger.warning("Invalid index: " + index + " (out of range)");
+    return "Invalid index. Please provide an index between 1 and " + transactions.size() + ".";
 }
 ```
 
 **User Confirmation via UI**
 
-The parseEditCommand method in Parser.java now includes a confirmation step:
+WIthin parseEditCommand method in Parser.java, there is a confirmation step:
 ```java
-private Command parseEditCommand(Ui ui) {
-    try {
-        // Get index of transaction to edit
-        int index = ui.readIndex("Enter the index of transaction to edit:\n> ");
-        
-        // Add confirmation step
-        boolean confirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
-        if (!confirmed) {
-            return new Command() {
-                @Override
-                public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
-                    return "Edit operation cancelled.";
-                }
-                
-                @Override
-                public boolean isExit() {
-                    return false;
-                }
-            };
+boolean isConfirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
+if (!isConfirmed) {
+   logger.fine("User cancelled edit operation");
+   return new Command() {
+        @Override
+        public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
+        return "Edit operation cancelled.";
         }
-        
-        // Proceed with collecting parameters for the edit
-        Map<String, String> parameters = new HashMap<>();
-        
-        // Collect parameters with UI interaction
-        String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
-        if (!amountStr.isEmpty()) {
-            parameters.put("a", amountStr);
+
+        @Override
+        public boolean isExit() {
+            return false;
         }
-        
-        // [Additional parameter collection]
-        
-        return new EditCommand(index, parameters);
-    } catch (Exception e) {
-        logger.log(Level.WARNING, "Error parsing edit command", e);
-        return new InvalidCommand("Invalid edit command: " + e.getMessage());
-    }
+   };
 }
 ```
 **Transaction Update Logic**
 
 The selective field update approach is retained:
+1. Amount Update
 ```java
-private Transaction createUpdatedTransaction(Transaction original, Map<String, String> parameters) {
+String amountStr = ui.readAmount("Enter new amount (press Enter to skip):\n> ");
+if (!amountStr.isEmpty()) {
     try {
-        // Default values from original transaction
-        double amount = original.getAmount();
-        String description = original.getDescription();
-        LocalDate date = original.getDate();
-        List<String> tags = new ArrayList<>(original.getTags());
-        
-        // Update values based on parameters
-        if (parameters.containsKey("a")) {
-            amount = Double.parseDouble(parameters.get("a"));
+        double amount = Double.parseDouble(amountStr);
+        if (amount <= 0) {
+            return "Amount must be positive.";
         }
-        if (parameters.containsKey("d")) {
-            description = parameters.get("d");
-        }
-        if (parameters.containsKey("date")) {
-            date = LocalDate.parse(parameters.get("date"));
-        }
-        if (parameters.containsKey("t")) {
-            tags = Arrays.asList(parameters.get("t").split(","));
-        }
-        
-        // Create new transaction based on the type of the original
-        if (original instanceof Income) {
-            return new Income(amount, description, date, tags);
-        } else if (original instanceof Expense) {
-            Expense originalExpense = (Expense) original;
-            Expense.Category category = originalExpense.getCategory();
-            
-            if (parameters.containsKey("c")) {
-                category = Expense.Category.fromString(parameters.get("c"));
-            }
-            
-            return new Expense(amount, description, date, category, tags);
-        }
-        return null;
+        parameters.put("a", amountStr);
     } catch (NumberFormatException e) {
-        logger.log(Level.WARNING, "Invalid amount format in edit command", e);
-        return null;
-    } catch (DateTimeParseException e) {
-        logger.log(Level.WARNING, "Invalid date format in edit command", e);
-        return null;
+        return "Invalid amount format.";
     }
+}
+```
+
+2. Description Update
+```java
+String description = ui.readDescription("Enter new description (press Enter to skip):\n> ");
+if (!description.isEmpty()) {
+parameters.put("d", description);
+}
+```
+
+3. Date Update
+```java
+String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
+if (!dateStr.isEmpty()) {
+    try {
+        LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        parameters.put("date", dateStr);
+    } catch (DateTimeParseException e) {
+        return "Invalid date format. Please use YYYY-MM-DD.";
+    }
+}
+```
+
+4. Category Update
+```java
+String categoryInput = ui.readCategory(
+                "Enter new category (press Enter to skip, 'y' to select from menu):\n> "
+);
+if (!categoryInput.isEmpty()) {
+    if (categoryInput.toLowerCase().startsWith("y")) {
+        Expense.Category category = parseCategory(ui);
+        parameters.put("c", category.toString());
+    } else {
+        try {
+            Expense.Category category = Expense.Category.fromString(categoryInput);
+            parameters.put("c", category.toString());
+        } catch (IllegalArgumentException e) {
+            return "Invalid category.";
+        }
+    }
+}
+```
+
+5. Tags Update
+```java
+String tagsInput = ui.readTags("Enter new tags (comma separated, press Enter to skip, 'y' to select):\n> ");
+if (!tagsInput.isEmpty()) {
+    if (tagsInput.toLowerCase().startsWith("y")) {
+        List<String> tags = parseTags(ui);
+        if (!tags.isEmpty()) {
+            parameters.put("t", String.join(",", tags));
+        }
+    } else {
+        List<String> tags = Arrays.stream(tagsInput.split(","))
+                .map(String::trim)
+                .filter(tag -> !tag.isEmpty())
+                .collect(Collectors.toList());
+        if (!tags.isEmpty()) {
+            parameters.put("t", String.join(",", tags));
+        }
+    }
+}
+```
+
+If no parameters were to be changed:
+```java
+if (parameters.isEmpty()) {
+    return "No changes were specified. Transaction remains unchanged.";
+}
+```
+
+If transaction is updated successfully, updates the storage as such:
+```java
+boolean success = transactionManager.updateTransaction(originalTransaction, updatedTransaction);
+if (success) {
+    storage.saveTransactions(transactionManager);
+    return "Transaction updated successfully:\n" + updatedTransaction;
+} else {
+    return "Failed to update transaction.";
 }
 ```
 

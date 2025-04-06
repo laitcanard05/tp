@@ -50,6 +50,7 @@ public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final int INDEX_OFFSET = 1;
 
     // Track if a clear confirmation is pending
     private boolean clearCommandPending = false;
@@ -227,7 +228,7 @@ public class Parser {
      */
     private String processEditWorkflow(int index, TransactionManager transactionManager, Ui ui, Storage storage) {
         List<Transaction> transactions = transactionManager.listTransactions();
-        Transaction originalTransaction = transactions.get(index - 1); // Adjust for 0-based indexing
+        Transaction originalTransaction = transactions.get(index - INDEX_OFFSET); // Adjust for 0-based indexing
 
         Map<String, String> parameters = new HashMap<>();
 

@@ -56,7 +56,7 @@ public class EditCommand implements Command {
         // Check if index is valid
         if (index <= 0 || index > transactions.size()) {
             logger.warning("Invalid index: " + index);
-            return "Invalid index. Please provide an index between 1 and " + (transactions.size() - 1+ ".");
+            return "Invalid index. Please provide an index between 1 and " + (transactions.size() + ".");
         }
 
         // Get the transaction at the specified index
@@ -73,7 +73,6 @@ public class EditCommand implements Command {
                 logger.warning("Failed to update transaction");
             }
         }
-
         return "Failed to update transaction.";
     }
 
