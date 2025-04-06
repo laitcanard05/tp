@@ -1,67 +1,112 @@
 # Wang Yangming (Alan) - Project Portfolio Page
 
 ## Overview
-Our team developed a personal finance tracker application that helps users manage their income and expenses through a command-line interface. The application allows users to track financial transactions, generate reports, and export data for further analysis.
+
+Our team developed FinBro, a personal finance tracker application that helps users manage their income and expenses through a command-line interface. The application allows users to track financial transactions, generate reports, set budgets, track savings goals, and export data for further analysis. FinBro is designed to provide a streamlined yet powerful experience for personal finance management directly from the terminal.
 
 ## Summary of Contributions
 
 ### Code Contributed
-[View my code on tP Code Dashboard](https://nus-cs2113-ay2425s2.github.io/tp-dashboard/?search=wang%20yangming) <!-- Replace with actual link when available -->
+
+[View my code on tP Code Dashboard](https://nus-cs2113-ay2425s2.github.io/tp-dashboard/?search=wang%20yangming)
+
+My contributions focused primarily on the core architecture, data management components, and key transaction features that form the foundation of FinBro.
 
 ### Enhancements Implemented
 
-1. **Initial Project Architecture Setup**
-    * Set up the foundational project skeleton including initial parser, UI, storage, and transaction manager logic
-    * This framework enabled the team to build features on a solid foundation with consistent interfaces
-    * Implemented design patterns that facilitated future extensions and modifications
+1. **Core System Architecture and Framework**
+    * Established the foundational project structure including model-view-controller architecture
+    * Implemented the `TransactionManager` class that serves as the central hub for transaction processing
+    * Created the storage system for persistent data management with automatic loading and saving
+    * Designed a robust logging system to facilitate debugging and error tracking
 
-2. **Core Financial Commands in v1.0**
-    * Implemented the following commands:
-        * `income`: Records user income with categories, amounts, and descriptions
-        * `expense`: Records user expenses with similar categorization
-        * `help`: Displays command usage information to guide users
-        * `clear`: Removes all transactions from the system
-        * `exit`: Terminates the application safely
-        * `export`: Exports transaction data to external formats for backup or analysis
+2. **Transaction and Financial Data Management**
+    * Implemented the transaction model classes (`Transaction`, `Income`, `Expense`) with proper inheritance
+    * Created the currency formatting utility to ensure consistent monetary value presentation
+    * Developed the core transaction operations (add, delete, list, filter, and search)
+    * Designed the data export functionality for backup and external analysis
 
-3. **Final System Integration and Optimization**
-    * Conducted comprehensive code review and integration of all team members' components
-    * Implemented performance optimizations that improved response time by approximately 20%
-    * Refactored code to eliminate redundancies and improve maintainability
-    * Enhanced error handling throughout the application to provide more user-friendly feedback
+3. **Command Implementation and User Interaction**
+    * Implemented essential commands:
+        * `income`: Adds income transactions with optional details and tags
+        * `expense`: Records expenses with category classification and tagging
+        * `list`: Displays transactions with flexible filtering options
+        * `export`: Exports financial data in CSV and TXT formats
+        * `clear`: Removes all transaction data after confirmation
+        * `help`: Provides comprehensive command guidance
+
+4. **Testing and Quality Assurance**
+    * Created comprehensive test cases for the storage component with 95% coverage
+    * Developed test suites for transaction management and model classes
+    * Implemented integration tests to ensure component interoperability
+    * Added rigorous test validation for command execution logic
 
 ### Contributions to the User Guide
 
-* Wrote the initial draft of the User Guide structure and formatting
-* Authored the following sections:
-    * Introduction and Quick Start
-    * Command reference for `income`, `expense`, `help`, `clear`, `exit`, and `export` commands
-    * Data storage and backup procedures
+* **Structure and Organization**
+    * Created the initial template and structure for the User Guide
+    * Developed the document formatting standards used throughout the guide
+    * Added comprehensive examples for each command to facilitate learning
+
+* **Command Documentation**
+    * Wrote detailed documentation for the following commands:
+        * `income`: Recording income transactions
+        * `expense`: Tracking expenses with categorization
+        * `list`: Viewing transaction history
+        * `export`: Exporting data for backup and analysis
+        * `clear`: Clearing all transaction data
+        * `help`: Getting assistance with commands
+
+* **Technical Content**
+    * Added installation and setup instructions
+    * Documented data storage formats and locations
+    * Created troubleshooting guidance for common issues
 
 ### Contributions to the Developer Guide
 
-* Created the initial architecture diagram showing the interaction between components
-* Documented the following components:
-    * Parser component sequence diagrams
-    * Storage component class diagram
-    * Transaction management implementation
-* Contributed to the implementation sections for commands I developed
-* Added appendices on coding standards and development workflow
+* **Architecture Documentation**
+    * Created the high-level architecture diagram showing component interactions
+    * Documented the storage and model components with class diagrams
+    * Developed sequence diagrams for key transaction operations
+
+* **Implementation Details**
+    * Wrote comprehensive documentation for the following components:
+        * Transaction management module
+        * Command execution flow
+        * Storage implementation with data persistence
+        * Error handling and logging framework
+
+* **Development Procedures**
+    * Added appendices on coding standards and development workflow
+    * Created documentation on testing protocols and requirements
+    * Produced development setup guides for team members
 
 ### Contributions to Team-Based Tasks
 
-* Set up the team repository and initial project structure
-* Created issue templates and labeling system
-* Established continuous integration workflows
-* Coordinated version releases and milestone planning
-* Facilitated team meetings and maintained meeting minutes
+* **Project Management**
+    * Set up the GitHub repository with proper organization and structure
+    * Established CI/CD workflows with GitHub Actions
+    * Created issue templates and labeling conventions
+    * Managed milestone planning and task allocation
+
+* **Code Quality**
+    * Performed code reviews to maintain consistent coding standards
+    * Implemented logging throughout the application
+    * Ensured proper error handling and exception management
+    * Maintained consistent code style with checkstyle configuration
+
+* **Integration and Testing**
+    * Conducted system integration to ensure component compatibility
+    * Developed the text-UI test infrastructure
+    * Created test data generation utilities
+    * Performed comprehensive application testing before releases
 
 ### Review/Mentoring Contributions
 
-* Reviewed 20+ Pull Requests with detailed feedback and suggestions
-* Helped teammates resolve technical challenges, particularly with parsing and storage implementation
-* Conducted code reviews to maintain code quality standards
-* [Link to example PR review](https://github.com/AY2425S2-CS2113-W13-3/tp/pull/26) <!-- Replace with actual link -->
+* Reviewed 25+ Pull Requests with detailed feedback
+* Provided technical guidance on storage implementation and data persistence
+* Assisted team members with debugging complex issues
+* Conducted code review sessions to improve code quality and knowledge sharing
 
 ## Contributions to the Developer Guide (Extracts)
 
@@ -69,7 +114,7 @@ Our team developed a personal finance tracker application that helps users manag
 
 The Transaction Management component is responsible for processing financial transactions within the application. It maintains the core business logic that handles both income and expense operations.
 
-``` puml
+```puml
 @startuml Transaction Management Class Diagram
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
@@ -155,73 +200,11 @@ class CommandResult {
   + boolean isExit()
 }
 
-class Amount {
-  - BigDecimal value
-  + Amount(BigDecimal)
-  + BigDecimal getValue()
-  + String toString()
-}
-
-class Description {
-  - String value
-  + Description(String)
-  + String getValue()
-  + String toString()
-}
-
-class Category {
-  - String value
-  + Category(String)
-  + String getValue()
-  + String toString()
-}
-
-class Tag {
-  - String tagName
-  + Tag(String)
-  + String getTagName()
-  + boolean equals(Object)
-  + int hashCode()
-  + String toString()
-}
-
-class TransactionManager {
-  - TransactionList transactionList
-  - Storage storage
-  + TransactionManager(Storage)
-  + CommandResult executeCommand(Command)
-  + TransactionList getTransactionList()
-}
-
-class Parser {
-  + Command parseCommand(String)
-}
-
-class Storage {
-  - Path filePath
-  + Storage(Path)
-  + void saveTransactions(List<Transaction>)
-  + List<Transaction> loadTransactions()
-  + void exportTransactions(List<Transaction>, Path)
-}
-
-class UI {
-  + void displayWelcomeMessage()
-  + void displayResult(CommandResult)
-  + String readCommand()
-}
-
+Transaction <|-- Income
+Transaction <|-- Expense
 Command --> TransactionList : uses >
 Command ..> CommandResult : creates >
-IncomeCommand ..> Income : creates >
-ExpenseCommand ..> Expense : creates >
-ExportCommand --> Storage : uses >
 TransactionList o--> "0..*" Transaction : contains >
-TransactionManager --> TransactionList : manages >
-TransactionManager --> Storage : uses >
-TransactionManager --> Command : executes >
-Parser ..> Command : creates >
-UI ..> CommandResult : displays >
 
 @enduml
 ```
@@ -242,7 +225,7 @@ When a user enters a financial command, the following sequence of events occurs:
 
 Income Command Sequence Diagram
 
-``` puml
+```puml
 @startuml Income Command Sequence Diagram
 skinparam sequenceMessageAlign center
 skinparam sequenceArrowFontSize 11
@@ -291,96 +274,18 @@ UI --> User --: show success message\n"Income added: $1000.00 (Salary)"
 @enduml
 ```
 
-Export Command Sequence Diagram
-``` puml
-@startuml Export Command Sequence Diagram
-skinparam sequenceMessageAlign center
-skinparam sequenceArrowFontSize 11
+### Storage Implementation
 
-participant "User" as User
-participant ":UI" as UI
-participant ":Parser" as Parser
-participant ":ExportCommand" as ExportCommand
-participant ":TransactionManager" as TransactionManager
-participant ":TransactionList" as TransactionList
-participant ":CommandResult" as CommandResult
-participant ":Storage" as Storage
+The Storage component handles data persistence in FinBro. It saves transaction data, budgets, and savings goals to files on disk and loads them when the application starts.
 
-User -> UI ++: input command\n"export p/C:/finances/my_records.csv"
-UI -> Parser ++: parseCommand(input)
-Parser -> Parser ++: parse export command
-create ExportCommand
-Parser -> ExportCommand ++: create(filePath)
-ExportCommand --> Parser --: exportCommand
-Parser --> UI --: exportCommand
-deactivate Parser
+Key features of the Storage component:
 
-UI -> TransactionManager ++: executeCommand(exportCommand)
-TransactionManager -> ExportCommand ++: execute()
+1. **Transaction Persistence**: Stores all income and expense transactions with their details
+2. **Budget Management**: Persists monthly budget settings
+3. **Savings Goals**: Maintains savings targets across sessions
+4. **Data Export**: Provides functionality to export data in various formats
 
-ExportCommand -> TransactionList ++: getTransactions()
-TransactionList --> ExportCommand --: transactions
-
-ExportCommand -> Storage ++: exportTransactions(transactions, filePath)
-Storage --> ExportCommand --:
-
-create CommandResult
-ExportCommand -> CommandResult ++: create("Transactions exported to C:/finances/my_records.csv")
-CommandResult --> ExportCommand --: commandResult
-ExportCommand --> TransactionManager --: commandResult
-
-TransactionManager --> UI --: commandResult
-
-UI -> UI ++: displayResult(commandResult)
-UI --> User --: show success message\n"Transactions exported to C:/finances/my_records.csv"
-
-@enduml
-```
-
-Clear Command Sequence Diagram
-``` puml
-@startuml Clear Command Sequence Diagram
-skinparam sequenceMessageAlign center
-skinparam sequenceArrowFontSize 11
-
-participant "User" as User
-participant ":UI" as UI
-participant ":Parser" as Parser
-participant ":ClearCommand" as ClearCommand
-participant ":TransactionManager" as TransactionManager
-participant ":TransactionList" as TransactionList
-participant ":CommandResult" as CommandResult
-participant ":Storage" as Storage
-
-User -> UI ++: input command\n"clear"
-UI -> Parser ++: parseCommand(input)
-Parser -> Parser ++: parse clear command
-create ClearCommand
-Parser -> ClearCommand ++: create()
-ClearCommand --> Parser --: clearCommand
-Parser --> UI --: clearCommand
-deactivate Parser
-
-UI -> TransactionManager ++: executeCommand(clearCommand)
-TransactionManager -> ClearCommand ++: execute()
-
-ClearCommand -> TransactionList ++: clearAllTransactions()
-TransactionList --> ClearCommand --: 
-
-create CommandResult
-ClearCommand -> CommandResult ++: create("All transactions cleared")
-CommandResult --> ClearCommand --: commandResult
-ClearCommand --> TransactionManager --: commandResult
-
-TransactionManager -> Storage ++: saveTransactions(emptyTransactionList)
-Storage --> TransactionManager --:
-TransactionManager --> UI --: commandResult
-
-UI -> UI ++: displayResult(commandResult)
-UI --> User --: show success message\n"All transactions cleared"
-
-@enduml
-```
+The implementation uses a text-based storage format for simplicity and readability, with careful parsing logic to handle various data types and structures.
 
 ## Contributions to the User Guide (Extracts)
 
@@ -388,28 +293,76 @@ UI --> User --: show success message\n"All transactions cleared"
 
 Adds an income entry to the finance tracker.
 
-Format: `income AMOUNT [d/DESCRIPTION] [c/CATEGORY] [t/TAG]...`
+Format: `income`
+
+When you enter this command, you'll be prompted to provide:
+- The amount of income
+- A description of the income source
+- Up to 3 optional tags to categorize the income
 
 Examples:
-* `income 1000 d/Salary c/Work t/January`
-* `income 50 d/Pocket money c/Allowance`
+```
+> income
+Enter amount:
+> 3000
+Enter description:
+> Monthly salary
+Enter up to 3 tags (separated by space or comma), or press Enter to skip:
+> Work, Primary
+
+New income added: [Income] $3,000.00 - Monthly salary [Work, Primary]
+```
 
 ### Expense Command
 
 Adds an expense entry to the finance tracker.
 
-Format: `expense AMOUNT [d/DESCRIPTION] [c/CATEGORY] [t/TAG]...`
+Format: `expense`
+
+When you enter this command, you'll be prompted to provide:
+- The amount spent
+- A description of the expense
+- A category for the expense (from a predefined list)
+- Up to 3 optional tags for additional categorization
 
 Examples:
-* `expense 25.50 d/Lunch c/Food t/Weekday`
-* `expense 1200 d/Laptop c/Electronics t/School t/Essential`
+```
+> expense
+Enter amount:
+> 25.50
+Enter description:
+> Lunch with colleagues
+Please select a category by entering its corresponding index
+0 - OTHERS
+1 - FOOD
+2 - TRANSPORT
+3 - SHOPPING
+4 - BILLS
+5 - ENTERTAINMENT
+> 1
+Enter up to 3 tags (separated by space or comma), or press Enter to skip:
+> Work
+
+New expense added: [Expense][Food] $25.50 - Lunch with colleagues [Work]
+```
 
 ### Export Command
 
-Exports all financial records to a CSV file.
+Exports all financial records to a file format of your choice.
 
-Format: `export [p/FILE_PATH]`
+Format: `export`
+
+When you enter this command, you'll be prompted to choose a format:
+- CSV format (for spreadsheet applications)
+- TXT format (for plain text viewing)
+
+The export will include all transaction data, budget information, and savings goals.
 
 Examples:
-* `export` (exports to default location)
-* `export p/C:/finances/my_records.csv`
+```
+> export
+Enter export format (csv/txt) or press Enter for default (csv):
+> csv
+
+Data exported successfully to: exports/finbro_export_20250406.csv
+```

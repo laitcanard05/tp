@@ -4,7 +4,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -249,14 +248,9 @@ public class Parser {
             parameters.put("d", description);
         }
 
-        String dateStr = ui.readDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
+        String dateStr = ui.readValidDate("Enter new date (YYYY-MM-DD) (press Enter to skip):\n> ");
         if (!dateStr.isEmpty()) {
-            try {
-                LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                parameters.put("date", dateStr);
-            } catch (DateTimeParseException e) {
-                return "Invalid date format. Please use YYYY-MM-DD.";
-            }
+            parameters.put("date", dateStr);
         }
 
         String categoryInput = ui.readCategory(
@@ -391,18 +385,17 @@ public class Parser {
     private Command parseListCommand(Ui ui) {
         logger.fine("Parsing list command");
         try {
-            String startDateInput = ui.readStartDate(); //only uses start date
+            // Use the new validated date reading method
+            String startDateInput = ui.readValidStartDate();
             logger.fine("List start date: " + startDateInput);
 
             LocalDate date = null;
             if (startDateInput != null && !startDateInput.isEmpty()) {
-                DateTimeFormatter strictFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd")
-                        .withResolverStyle(ResolverStyle.STRICT);
-                date = LocalDate.parse(startDateInput.trim(), strictFormatter);
-            }
-
-            if (date != null && (date.isBefore(LocalDate.of(0, 1, 1)) || date.isAfter(LocalDate.of(9999, 12, 31)))) {
-                return new InvalidCommand("Please enter a date between year 0000 and year 9999.");
+                date = seedu.finbro.util.DateUtil.parseDate(startDateInput);
+                if (date == null) {
+                    // This should not happen since we're using the validated method
+                    return new InvalidCommand("Invalid date format. Please use YYYY-MM-DD.");
+                }
             }
 
             Integer limit = ui.readLimit();
@@ -414,12 +407,6 @@ public class Parser {
             logger.fine("Creating ListCommand with limit=" + limit + ", date=" + date);
             return new ListCommand(limit, date);
 
-        } catch (DateTimeParseException e) {
-            logger.log(Level.WARNING, "Date format error in list command", e);
-            return new InvalidCommand("Date is invalid. Please use format YYYY-MM-DD, and ensure date exists.");
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid number format for list limit", e);
-            return new InvalidCommand("Limit must be a valid number.");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing list command", e);
             return new InvalidCommand("Invalid list command: " + e.getMessage());
@@ -511,49 +498,24 @@ public class Parser {
     private Command parseFilterCommand(Ui ui) {
         logger.fine("Parsing filter command");
         try {
-            String[] filterDates = ui.readDates();
+            // Use the new validated date reading method
+            String[] filterDates = ui.readValidDates();
             logger.fine("Filter dates: " + filterDates[0] + " to " + filterDates[1]);
 
-            if (filterDates[0] == null || filterDates[0].isEmpty()) {
-                logger.warning("Missing start date parameter for filter command");
-                return new InvalidCommand("Start date must be specified for filter command.");
-            }
-
-            if (!isValidDate(filterDates[0])) {
-                return new InvalidCommand("Invalid start date. Please use format YYYY-MM-DD with valid date values.");
-            }
-
-            LocalDate startDate = LocalDate.parse(
-                    filterDates[0].trim(),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            );
+            // Parse the dates (they should be valid at this point)
+            LocalDate startDate = seedu.finbro.util.DateUtil.parseDate(filterDates[0]);
 
             LocalDate endDate;
             if (filterDates[1] == null || filterDates[1].isEmpty()) {
                 logger.fine("No end date specified, using current date");
                 endDate = LocalDate.now();
             } else {
-                if (!isValidDate(filterDates[1])) {
-                    return new InvalidCommand("Invalid end date. Please use format YYYY-MM-DD with valid date values.");
-                }
-
-                endDate = LocalDate.parse(
-                        filterDates[1].trim(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                );
-            }
-
-            if (startDate.isAfter(endDate)) {
-                logger.warning("Start date is after end date: " + startDate + " > " + endDate);
-                return new InvalidCommand("Start date cannot be after end date.");
+                endDate = seedu.finbro.util.DateUtil.parseDate(filterDates[1]);
             }
 
             logger.fine("Creating FilterCommand with startDate=" + startDate +
                     ", endDate=" + endDate);
             return new FilterCommand(startDate, endDate);
-        } catch (DateTimeParseException e) {
-            logger.log(Level.WARNING, "Date format error in filter command", e);
-            return new InvalidCommand("Date must be specified in the format YYYY-MM-DD with valid values.");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error parsing filter command", e);
             return new InvalidCommand("Invalid filter command: " + e.getMessage());
