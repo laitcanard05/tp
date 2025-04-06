@@ -546,12 +546,12 @@ public class Ui {
         String[] dates = new String[2];
 
         // Read start date (required)
-        String startDate = readRequiredDate("Please enter the start date in the format yyyy-mm-dd.");
+        String startDate = readRequiredDate("Please enter the start date in the format yyyy-mm-dd.\n");
         dates[0] = startDate;
 
         // Read end date (optional)
         String endDate = readValidDate("Please enter the end date in the format yyyy-mm-dd." +
-                " (Leave blank to show transactions up to current date.)");
+                " (Leave blank to show transactions up to current date.)\n");
         dates[1] = endDate;
 
         // If end date is provided, validate that it's after start date
@@ -576,7 +576,7 @@ public class Ui {
      */
     public String readValidStartDate() {
         return readValidDate("Please enter the start date in the format yyyy-mm-dd. " +
-                "(Leave blank to show from first transaction onwards)");
+                "(Leave blank to show from first transaction onwards)\n");
     }
 
     /**
