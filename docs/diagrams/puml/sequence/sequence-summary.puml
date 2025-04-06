@@ -17,15 +17,29 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "summary m/2 y/2025"
+note right: Parse "summary"
+
+Parser -> Parser : parseSummaryCommand(ui)
+activate Parser
+
+Parser -> UI : readMonthYear()
+activate UI
+UI -> User : request month, year
+activate User
+User --> UI : input month, year
+deactivate User
+UI --> Parser : month, year
+deactivate UI
 
 create SummaryCommand
 Parser -> SummaryCommand : new SummaryCommand(month, year)
 activate SummaryCommand
 SummaryCommand --> Parser : command
 deactivate SummaryCommand
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 

@@ -17,15 +17,29 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "search lunch"
+note right: Parse "search"
+
+Parser -> Parser : parseSearchCommand(ui)
+activate Parser
+
+Parser -> UI : readString("Enter keyword or string to search:")
+activate UI
+UI -> User : request keyword
+activate User
+User --> UI : input keyword
+deactivate User
+UI --> Parser : keyword
+deactivate UI
 
 create SearchCommand
 Parser -> SearchCommand : new SearchCommand(keyword)
 activate SearchCommand
 SearchCommand --> Parser : command
 deactivate SearchCommand
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 

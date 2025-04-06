@@ -18,58 +18,31 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "balance" or "balance d/2023-01-01"
+note right: Parse "balance"
 
-alt date parameter provided
-    Parser -> Parser : Extract date parameter
-    activate Parser
-    note right: Self-call to extract date
-    Parser --> Parser : date
-    deactivate Parser
-
-    create BalanceCommand
-    Parser -> BalanceCommand : new BalanceCommand(date)
-    activate BalanceCommand
-else no date parameter
-    create BalanceCommand
-    Parser -> BalanceCommand : new BalanceCommand(null)
-    activate BalanceCommand
-end
-
-BalanceCommand --> Parser : command
-
+create BalanceCommand
+Parser -> BalanceCommand : new BalanceCommand()
 activate BalanceCommand
 BalanceCommand --> Parser : command
 deactivate BalanceCommand
+
 Parser --> FinBro : command
 deactivate Parser
 
 FinBro -> BalanceCommand : execute(transactionManager, ui, storage)
 activate BalanceCommand
 
-alt date specified
-    BalanceCommand -> TransactionMgr : getTotalIncomeFromDate(date)
-    activate TransactionMgr
-    TransactionMgr --> BalanceCommand : totalIncome
-    deactivate TransactionMgr
+BalanceCommand -> TransactionMgr : getTotalIncome()
+activate TransactionMgr
+TransactionMgr --> BalanceCommand : totalIncome
+deactivate TransactionMgr
 
-    BalanceCommand -> TransactionMgr : getTotalExpensesFromDate(date)
-    activate TransactionMgr
-    TransactionMgr --> BalanceCommand : totalExpenses
-    deactivate TransactionMgr
-else no date
-    BalanceCommand -> TransactionMgr : getTotalIncome()
-    activate TransactionMgr
-    TransactionMgr --> BalanceCommand : totalIncome
-    deactivate TransactionMgr
-
-    BalanceCommand -> TransactionMgr : getTotalExpenses()
-    activate TransactionMgr
-    TransactionMgr --> BalanceCommand : totalExpenses
-    deactivate TransactionMgr
-end
+BalanceCommand -> TransactionMgr : getTotalExpenses()
+activate TransactionMgr
+TransactionMgr --> BalanceCommand : totalExpenses
+deactivate TransactionMgr
 
 BalanceCommand -> BalanceCommand : formatBalanceMessage(totalBalance, totalIncome, totalExpenses, title)
 activate BalanceCommand
