@@ -174,8 +174,8 @@ public class Parser {
             }
             
             // Check for confirmation
-            boolean confirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
-            if (!confirmed) {
+            boolean isConfirmed = ui.readConfirmation("Do you want to edit transaction at index " + index + "?");
+            if (!isConfirmed) {
                 logger.fine("User cancelled edit operation");
                 return new Command() {
                     @Override
