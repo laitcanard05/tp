@@ -3,6 +3,7 @@ package seedu.finbro.ui;
 import seedu.finbro.logic.exceptions.DecimalPointException;
 import seedu.finbro.logic.exceptions.EmptyInputException;
 import seedu.finbro.logic.exceptions.NegativeNumberException;
+import seedu.finbro.logic.exceptions.InvalidDecimalFormatException;
 
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -398,6 +399,9 @@ public class Ui {
             if (input.isEmpty()) {
                 throw new EmptyInputException();
             }
+            if (input.contains(",")) {
+               throw new InvalidDecimalFormatException();
+            }
             double output = Double.parseDouble(input);
             if (output < 0) {
                 throw new NegativeNumberException();
@@ -423,6 +427,9 @@ public class Ui {
         } catch (DecimalPointException e) {
             logger.log(Level.WARNING, "Double input invalid - exceeds 2dp.", e);
             DecimalPointException.handle();
+        } catch (InvalidDecimalFormatException e) {
+            logger.log(Level.WARNING, "Double input invalid - contains comma instead of decimal points.", e);
+            InvalidDecimalFormatException.handle();
         }
         return readDouble(message);
     }
