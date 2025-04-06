@@ -59,7 +59,7 @@ Key capabilities include:
 
 FinBro uses an interactive command approach. Rather than requiring you to type complex commands with multiple parameters, it guides you through each step:
 
-1. You enter a basic command keyword (like `income` or `expense`)
+1. You enter a basic command keyword, like `income` or `Expense` (case-insensitive)
 2. FinBro prompts you for each piece of information needed
 3. You provide the information one step at a time
 4. The command is completed once all necessary information is gathered

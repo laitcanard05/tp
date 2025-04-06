@@ -2,6 +2,8 @@ package seedu.finbro.ui;
 
 import seedu.finbro.logic.exceptions.DecimalPointException;
 import seedu.finbro.logic.exceptions.EmptyInputException;
+import seedu.finbro.logic.exceptions.InvalidDecimalFormatException;
+import seedu.finbro.logic.exceptions.MissingDecimalsException;
 import seedu.finbro.logic.exceptions.NegativeNumberException;
 
 import java.time.LocalDate;
@@ -90,6 +92,7 @@ public class Ui {
         logger.fine("Waiting for user input");
         System.out.print("Enter command word:\n> ");
         String command = scanner.nextLine();
+        command = command.toLowerCase();
         logger.fine("User input received: " + command);
         return command;
     }
@@ -398,6 +401,9 @@ public class Ui {
             if (input.isEmpty()) {
                 throw new EmptyInputException();
             }
+            if (input.contains(",")) {
+                throw new InvalidDecimalFormatException();
+            }
             double output = Double.parseDouble(input);
             if (output < 0) {
                 throw new NegativeNumberException();
@@ -406,6 +412,9 @@ public class Ui {
                 System.out.println("INVALID INPUT: Amount exceeds maximum limit of $1,000,000,000.00");
                 System.out.println("Please enter a smaller amount.");
                 return readDouble(message);
+            }
+            if (input.matches("^\\d+\\.")) {
+                throw new MissingDecimalsException();
             }
             if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
                 throw new DecimalPointException();
@@ -423,6 +432,12 @@ public class Ui {
         } catch (DecimalPointException e) {
             logger.log(Level.WARNING, "Double input invalid - exceeds 2dp.", e);
             DecimalPointException.handle();
+        } catch (InvalidDecimalFormatException e) {
+            logger.log(Level.WARNING, "Double input invalid - contains comma instead of decimal points.", e);
+            InvalidDecimalFormatException.handle();
+        } catch (MissingDecimalsException e) {
+            logger.log(Level.WARNING, "Double input invalid - contains decimal point but no decimal places.", e);
+            MissingDecimalsException.handle();
         }
         return readDouble(message);
     }
