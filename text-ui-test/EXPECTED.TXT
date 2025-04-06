@@ -166,7 +166,8 @@ New expense added: [Expense][Food] $120.00 - Groceries [Essential]
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)Enter number of transactions to list. (Leave blank to show all transactions.)
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
@@ -181,7 +182,8 @@ Here are your transactions:
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)Enter number of transactions to list. (Leave blank to show all transactions.)
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
@@ -206,8 +208,10 @@ Here are the transactions containing the keyword:bill
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Please enter the start date in the format yyyy-mm-dd.____________________________________________________________
-Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up to current date.)____________________________________________________________
+Please enter the start date in the format yyyy-mm-dd.
+____________________________________________________________
+Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up to current date.)
+____________________________________________________________
 There are no transactions between Mar 1 2025 and Mar 15 2025.
 ____________________________________________________________
 Enter command word:
@@ -338,7 +342,8 @@ Deleted transactions:
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
-Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)Enter number of transactions to list. (Leave blank to show all transactions.)
+Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
