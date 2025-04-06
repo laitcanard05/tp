@@ -66,7 +66,7 @@ public class ExceptionsTest {
 
         // Then
         String output = outContent.toString();
-        assertTrue(output.contains("INVALID INPUT - index exceeds limit"));
+        assertTrue(output.contains("INVALID INPUT: index exceeds limit"));
         assertTrue(output.contains("Please input an index within the appropriate range"));
     }
 

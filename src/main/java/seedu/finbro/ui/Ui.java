@@ -1,6 +1,10 @@
 package seedu.finbro.ui;
 
-import seedu.finbro.logic.exceptions.*;
+import seedu.finbro.logic.exceptions.DecimalPointException;
+import seedu.finbro.logic.exceptions.EmptyInputException;
+import seedu.finbro.logic.exceptions.InvalidDecimalFormatException;
+import seedu.finbro.logic.exceptions.MissingDecimalsException;
+import seedu.finbro.logic.exceptions.NegativeNumberException;
 
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -398,7 +402,7 @@ public class Ui {
                 throw new EmptyInputException();
             }
             if (input.contains(",")) {
-               throw new InvalidDecimalFormatException();
+                throw new InvalidDecimalFormatException();
             }
             double output = Double.parseDouble(input);
             if (output < 0) {
