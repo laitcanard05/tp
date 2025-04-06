@@ -88,6 +88,7 @@ public class Ui {
         logger.fine("Waiting for user input");
         System.out.print("Enter command word:\n> ");
         String command = scanner.nextLine();
+        command = command.toLowerCase();
         logger.fine("User input received: " + command);
         return command;
     }
