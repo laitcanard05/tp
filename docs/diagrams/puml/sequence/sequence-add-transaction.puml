@@ -19,15 +19,51 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "income 3000 d/Monthly salary t/work"
+note right: Parse "income"
+
+Parser -> Parser : parseIncomeCommand(ui)
+activate Parser
+
+Parser -> UI : readDouble("Enter amount:")
+activate UI
+UI -> User : request amount
+activate User
+User --> UI : input amount
+deactivate User
+UI --> Parser : amount
+deactivate UI
+
+Parser -> UI : readString("Enter description:")
+activate UI
+UI -> User : request description
+activate User
+User --> UI : input description
+deactivate User
+UI --> Parser : description
+deactivate UI
+
+Parser -> Parser : parseTags(ui)
+activate Parser
+Parser -> UI : readTags("Enter up to 3 tags (separated by space or comma), or press Enter to skip:")
+activate UI
+UI -> User : request tags
+activate User
+User --> UI : input tags
+deactivate User
+UI --> Parser : tags
+deactivate UI
+Parser --> Parser : tags
+deactivate Parser
 
 create IncomeCommand
 Parser -> IncomeCommand : new IncomeCommand(amount, description, tags)
 activate IncomeCommand
 IncomeCommand --> Parser : command
 deactivate IncomeCommand
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 
@@ -44,6 +80,10 @@ note right of IncomeCommand: Check for duplicates
 alt duplicates found
     IncomeCommand -> UI : warnDuplicate()
     activate UI
+    UI -> User : display duplicate
+    activate User
+    User --> UI : input result
+    deactivate User
     UI --> IncomeCommand : confirmResult
     deactivate UI
 

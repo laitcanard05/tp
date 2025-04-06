@@ -18,29 +18,47 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
+note right: Parse "edit"
 
-note right: Parse "edit 1 a/200.0 d/Updated Description"
+Parser -> Parser : parseEditCommand(ui)
+activate Parser
 
 Parser -> UI : readIndex("Enter the index of transaction to edit")
 activate UI
+UI -> User : request index
+activate User
+User --> UI : input index
+deactivate User
 UI --> Parser : index
 deactivate UI
 
 Parser -> UI : readConfirmation("Do you want to edit transaction at index 1?")
 activate UI
+UI -> User : request confirmation
+activate User
+User --> UI : input confirmation
+deactivate User
 UI --> Parser : confirmed (boolean)
 deactivate UI
 
 alt user confirms
     Parser -> UI : readAmount("Enter new amount (press Enter to skip)")
     activate UI
+    UI -> User : request new amount
+    activate User
+    User --> UI : input new amount
+    deactivate User
     UI --> Parser : amountStr
     deactivate UI
 
     Parser -> UI : readDescription("Enter new description (press Enter to skip)")
     activate UI
+    UI -> User : request new description
+    activate User
+    User --> UI : input new description
+    deactivate User
     UI --> Parser : descriptionStr
     deactivate UI
 
@@ -59,6 +77,8 @@ else user cancels
     deactivate "SimpleCommand"
 end
 
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 

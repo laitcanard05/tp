@@ -18,15 +18,28 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "filter d/2023-01-01 to/2023-12-31"
+note right: Parse "filter"
+
+Parser -> Parser : parseFilterCommand(ui)
+activate Parser
+Parser -> UI : readDates()
+activate UI
+UI -> User : request dates
+activate User
+User --> UI : input dates
+deactivate User
+UI --> Parser : startDate, endDate
+deactivate UI
 
 create FilterCommand
 Parser -> FilterCommand : new FilterCommand(startDate, endDate)
 activate FilterCommand
 FilterCommand --> Parser : command
 deactivate FilterCommand
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 

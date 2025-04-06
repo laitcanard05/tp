@@ -17,15 +17,38 @@ activate UI
 UI -> FinBro : readCommand()
 activate FinBro
 
-FinBro -> Parser : parseCommand(userInput)
+FinBro -> Parser : parseCommandWord(userInput, ui)
 activate Parser
-note right: Parse "list n/5 d/2025-03-01"
+note right: Parse "list"
+
+Parser -> Parser : parseListCommand(ui)
+activate Parser
+
+Parser -> UI : readStartDate()
+activate UI
+UI -> User : request start date
+activate User
+User --> UI : input start date
+deactivate User
+UI --> Parser : startDate
+deactivate UI
+
+Parser -> UI : readLimit()
+activate UI
+UI -> User : request limit
+activate User
+User --> UI : input limit
+deactivate User
+UI --> Parser : limit
+deactivate UI
 
 create ListCommand
 Parser -> ListCommand : new ListCommand(limit, date)
 activate ListCommand
 ListCommand --> Parser : command
 deactivate ListCommand
+Parser --> Parser : command
+deactivate Parser
 Parser --> FinBro : command
 deactivate Parser
 
