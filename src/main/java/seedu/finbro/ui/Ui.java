@@ -504,19 +504,94 @@ public class Ui {
     }
 
     /**
-     * Reads user input for date. Used in EditCommand.
-     * Allows empty input to skip the field.
+     * Reads a date from the user with validation.
+     * Allows empty input to skip the date input.
      *
      * @param message The prompt message to display
-     * @return The date entered by the user, can be empty
+     * @return The valid date string, or empty string if the user wants to skip
      */
-    public String readDate(String message) {
-        logger.fine("Requesting user input for date");
+    public String readValidDate(String message) {
+        logger.fine("Requesting user input for validated date");
         System.out.println(LINE);
         System.out.print(message);
-        String date = scanner.nextLine().trim();
-        logger.fine("User input for date received: " + date);
-        return date;
+        String input = scanner.nextLine().trim();
+
+        // If input is empty, allow skipping
+        if (input.isEmpty()) {
+            return input;
+        }
+
+        // Validate the date
+        if (!seedu.finbro.util.DateUtil.isValidDate(input)) {
+            String errorMessage = seedu.finbro.util.DateUtil.getValidationErrorMessage(input);
+            System.out.println("INVALID INPUT: " + errorMessage);
+            System.out.println("Please try again.");
+            return readValidDate(message); // Ask again
+        }
+
+        logger.fine("Valid date input received: " + input);
+        return input;
+    }
+
+    /**
+     * Reads a date from the user with validation.
+     * Does not allow empty input.
+     *
+     * @param message The prompt message to display
+     * @return The valid date string
+     */
+    public String readRequiredDate(String message) {
+        String input = readValidDate(message);
+
+        if (input.isEmpty()) {
+            System.out.println("Date cannot be empty for this command.");
+            return readRequiredDate(message); // Ask again
+        }
+
+        return input;
+    }
+
+    /**
+     * Reads start and end dates for filtering with validation.
+     * Start date is required, end date is optional.
+     *
+     * @return A string array with [startDate, endDate]
+     */
+    public String[] readValidDates() {
+        String[] dates = new String[2];
+
+        // Read start date (required)
+        String startDate = readRequiredDate("Please enter the start date in the format yyyy-mm-dd.\n");
+        dates[0] = startDate;
+
+        // Read end date (optional)
+        String endDate = readValidDate("Please enter the end date in the format yyyy-mm-dd." +
+                " (Leave blank to show transactions up to current date.)\n");
+        dates[1] = endDate;
+
+        // If end date is provided, validate that it's after start date
+        if (!endDate.isEmpty()) {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            if (start.isAfter(end)) {
+                System.out.println("ERROR: Start date cannot be after end date.");
+                return readValidDates(); // Ask again
+            }
+        }
+
+        return dates;
+    }
+
+    /**
+     * Reads a single date for listing with validation.
+     * Allows empty input to skip.
+     *
+     * @return The valid date string or empty string
+     */
+    public String readValidStartDate() {
+        return readValidDate("Please enter the start date in the format yyyy-mm-dd. " +
+                "(Leave blank to show from first transaction onwards)\n");
     }
 
     /**
