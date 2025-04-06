@@ -1,6 +1,5 @@
 package seedu.finbro.logic.exceptions;
 
-import seedu.finbro.ui.Ui;
 
 public class InvalidDecimalFormatException extends Exception {
 
@@ -9,6 +8,7 @@ public class InvalidDecimalFormatException extends Exception {
     }
 
     public static void handle() {
-        System.out.println("INVALID INPUT: Decimal input uses comma. Please use Decimal Points instead.");
+        System.out.println("INVALID INPUT: Decimal input uses comma.\n" +
+                "Please use Decimal Points \".\" instead.\n");
     }
 }

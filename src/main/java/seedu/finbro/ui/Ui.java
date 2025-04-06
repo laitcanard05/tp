@@ -1,9 +1,6 @@
 package seedu.finbro.ui;
 
-import seedu.finbro.logic.exceptions.DecimalPointException;
-import seedu.finbro.logic.exceptions.EmptyInputException;
-import seedu.finbro.logic.exceptions.NegativeNumberException;
-import seedu.finbro.logic.exceptions.InvalidDecimalFormatException;
+import seedu.finbro.logic.exceptions.*;
 
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -411,6 +408,9 @@ public class Ui {
                 System.out.println("Please enter a smaller amount.");
                 return readDouble(message);
             }
+            if (input.matches("^\\d+\\.")) {
+                throw new MissingDecimalsException();
+            }
             if (!input.matches("^\\d+(\\.\\d{1,2})?$")) {
                 throw new DecimalPointException();
             }
@@ -430,6 +430,9 @@ public class Ui {
         } catch (InvalidDecimalFormatException e) {
             logger.log(Level.WARNING, "Double input invalid - contains comma instead of decimal points.", e);
             InvalidDecimalFormatException.handle();
+        } catch (MissingDecimalsException e) {
+            logger.log(Level.WARNING, "Double input invalid - contains decimal point but no decimal places.", e);
+            MissingDecimalsException.handle();
         }
         return readDouble(message);
     }
