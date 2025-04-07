@@ -286,6 +286,7 @@ public class Ui {
      * @throws NumberFormatException if input is not a valid number
      */
     public Integer readLimit() {
+        System.out.println(LINE);
         System.out.println("Enter number of transactions to list. (Leave blank to show all transactions.)");
         System.out.print("> ");
         String input = scanner.nextLine().trim();
