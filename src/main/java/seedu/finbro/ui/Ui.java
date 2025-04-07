@@ -495,12 +495,39 @@ public class Ui {
      * @return The description entered by the user, can be empty
      */
     public String readDescription(String message) {
-        logger.fine("Requesting user input for description");
         System.out.println(LINE);
         System.out.print(message);
-        String description = scanner.nextLine().trim();
-        logger.fine("User input for description received: " + description);
-        return description;
+        String input = scanner.nextLine();
+        return validateInput(input);
+    }
+
+    /**
+     * Validates and sanitizes a string input to ensure it's safe for storage.
+     *
+     * @param input The user input to validate
+     * @return The sanitized input
+     */
+    public String validateInput(String input) {
+        if (input == null) {
+            return "";
+        }
+
+        // Warn the user if input contains pipe characters
+        if (input.contains("|")) {
+            System.out.println("Warning: Your input contains the '|' character, which will be stored as-is.");
+        }
+
+        // Trim input to remove leading/trailing whitespace
+        String sanitized = input.trim();
+
+        // Check if input is too long (implementation-defined limit)
+        final int MaxInputLength = 500;
+        if (sanitized.length() > MaxInputLength) {
+            System.out.println("Warning: Input truncated to " + MaxInputLength + " characters.");
+            sanitized = sanitized.substring(0, MaxInputLength);
+        }
+
+        return sanitized;
     }
 
     /**
