@@ -564,7 +564,7 @@ public class Parser {
     private Command parseExportCommand(Ui ui) {
         logger.fine("Parsing export command interactively");
         try {
-            String format = ui.readString("Enter export format (csv/txt) or press Enter for default (csv):\n> ");
+            String format = ui.readString("Enter export format (csv/txt):\n> ");
 
             // If format is not "csv" or "txt" (case-insensitive), show error
             if (!format.trim().isEmpty() &&
