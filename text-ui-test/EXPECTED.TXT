@@ -2,6 +2,7 @@ ____________________________________________________________
 Welcome to FinBro - Your Personal Finance Manager!
 Type 'help' to see available commands.
 ____________________________________________________________
+All recovery attempts failed, starting with empty data
 Enter command word:
 > ____________________________________________________________
 FinBro uses an interactive command experience. Type a command and follow the prompts.
