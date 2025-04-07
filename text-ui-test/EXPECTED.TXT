@@ -2,7 +2,6 @@ ____________________________________________________________
 Welcome to FinBro - Your Personal Finance Manager!
 Type 'help' to see available commands.
 ____________________________________________________________
-All recovery attempts failed, starting with empty data
 Enter command word:
 > ____________________________________________________________
 FinBro uses an interactive command experience. Type a command and follow the prompts.
@@ -168,7 +167,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-Enter number of transactions to list. (Leave blank to show all transactions.)
+> Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
@@ -184,7 +183,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-Enter number of transactions to list. (Leave blank to show all transactions.)
+> Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
@@ -210,9 +209,9 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd.
-____________________________________________________________
+> ____________________________________________________________
 Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up to current date.)
-____________________________________________________________
+> ____________________________________________________________
 There are no transactions between Mar 1 2025 and Mar 15 2025.
 ____________________________________________________________
 Enter command word:
@@ -344,7 +343,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-Enter number of transactions to list. (Leave blank to show all transactions.)
+> Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
