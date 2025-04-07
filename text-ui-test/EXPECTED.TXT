@@ -168,7 +168,8 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-> Enter number of transactions to list. (Leave blank to show all transactions.)
+> ____________________________________________________________
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
@@ -184,7 +185,8 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-> Enter number of transactions to list. (Leave blank to show all transactions.)
+> ____________________________________________________________
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
@@ -344,7 +346,8 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
-> Enter number of transactions to list. (Leave blank to show all transactions.)
+> ____________________________________________________________
+Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
 1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: <DATE>)
