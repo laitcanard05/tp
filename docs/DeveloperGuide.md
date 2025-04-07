@@ -615,11 +615,39 @@ This sequence diagram illustrates the process when a user adds a new transaction
 
 ![Adding a Transaction Sequence Diagram](img/puml/sequence-add-transaction.png)
 
+The general steps are as follows:
+
+
+1. User Input: The user inputs the command to add a transaction.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the transaction details (amount, description, tags).
+5. Command Creation: The Parser creates a new IncomeCommand or ExpenseCommand object based on the user input.
+6. Command Execution: The FinBro component executes the command.
+7. Duplicate Check: The command checks for duplicate transactions using the TransactionManager.
+8. User Confirmation: If duplicates are found, the UI warns the user and asks for confirmation.
+9. Transaction Addition: The command creates a new transaction and adds the transaction to the TransactionManager.
+10. Data Storage: The Storage component saves the updated transaction list.
+11. Result Display: The FinBro component sends the result message to the UI to display the confirmation to the user.
+
+
 ### Searching for a Transaction
 
 This sequence diagram illustrates the process of searching for transactions:
 
 ![Searching for a Transaction Sequence Diagram](img/puml/sequence-search.png)
+
+The general steps are as follows:
+
+1. User Input: The user inputs the command to search for transactions.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the search criteria (keyword).
+5. Command Creation: The Parser creates a new SearchCommand object based on the user input.
+6. Command Execution: The FinBro component executes the command.
+7. Transaction Search: The command searches for transactions in the TransactionManager based on the keyword.
+8. Transaction Formatting: The command formats the search results.
+9. Result Display: The FinBro component sends the search results to the UI to display to the user.
 
 ### Filtering Transactions
 
@@ -627,11 +655,34 @@ This sequence diagram illustrates the process of filtering transactions based on
 
 ![Filtering Transactions Sequence Diagram](img/puml/sequence-filter.png)
 
+The general steps are as follows:
+1. User Input: The user inputs the command to filter transactions.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the filter criteria (start date, end date).
+5. Command Creation: The Parser creates a new FilterCommand object based on the user input.
+6. Command Execution: The FinBro component executes the command.
+7. Transaction Filtering: The command filters transactions in the TransactionManager based on the date range.
+8. Transaction Formatting: The command formats the filtered transactions results.
+9. Result Display: The FinBro component sends the filtered transactions to the UI to display to the user.
+
 ### Obtaining a Monthly Financial Summary
 
 This sequence diagram illustrates the process of obtaining a monthly financial summary:
 
 ![Obtaining Monthly Financial Summary Sequence Diagram](img/puml/sequence-summary.png)
+
+The general steps are as follows:
+1. User Input: The user inputs the command to obtain a monthly financial summary.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the month and year for the summary.
+5. Command Creation: The Parser creates a new SummaryCommand object based on the user input.
+6. Command Execution: The FinBro component executes the command.
+7. Transaction Summary: The command retrieves the total income, total expenses, all expenses sorted by categories and all transactions sorted by tags
+from the TransactionManager for the specified month and year.
+8. Summary Formatting: The command formats the summary results.
+9. Result Display: The FinBro component sends the summary results to the UI to display to the user.
 
 ### Obtaining the Current List of Transactions
 
@@ -639,17 +690,54 @@ This sequence diagram illustrates the process of obtaining the current list of t
 
 ![Obtaining Current List of Transactions Sequence Diagram](img/puml/sequence-list.png)
 
+The general steps are as follows:
+
+1. User Input: The user inputs the command to obtain the current list of transactions.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the list criteria (start date, limit for number of transactions to display).
+5. Command Creation: The Parser creates a new ListCommand object based on the user input.
+6. Command Execution: The FinBro component executes the command.
+7. Transaction Retrieval: If start date and/or limit are specified, the command retrieves a filtered list of transactions from the TransactionManager.
+Otherwise, it retrieves all transactions.
+8. Transaction Formatting: The command formats the list of transactions.
+9. Result Display: The FinBro component sends the current list of transactions to the UI to display to the user.
+
 ### Viewing Balance
 
 This sequence diagram illustrates the process of viewing the current balance:
 
 ![Viewing Balance Sequence Diagram](img/puml/sequence-balance.png)
 
+The general steps are as follows:
+
+1. User Input: The user inputs the command to view the current balance.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. Command Creation: The Parser creates a new BalanceCommand object.
+5. Command Execution: The FinBro component executes the command.
+6. Balance Calculation: The command retrieves the total income, total expenses, and calculates the current balance from the TransactionManager.
+7. Balance Formatting: The command formats the balance results.
+8. Result Display: The FinBro component sends the balance results to the UI to display to the user.
+
 ### Editing a Transaction
 
 This sequence diagram illustrates the process of editing a transaction:
 
 ![Editing a Transaction Sequence Diagram](img/puml/sequence-edit.png)
+
+The general steps are as follows:
+1. User Input: The user inputs the command to edit a transaction.
+2. UI Interaction: The UI component reads the command from the user.
+3. Command Parsing: The FinBro component sends the user input to the Parser to parse the command.
+4. UI Interaction: The Parser interacts with the UI to read the transaction index.
+5. User Confirmation: The UI asks the user for confirmation to edit the transaction.
+6. UI Interaction: The Parser interacts with the UI to read the new transaction details (amount, description, date, category, tags).
+7. Command Creation: The Parser creates a new EditCommand object based on the user input.
+8. Command Execution: The FinBro component executes the command.
+9. Transaction Update: The command retrieves the transaction from the TransactionManager and updates it with the new details.
+10. Data Storage: The Storage component saves the updated transaction list.
+11. Result Display: The FinBro component sends the result message to the UI to display the confirmation to the user.
 
 ## Testing
 

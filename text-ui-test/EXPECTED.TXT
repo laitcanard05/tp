@@ -170,15 +170,15 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from 
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-06)
-3. [Income] $1,200.00 - Tax refund [Annual] (Date created: 2025-04-06)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-06)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-06)
-6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-06)
-7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-06)
-8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-06)
-9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-06)
+1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-07)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-07)
+3. [Income] $1,200.00 - Tax refund [Annual] (Date created: 2025-04-07)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-07)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-07)
+6. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-07)
+7. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-07)
+8. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-07)
+9. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-07)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -186,25 +186,25 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from 
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-06)
-3. [Income] $1,200.00 - Tax refund [Annual] (Date created: 2025-04-06)
-4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-06)
-5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-06)
+1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-07)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-07)
+3. [Income] $1,200.00 - Tax refund [Annual] (Date created: 2025-04-07)
+4. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-07)
+5. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-07)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Enter keyword or string to search:
 >____________________________________________________________
 Here are the transactions containing the keyword:lunch
-1. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-06)
+1. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-07)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Enter keyword or string to search:
 >____________________________________________________________
 Here are the transactions containing the keyword:bill
-1. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-06)
+1. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-07)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
@@ -346,14 +346,14 @@ Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from 
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
-1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-06)
-2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-06)
-3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-06)
-4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-06)
-5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-06)
-6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-06)
-7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-06)
-8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-06)
+1. [Income] $3,000.00 - Monthly salary [Work, Primary] (Date created: 2025-04-07)
+2. [Income] $500.50 - Freelance project [Side-hustle, Design] (Date created: 2025-04-07)
+3. [Expense][Food] $25.50 - Lunch with colleagues [Work] (Date created: 2025-04-07)
+4. [Expense][Shopping] $75.00 - New shoes [Clothing] (Date created: 2025-04-07)
+5. [Expense][Bills] $150.20 - Electricity bill [Monthly-utilities] (Date created: 2025-04-07)
+6. [Expense][Transport] $10.80 - Bus fare [Transport, Commute] (Date created: 2025-04-07)
+7. [Expense][Entertainment] $45.99 - Movie tickets [Weekend-leisure] (Date created: 2025-04-07)
+8. [Expense][Food] $120.00 - Groceries [Essential] (Date created: 2025-04-07)
 ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
