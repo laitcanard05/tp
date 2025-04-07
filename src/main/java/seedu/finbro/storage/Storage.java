@@ -206,7 +206,7 @@ public class Storage {
             }
 
             // All recovery attempts failed, return empty manager
-            logger.severe("All recovery attempts failed, starting with empty data");
+            System.out.println("All recovery attempts failed, starting with empty data");
             return new TransactionManager();
         }, new TransactionManager());  // Default value if locking fails
     }
