@@ -27,7 +27,7 @@ public class HelpCommand implements Command {
                 "edit     => Edit a transaction (prompts for index and fields to update)\n" +
                 "filter   => Filter transactions by date (prompts for start/end dates)\n" +
                 "search   => Search transactions (prompts for keyword)\n" +
-                "balance  => View current balance\n" +
+                "balance/view  => View current balance\n" +
                 "summary  => View financial summary (prompts for month/year)\n" +
                 "setbudget => Set a monthly budget (prompts for month/year and amount)\n" +
                 "trackbudget => Track your budget progress (prompts for month/year)\n" +

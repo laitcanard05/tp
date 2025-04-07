@@ -208,6 +208,8 @@ Enter new tags (comma separated, press Enter to skip, 'y' to select):
 - Only fields you provide values for will be updated
 - The transaction's type (income or expense) cannot be changed
 - You'll be asked to confirm before editing the transaction
+- If you attempt to add a category to Income, it will be allowed, but no category will be attached to that particular Income Input made as it is not intended to have a category
+- Do avoid inputting an index that is invalid (such as '0', negative numbers, or a number more than the number of index in the list) when selecting the index to edit
 
 ---
 
