@@ -31,7 +31,13 @@ public class DeleteCommand implements Command {
     public String execute(TransactionManager transactionManager, Ui ui, Storage storage) {
         try {
             int total = transactionManager.getTransactionCount();
-            if (startIndex < 1 || endIndex > total || startIndex > endIndex) {
+            if (total == 0) {
+                return "There are no transactions to delete.";
+            }
+            else if (total == 1 && startIndex > 1) {
+                return "Invalid index range. There is only " + total + " transaction.";
+            }
+            else if (startIndex < 1 || endIndex > total || startIndex > endIndex) {
                 return "Invalid index range. There are only " + total + " transactions.";
             }
 

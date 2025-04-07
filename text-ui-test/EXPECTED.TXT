@@ -168,6 +168,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+> ____________________________________________________________
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
@@ -184,6 +185,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+> ____________________________________________________________
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
@@ -210,9 +212,9 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd.
-____________________________________________________________
+> ____________________________________________________________
 Please enter the end date in the format yyyy-mm-dd. (Leave blank to show transactions up to current date.)
-____________________________________________________________
+> ____________________________________________________________
 There are no transactions between Mar 1 2025 and Mar 15 2025.
 ____________________________________________________________
 Enter command word:
@@ -344,6 +346,7 @@ ____________________________________________________________
 Enter command word:
 > ____________________________________________________________
 Please enter the start date in the format yyyy-mm-dd. (Leave blank to show from first transaction onwards)
+> ____________________________________________________________
 Enter number of transactions to list. (Leave blank to show all transactions.)
 > ____________________________________________________________
 Here are your transactions:
